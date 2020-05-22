@@ -16,6 +16,7 @@ define( 'PARENT_DIR', get_template_directory() );
 define( 'PARENT_URL', get_template_directory_uri() );
 
 require PARENT_DIR . '/includes/core.php';
+require PARENT_DIR . '/php/class-main.php';
 
 
 /**

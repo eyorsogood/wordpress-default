@@ -36,7 +36,7 @@ class Theme {
     
 
     function __autoload() {
-        $classes = array('destination');
+        $classes = array();
 
         foreach($classes as $value){
             require_once PARENT_DIR . '/php/class-'. $value .'.php';

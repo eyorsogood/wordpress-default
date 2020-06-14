@@ -86,16 +86,18 @@ class Theme {
         return $the_query;
     }
 
-    public function createPostQuery($postType, $postPerPage, $pagination = false) {
+    public function createPostQuery($postType, $postPerPage, $pagination = false, $meta_query = array()) {
         $rows = array();
         $paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
+
         $args = array(
             'post_type' => $postType,
             'post_status' => array('publish'),
             'posts_per_page' => $postPerPage,
             'paged' => $paged,
             'orderby'			=> 'date',
-            'order'				=> 'DESC'
+            'order'				=> 'DESC',
+            'meta_query'        => $meta_query
         );
 
         $pagi = '';

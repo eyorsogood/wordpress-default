@@ -930,25 +930,6 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Module' ) ) {
 		}
 
 		/**
-		 * Get Term Labels
-		 *
-		 * @since ?
-		 *
-		 * @param $post_objs
-		 * @return array
-		 */
-		function get_term_labels( $post_objs ) {
-			$post_types = array();
-			foreach ( $post_objs as $p ) {
-				if ( ! empty( $p->name ) ) {
-					$post_types[ $p->term_id ] = $p->name;
-				}
-			}
-
-			return $post_types;
-		}
-
-		/**
 		 * Get Post Type Titles
 		 *
 		 * @since ?
@@ -974,22 +955,6 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Module' ) ) {
 		 */
 		function get_taxonomy_titles( $args = array() ) {
 			return $this->get_object_labels( get_taxonomies( $args, 'objects' ) );
-		}
-
-		/**
-		 * Gets the category titles.
-		 *
-		 * @since 3.0 Changed function name from `get_category_titles` to `get_term_titles`. (#240)
-		 * @since 3.0 Changed `get_categories()` to `get_terms()` to fetch all (custom) terms. (#240)
-		 *
-		 * @see WP_Term_Query::__constructor()
-		 * @link https://developer.wordpress.org/reference/classes/wp_term_query/__construct/
-		 *
-		 * @param array $args An array for arguments to query by. See WP_Term_Query::__constructor() for more info.
-		 * @return array
-		 */
-		function get_term_titles( $args = array() ) {
-			return $this->get_term_labels( get_terms( $args ) );
 		}
 
 		/**

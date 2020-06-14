@@ -53,6 +53,10 @@ class AIOSEOP_Education {
 
 		add_action( 'wp_ajax_aioseop_deactivate_conflicting_plugins', array( 'AIOSEOP_Education', 'deactivate_conflicting_plugins' ) );
 
+		if ( !AIOSEOPPRO || ( AIOSEOPPRO && !aioseop_is_addon_allowed('news_sitemap') ) ) {
+			add_action( 'wp_ajax_aioseop_get_news_sitemap_upsell', array( 'AIOSEOP_Education', 'get_news_sitemap_upsell' ) );
+		}
+
 		if ( AIOSEOPPRO ) {
 			return;
 		}
@@ -75,6 +79,10 @@ class AIOSEOP_Education {
 	 */
 	public static function admin_enqueue_scripts() {
 		self::enqueue_deactivate_conflicting_plugins_script();
+
+		if ( !AIOSEOPPRO || ( AIOSEOPPRO && !aioseop_is_addon_allowed('news_sitemap') ) ) {
+			self::enqueue_news_sitemap_upsell_script();
+		}
 
 		if ( AIOSEOPPRO ) {
 			return;
@@ -145,6 +153,29 @@ class AIOSEOP_Education {
 		);
 
 		wp_localize_script( 'aioseop-video-sitemap-upsell', 'aioseopVideoSitemapUpsellData', $ajax_data );
+	}
+
+	/**
+	 * Enqueues the video sitemap upsell script.
+	 *
+	 * @since   3.4.0
+	 */
+	private static function enqueue_news_sitemap_upsell_script() {
+		if ( 
+			'all-in-one-seo_page_' . AIOSEOP_PLUGIN_DIRNAME . '/modules/aioseop_sitemap' !== get_current_screen()->id &&
+			'all-in-one-seo_page_' . AIOSEOP_PLUGIN_DIRNAME . '/pro/class-aioseop-pro-sitemap' !== get_current_screen()->id
+		) {
+			return;
+		}
+
+		wp_enqueue_script( 'aioseop-news-sitemap-upsell', AIOSEOP_PLUGIN_URL . 'js/admin/education/aioseop-news-sitemap-upsell.js', array( 'jquery' ), AIOSEOP_VERSION, false );
+
+		$ajax_data = array(
+			'requestUrl' => admin_url( 'admin-ajax.php' ),
+			'nonce'      => wp_create_nonce( 'news-sitemap-upsell' ),
+		);
+
+		wp_localize_script( 'aioseop-news-sitemap-upsell', 'aioseopNewsSitemapUpsellData', $ajax_data );
 	}
 
 	/**
@@ -378,6 +409,39 @@ class AIOSEOP_Education {
 			"<div id='aioseop-video-sitemap-upsell'>
             <span class='dashicons dashicons-dismiss dismiss'></span><h5>$header</h5><br/><p>$p1</p><p>$p2</p></p><p>$link</p><p>$p3</p>
             </div>";
+
+		wp_die();
+	}
+
+	/**
+	 * Returns the news sitemap upsell markup.
+	 *
+	 * Acts as a callback for our "wp_ajax_aioseop_get_news_sitemap_upsell" endpoint.
+	 *
+	 * @since   3.4.0
+	 */
+	public static function get_news_sitemap_upsell() {
+		if ( ! isset( $_GET ) ) {
+			return;
+		}
+
+		check_ajax_referer( 'news-sitemap-upsell', '_ajax_nonce' );
+
+		$message = __( 'Did you know that we also support Google News sitemaps?&nbsp;', 'all-in-one-seo-pack' );
+		$link    = __( 'Upgrade to Pro to unlock this feature.', 'all-in-one-seo-pack' );
+		if( AIOSEOPPRO && !aioseop_is_addon_allowed('news_sitemap') ) {
+			$message = __( 'Did you know that Business & Agency plan users also have access to Google News sitemaps?&nbsp;', 'all-in-one-seo-pack' );
+			$link    = __( 'Upgrade to a higher tier to unlock this feature.', 'all-in-one-seo-pack' );
+		}
+
+		printf(
+			'<p class="aioseop-news-sitemap-upsell">%1$s<br/><a href="%2$s" title="%3$s" target="_blank">%4$s</a></p>',
+			$message,
+			aioseop_get_utm_url( 'news-sitemap-upsell' ),
+			/* translators: %s: "All in One SEO Pack Pro" */
+			sprintf( __( 'Upgrade to %s', 'all-in-one-seo-pack' ), AIOSEOP_PLUGIN_NAME . '&nbsp;Pro' ),
+			$link
+		);
 
 		wp_die();
 	}

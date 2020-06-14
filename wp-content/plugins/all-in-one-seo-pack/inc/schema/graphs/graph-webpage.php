@@ -60,6 +60,29 @@ class AIOSEOP_Graph_WebPage extends AIOSEOP_Graph_Creativework {
 			// WooCommerce - Shop Page.
 			$shop_page = get_post( wc_get_page_id( 'shop' ) );
 			$context   = AIOSEOP_Context::get_instance( $shop_page );
+		} elseif (
+				class_exists( 'BuddyPress' ) &&
+				'single_page' === AIOSEOP_Context::get_is() &&
+				bp_is_user()
+		) {
+			// BuddyPress - Member Page.
+			$wp_user = wp_get_current_user();
+			$context = AIOSEOP_Context::get_instance( $wp_user );
+		} elseif (
+				class_exists( 'BuddyPress' ) &&
+				'single_page' === AIOSEOP_Context::get_is() &&
+				(
+					bp_is_group() ||
+					bp_is_group_create()
+				)
+		) {
+			// BuddyPress - Group Page(s).
+			$bp_pages = get_option( 'bp-pages' );
+			$context = array(
+				'context_type' => 'WP_Post',
+				'context_key'  => $bp_pages['groups']
+			);
+			$context = AIOSEOP_Context::get_instance( $context );
 		} else {
 			$context = AIOSEOP_Context::get_instance();
 		}

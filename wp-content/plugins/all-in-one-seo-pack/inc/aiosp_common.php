@@ -210,9 +210,10 @@ class aiosp_common {
 	 *
 	 * Renders the value XML safe.
 	 *
-	 * @since 2.10
+	 * @since	2.10.0
+	 * @since	3.4.0	Renamed function.
 	 */
-	public static function make_xml_safe( $tag, $value ) {
+	public static function esc_xml( $tag, $value ) {
 		// some tags contain an array of values.
 		if ( is_array( $value ) ) {
 			return $value;

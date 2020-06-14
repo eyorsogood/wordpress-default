@@ -1519,6 +1519,32 @@ if ( ! function_exists( 'aioseop_get_utm_url' ) ) {
 	}
 }
 
+if ( ! function_exists('aioseop_add_url_utm') ) {
+
+	/**
+     * Adds UTM params to URL
+     *
+     * @since 3.5
+     *
+	 * @param  string $href Base URL to append UTM params.
+	 * @param  array  $args UTM params to apply to $href/URL.
+	 * @return string       Full URL with UTM params.
+	 */
+	function aioseop_add_url_utm( $href = '', $args = array() ) {
+		if ( empty( $href ) ) {
+			$href = 'https://semperplugins.com/all-in-one-seo-pack-pro-version/';
+		}
+
+	    $default_args = array(
+			'utm_source'   => 'WordPress',
+			'utm_medium'   => ( AIOSEOPPRO ) ? 'proplugin' : 'liteplugin'
+        );
+	    $args = wp_parse_args( $args, $default_args );
+
+		return add_query_arg( $args, $href );
+	}
+}
+
 if ( ! function_exists( 'aioseop_get_site_logo_url' ) ) {
 	/**
 	 * Returns the URL of the site logo if it exists.
@@ -1572,5 +1598,53 @@ if ( ! function_exists( 'aioseop_delete_rewrite_rules' ) ) {
 		}
 
 		update_option( 'rewrite_rules', $rules );
+	}
+}
+
+if ( ! function_exists( 'aioseop_is_addon_allowed' ) ) {
+	function aioseop_is_addon_allowed( $addonName ) {
+		global $aioseop_options;
+		if (
+			! AIOSEOPPRO ||
+			! isset( $aioseop_options['addons'] ) ||
+			! is_array( $aioseop_options['addons'] ) ||
+			! in_array( $addonName, $aioseop_options['addons'], true )
+		) {
+			return false;
+		}
+		return true;
+	}
+}
+
+if ( ! function_exists( 'aioseop_last_modified_post' ) ) {
+	/**
+	 * Returns the last modified post.
+	 *
+	 * This function is also useful to check if there's at least 1 published post.
+	 *
+	 * @since 3.5.0
+	 *
+	 * @param  array $additionalArgs
+	 * @return mixed                 WP_Post or false.
+	 */
+	function aioseop_last_modified_post( $additionalArgs = array() ) {
+		$args = array(
+			'post_status'    => 'publish',
+			'posts_per_page' => 1,
+			'orderby '       => 'modified',
+			'order'          => 'DESC'
+		);
+
+		if ( $additionalArgs ) {
+			foreach ( $additionalArgs as $k => $v ) {
+				$args[ $k ] = $v;
+			}
+		}
+
+		$query = ( new WP_Query( $args ) );
+		if ( ! $query->post_count ) {
+			return false;
+		}
+		return $query->posts[0];
 	}
 }

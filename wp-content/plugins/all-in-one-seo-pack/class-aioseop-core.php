@@ -427,7 +427,7 @@ class AIOSEOP_Core {
 
 			$file_dir = AIOSEOP_PLUGIN_DIR . 'all_in_one_seo_pack.php';
 			register_activation_hook( $file_dir, array( 'AIOSEOP_Core', 'activate' ) );
-			register_deactivation_hook( $file_dir, array( 'AIOSEOP_Core', 'deactivate' ) );
+			register_deactivation_hook( $file_dir, array( 'AIOSEOP_Core', 'deactivate' ) ); 
 
 			// TODO Move AJAX to aioseop_admin class, and could be a separate function hooked onto admin_init.
 			add_action( 'wp_ajax_aioseop_ajax_save_meta', 'aioseop_ajax_save_meta' );
@@ -453,9 +453,9 @@ class AIOSEOP_Core {
 		// Low priority allows us to override implementations of other plugins.
 		add_action( 'wp_enqueue_editor', array( 'AIOSEOP_Link_Attributes', 'enqueue_link_attributes_classic_editor' ), 999999 );
 
-		add_action( 'admin_init', array( 'AIOSEOP_Link_Attributes', 'register_link_attributes_gutenberg_editor' ) );
-
-		if ( version_compare( $wp_version, '5.0', '>=' ) ) {
+		include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		if ( version_compare( $wp_version, '5.3', '>=' ) || is_plugin_active( 'gutenberg/gutenberg.php' ) ) {
+			add_action( 'admin_init', array( 'AIOSEOP_Link_Attributes', 'register_link_attributes_gutenberg_editor' ) );
 			add_action( 'enqueue_block_editor_assets', array( 'AIOSEOP_Link_Attributes', 'enqueue_link_attributes_gutenberg_editor' ) );
 		}
 
@@ -511,7 +511,7 @@ class AIOSEOP_Core {
 
 	/**
 	 * Runs on plugin deactivation.
-	 *
+	 * 
 	 * @since 3.4.3
 	 */
 	public static function deactivate() {

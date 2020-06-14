@@ -399,7 +399,7 @@ class AIOSEOP_About {
 			'woocommerce'        => esc_html__( 'WooCommerce Integration', 'all-in-one-seo-pack' ),
 			'xml_sitemap'        => esc_html__( 'XML Sitemap', 'all-in-one-seo-pack' ),
 			'video_sitemap'      => esc_html__( 'Video XML Sitemap', 'all-in-one-seo-pack' ),
-			// 'news_sitemap'       => esc_html__( 'News Sitemap', 'all-in-one-seo-pack' ),
+			'news_sitemap'       => esc_html__( 'News Sitemap', 'all-in-one-seo-pack' ),
 			'google_tag_manager' => esc_html__( 'Google Tag Manager', 'all-in-one-seo-pack' ),
 			'image_seo'          => esc_html__( 'Image SEO', 'all-in-one-seo-pack' ),
 			'schema'             => esc_html__( 'Schema Rich Snippets', 'all-in-one-seo-pack' ),
@@ -610,7 +610,7 @@ class AIOSEOP_About {
 				'pro'  => array(
 					'status' => 'full',
 					'text'   => array(
-						'<strong>' . esc_html__( 'Submit Your Latest News Stories to Search Engines', 'all-in-one-seo-pack' ) . '</strong>',
+						'<strong>' . esc_html__( 'Submit Your Latest News Stories to Google News (Business & Agency tier only)', 'all-in-one-seo-pack' ) . '</strong>',
 					),
 				),
 			),

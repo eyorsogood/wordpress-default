@@ -135,7 +135,7 @@ class aiosp_metaboxes {
 						<li>
 							<div class="aioseop_icon aioseop-icon-file"></div>
 							<a target="_blank" rel="noopener noreferrer"
-							href="https://semperplugins.com/documentation/">
+							href="<?php echo aioseop_add_url_utm( 'https://semperplugins.com/documentation/' , array( 'utm_campaign' => 'support-box', 'utm_content' => 'documentation' ) ); ?>">
 								<?php
 								/* translators: %s is a placeholder, which means that it should not be translated. It will be replaced with the name of the plugin, All in One SEO Pack. */
 								printf( __( 'Read the %s user guide', 'all-in-one-seo-pack' ), AIOSEOP_PLUGIN_NAME );
@@ -146,22 +146,22 @@ class aiosp_metaboxes {
 							<div class="aioseop_icon aioseop-icon-support"></div>
 							<a target="_blank" rel="noopener noreferrer"
 							title="<?php _e( 'All in One SEO Pro Plugin Support Forum', 'all-in-one-seo-pack' ); ?>"
-							href="https://semperplugins.com/support/"><?php _e( 'Access our Premium Support Forums', 'all-in-one-seo-pack' ); ?></a>
+							href="<?php echo aioseop_add_url_utm( 'https://semperplugins.com/support/', array( 'utm_campaign' => 'support-box', 'utm_content' => 'support' ) ); ?>"><?php _e( 'Access our Premium Support', 'all-in-one-seo-pack' ); ?></a>
 						</li>
 						<li>
 							<div class="aioseop_icon aioseop-icon-cog"></div>
 							<a target="_blank" rel="noopener noreferrer" title="<?php _e( 'All in One SEO Pro Plugin Changelog', 'all-in-one-seo-pack' ); ?>"
-								href="https://semperplugins.com/all-in-one-seo-pack-changelog/"><?php _e( 'View the Changelog', 'all-in-one-seo-pack' ); ?></a>
+								href="<?php echo aioseop_add_url_utm( 'https://semperplugins.com/all-in-one-seo-pack-changelog/', array( 'utm_campaign' => 'support-box', 'utm_content' => 'changelog', ) ); ?>"><?php _e( 'View the Changelog', 'all-in-one-seo-pack' ); ?></a>
 						</li>
 						<li>
 							<div class="aioseop_icon aioseop-icon-youtube"></div>
 							<a target="_blank" rel="noopener noreferrer"
-							href="https://semperplugins.com/doc-type/video/"><?php _e( 'Watch video tutorials', 'all-in-one-seo-pack' ); ?></a>
+							href="<?php echo aioseop_add_url_utm( 'https://semperplugins.com/doc-type/video/', array( 'utm_campaign' => 'support-box', 'utm_content' => 'video') ); ?>"><?php _e( 'Watch video tutorials', 'all-in-one-seo-pack' ); ?></a>
 						</li>
 						<li>
 							<div class="aioseop_icon aioseop-icon-book"></div>
 							<a target="_blank" rel="noopener noreferrer"
-							href="https://semperplugins.com/documentation/quick-start-guide/"><?php _e( 'Getting started? Read the Beginners Guide', 'all-in-one-seo-pack' ); ?></a>
+							href="<?php echo aioseop_add_url_utm( 'https://semperplugins.com/documentation/quick-start-guide/', array( 'utm_campaign' => 'support-box', 'utm_content' => 'quick-start' ) ); ?>"><?php _e( 'Getting started? Read the Beginners Guide', 'all-in-one-seo-pack' ); ?></a>
 						</li>
 					</ul>
 				</div>

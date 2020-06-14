@@ -206,9 +206,9 @@ label[for=aioseop_edit_profile_header] {
 
 /** Taxonomies upsell **/
 
-.aioseop-preview-wrapper{
-    max-width:800px; 
-    margin-top:30px;
+.aioseop-preview-wrapper {
+    max-width: 800px;
+    margin-top: 30px;
 }
 
 .aioseop-upsell-blurred {
@@ -230,7 +230,6 @@ label[for=aioseop_edit_profile_header] {
     width: 750px;
     box-shadow: 0 0 60px 30px rgba(0, 0, 0, 0.15);
     border-radius: 3px;
-
     position: absolute;
     margin-top: -750px;
     margin-left: 25px;
@@ -337,111 +336,156 @@ label[for=aioseop_edit_profile_header] {
     color: #0073AA !important;
 }
 
-#aiosp_feature_manager_default_metabox a.feature-manager-cta-button{
-	float:right;
-	margin: 0 10px 10px 0;
-	background: #d54e21;
-	border-color: #aa3e1a;
-	-webkit-box-shadow: 0 1px 0 #aa3e1a;
-	box-shadow: 0 1px 0 #aa3e1a;
-	color: #fff;
-	text-decoration: none;
-	text-shadow: 0 -1px 1px #d54e21,1px 0 1px #d54e21,0 1px 1px #d54e21,-1px 0 1px #d54e21;
+#aiosp_feature_manager_default_metabox a.feature-manager-cta-button {
+    float: right;
+    margin: 0 10px 10px 0;
+    background: #d54e21;
+    border-color: #aa3e1a;
+    -webkit-box-shadow: 0 1px 0 #aa3e1a;
+    box-shadow: 0 1px 0 #aa3e1a;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: 0 -1px 1px #d54e21, 1px 0 1px #d54e21, 0 1px 1px #d54e21, -1px 0 1px #d54e21;
 }
+
 
 /* Image SEO - Media Library */
 
 .aioseop-image-attribute {
-	height: 100px;
+    height: 100px;
 }
 
 .aioseop-media-lib-dashicon:hover {
-	cursor: help;
-	color: #00a0d2;
+    cursor: help;
+    color: #00a0d2;
 }
 
 .aioseop-media-lib-tooltip {
-	display: inline-block;
-	position: relative;
+    display: inline-block;
+    position: relative;
 }
 
 .aioseop-media-lib-tooltip .aioseop-media-lib-tooltip-text {
-	visibility: hidden;
-	position: absolute;
-	width: 120px;
-
-	border-radius: 6px;
-	padding: 10px;
-	z-index: 1;
-	bottom: 125%;
-	left: 50%;
-	margin-left: -70px;
-
-	color: #fff;
-	background-color: rgb(95, 95, 95);
-
-	text-align: center;
-	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
-	font-size: 0.8rem;
-	line-height: 1rem;
-
-	opacity: 0;
-	transition: opacity 0.3s;
+    visibility: hidden;
+    position: absolute;
+    width: 120px;
+    border-radius: 6px;
+    padding: 10px;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -70px;
+    color: #fff;
+    background-color: rgb(95, 95, 95);
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    font-size: 0.8rem;
+    line-height: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 
 .aioseop-media-lib-tooltip .aioseop-media-lib-tooltip-text::after {
-	content: "";
-	position: absolute;
-	top: 100%;
-	left: 50%;
-	margin-left: -5px;
-
-	border-width: 5px;
-	border-style: solid;
-	border-color: #555 transparent transparent transparent;
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
 }
 
 .aioseop-media-lib-tooltip:hover .aioseop-media-lib-tooltip-text {
-	visibility: visible;
-	opacity: 1;
-}  
+    visibility: visible;
+    opacity: 1;
+}
+
 
 /* QUICKEDIT */
 
 .aioseop-quickedit-pencil {
-	margin-right: 5px;
-	color: #72777c;
+    margin-right: 5px;
+    color: #72777c;
 }
 
 .aioseop-quickedit-pencil:hover {
-	color: #0073aa;
-	outline: 0;
+    color: #0073aa;
+    outline: 0;
 }
 
 .aioseop-quickedit-input {
-	float:left;
-	position:relative;
-	margin-bottom: 10px;
-	font-size:13px;
-	width:100%;
-	z-index:1;
+    float: left;
+    position: relative;
+    margin-bottom: 10px;
+    font-size: 13px;
+    width: 100%;
+    z-index: 1;
 }
 
 .aioseop-quickedit-input-save {
-	margin-right: 5px;
-	color: rgb(22, 204, 22);
+    margin-right: 5px;
+    color: rgb(22, 204, 22);
 }
 
 .aioseop-quickedit-input-cancel {
-	color: red;
+    color: red;
 }
 
-.aioseop-quickedit-pencil:focus, .aioseop-quickedit-input-save:focus, .aioseop-quickedit-input-cancel:focus  {
-	box-shadow: none;
+.aioseop-quickedit-pencil:focus,
+.aioseop-quickedit-input-save:focus,
+.aioseop-quickedit-input-cancel:focus {
+    box-shadow: none;
 }
 
 .aioseop-quickedit-spinner {
-	float:left;
-	width:20px;
-	margin-right:5px;
+    float: left;
+    width: 20px;
+    margin-right: 5px;
+}
+
+#aiosp_sitemap_link_wrapper,
+#aiosp_video_sitemap_link_wrapper {
+    margin-left: 10px;
+}
+
+#aiosp_sitemap_link_wrapper p:first-of-type,
+#aiosp_video_sitemap_link_wrapper p:first-of-type {
+    margin-top: 0px;
+}
+
+#aiosp_sitemap_link_wrapper ul,
+#aiosp_video_sitemap_link_wrapper ul {
+    margin-left: 40px;
+    list-style: disc;
+}
+
+#aiosp_sitemap_link_wrapper ul li a,
+#aiosp_video_sitemap_link_wrapper ul li a {
+    text-decoration: none;
+}
+
+.aioseop-msg-small {
+    font-size: 0.8rem;
+}
+
+#aiosp_sitemap_status_metabox .aioseop-news-sitemap-upsell {
+    margin: 10px 0;
+}
+
+.aioseop-news-sitemap-upsell a {
+    font-weight: bold;
+}
+
+
+/* Fixes the default CSS for the Classic Editor link modal. */
+
+#wp-link-wrap {
+    height: 530px !important;
+    margin-top: -265px !important;
+}
+
+#search-results,
+#most-recent-results {
+    margin-top: 55px !important;
 }

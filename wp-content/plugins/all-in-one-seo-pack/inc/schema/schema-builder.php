@@ -113,7 +113,16 @@ class AIOSEOP_Schema_Builder {
 		);
 
 		// TODO Add layout customizations to settings.
-		if ( is_front_page() || is_home() ) {
+		if (
+				'single_page' === AIOSEOP_Context::get_is() &&
+				function_exists( 'bp_is_user' ) &&
+				bp_is_user()
+		) {
+			// Correct issue with BuddyPress when viewing a member page.
+			array_push( $layout['@graph'], '[aioseop_schema_ProfilePage]' );
+			array_push( $layout['@graph'], '[aioseop_schema_Person]' );
+			array_push( $layout['@graph'], '[aioseop_schema_BreadcrumbList]' );
+		} elseif ( is_front_page() || is_home() ) {
 			array_push( $layout['@graph'], '[aioseop_schema_WebPage]' );
 			array_push( $layout['@graph'], '[aioseop_schema_BreadcrumbList]' );
 		} elseif ( is_archive() ) {

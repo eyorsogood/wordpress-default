@@ -47,7 +47,33 @@ class AIOSEOP_Graph_BreadcrumbList extends AIOSEOP_Graph_ItemList {
 	 * @return array
 	 */
 	protected function prepare( $data = array() ) {
-		$context  = AIOSEOP_Context::get_instance();
+		if (
+				class_exists( 'BuddyPress' ) &&
+				'single_page' === AIOSEOP_Context::get_is() &&
+				bp_is_user()
+		) {
+			// BuddyPress - Member Page.
+			$wp_user = wp_get_current_user();
+			$context = AIOSEOP_Context::get_instance( $wp_user );
+		} elseif (
+			class_exists( 'BuddyPress' ) &&
+			'single_page' === AIOSEOP_Context::get_is() &&
+			(
+				bp_is_group() ||
+				bp_is_group_create()
+			)
+		) {
+			// BuddyPress - Member Page(s).
+			$bp_pages = get_option( 'bp-pages' );
+			$context = array(
+				'context_type' => 'WP_Post',
+				'context_key'  => $bp_pages['groups']
+			);
+			$context = AIOSEOP_Context::get_instance( $context );
+		} else {
+			$context = AIOSEOP_Context::get_instance();
+		}
+
 		$rtn_data = array(
 			'@type'           => $this->slug,
 			'@id'             => $context->get_url() . '#' . strtolower( $this->slug ),

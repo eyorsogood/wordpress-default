@@ -23,21 +23,18 @@ class AIOSEOP_Link_Attributes {
 	 * @return void
 	 */
 	public static function enqueue_link_attributes_classic_editor() {
-		$active_plugins = get_option('active_plugins');
-		if ( in_array( 'title-and-nofollow-for-links/title-and-nofollow-for-links.php', $active_plugins ) ) {
-			wp_deregister_script( 'wplink' );
-		}
-
+		wp_deregister_script( 'wplink' );
+		
 		wp_enqueue_script(
-			'aioseop-link-attributes-classic-editor',
-			AIOSEOP_PLUGIN_URL . 'js/admin/aioseop-link-attributes-classic-editor.js',
+			'wplink',
+			AIOSEOP_PLUGIN_URL . 'js/admin/aioseop-link.js',
 			array( 'jquery', 'wp-a11y' ),
 			AIOSEOP_VERSION,
 			true
 		);
 
 		wp_localize_script(
-			'aioseop-link-attributes-classic-editor',
+			'wplink',
 			'aioseopL10n',
 			array(
 				'update'         => __( 'Update', 'all-in-one-seo-pack' ),
@@ -48,6 +45,7 @@ class AIOSEOP_Link_Attributes {
 				'linkInserted'   => __( 'Link has been inserted.', 'all-in-one-seo-pack' ),
 				'noFollow'       => __( '&nbsp;Add <code>rel="nofollow"</code> to link', 'all-in-one-seo-pack' ),
 				'sponsored'      => __( '&nbsp;Add <code>rel="sponsored"</code> to link', 'all-in-one-seo-pack' ),
+				'ugc'            => __( '&nbsp;Add <code>rel="UGC"</code> to link', 'all-in-one-seo-pack' ),
 			)
 		);
 	}
@@ -62,9 +60,23 @@ class AIOSEOP_Link_Attributes {
 	 * @return void
 	 */
 	public static function register_link_attributes_gutenberg_editor() {
+		$link_format     = 'aioseop-link';
+		$link_format_old = 'aioseop-link-old';
+
+		if ( is_plugin_active( 'gutenberg/gutenberg.php' ) ) {
+			$data = get_plugin_data( ABSPATH . 'wp-content/plugins/gutenberg/gutenberg.php', false, false );
+			if ( version_compare( $data['Version'], '7.4.0', '<' ) ) {
+				$link_format = $link_format_old;
+			}
+		} else {
+			if ( version_compare( get_bloginfo( 'version' ), '5.4', '<' ) ) {
+				$link_format = $link_format_old;
+			}
+		}
+
 		wp_register_script(
-			'aioseop-link-attributes-gutenberg-editor',
-			AIOSEOP_PLUGIN_URL . 'build/aioseop-link-attributes-gutenberg-editor.js',
+			'aioseop-link',
+			AIOSEOP_PLUGIN_URL . 'build/' . $link_format . '.js',
 			array(
 				'wp-blocks',
 				'wp-i18n',
@@ -92,6 +104,6 @@ class AIOSEOP_Link_Attributes {
 	 * @return void
 	 */
 	public static function enqueue_link_attributes_gutenberg_editor() {
-		wp_enqueue_script( 'aioseop-link-attributes-gutenberg-editor' );
+		wp_enqueue_script( 'aioseop-link' );
 	}
 }

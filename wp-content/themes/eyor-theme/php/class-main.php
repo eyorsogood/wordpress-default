@@ -78,7 +78,8 @@ class Theme {
             'order'				=> $order,
             'numberposts'	=> $numberposts,
             'post_type'		=> $posttype,
-            'meta_query'    => array($meta_query)
+            'meta_query'    => array($meta_query),
+            'posts_per_page' => $numberposts
         );
 
         $the_query = new WP_Query( $args );

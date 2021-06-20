@@ -2,7 +2,7 @@
 namespace W3TC;
 
 if ( !defined( 'W3TC_SKIPLIB_AWS' ) ) {
-	require_once W3TC_LIB_DIR . '/Aws/aws-autoloader.php';
+	require_once W3TC_DIR . '/vendor/autoload.php';
 }
 
 
@@ -54,7 +54,7 @@ class Cdnfsd_CloudFront_Engine {
 	 */
 	public function flush_all() {
 		$api = $this->_api();
-		$uris = array( '/*' );
+		$uris = apply_filters( 'w3tc_cdn_cf_flush_all_uris', array( '/*' ) );
 
 		$api->createInvalidation( array(
 				'DistributionId' => $this->distribution_id,

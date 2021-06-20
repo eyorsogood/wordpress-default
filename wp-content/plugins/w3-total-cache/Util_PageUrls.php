@@ -431,9 +431,10 @@ class Util_PageUrls {
 		$key = md5( implode( ',', $pages ) );
 		if ( !isset( $pages_urls[$key] ) ) {
 			$full_urls = array();
-			foreach ( $pages as $page_slug ) {
-				if ( $page_slug ) {
-					$page_link = get_home_url() . '/' . trim( $page_slug, '/' ) . '/';
+			foreach ( $pages as $uri ) {
+				if ( $uri ) {
+					$page_link = get_home_url() . '/' . trim( $uri, '/' ) .
+						( strpos( $uri, '?' ) !== FALSE ? '': '/' );
 					$full_urls[] = $page_link;
 				}
 			}
@@ -510,7 +511,7 @@ class Util_PageUrls {
 		}
 
 		$result = $base . $request . $query_string;
-		$result = apply_filters( 'get_pagenum_link', $result );
+		$result = apply_filters( 'get_pagenum_link', $result, $pagenum );
 		return $result;
 	}
 
@@ -542,14 +543,17 @@ class Util_PageUrls {
 	}
 
 	/**
-	 * Returns number of posts in the archive
+	 * Returns number of posts in the archive.
 	 *
-	 * @param int     $year
-	 * @param int     $month
-	 * @param int     $day
+	 * @global $wpdb
+	 *
+	 * @param  int    $year      Year.
+	 * @param  int    $month     Month.
+	 * @param  int    $day       Day number.
+	 * @param  string $post_type Post type.
 	 * @return int
 	 */
-	static public function get_archive_posts_count( $year = 0, $month = 0, $day = 0, $post_type/* = 'post'*/ ) {
+	public static function get_archive_posts_count( $year = 0, $month = 0, $day = 0, $post_type = 'post' ) {
 		global $wpdb;
 
 		$filters = array(

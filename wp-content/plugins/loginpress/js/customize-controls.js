@@ -228,7 +228,7 @@ jQuery(document).ready(function($) {
                 'security' : loginpress_script.attachment_nonce
               },
               success : function( response ) {
-                console.log(response);
+                // console.log(response);
                 if( loginpress_find( '#loginpress_video-background' ).length > 0 ) {
                   var video = loginpress_find( '#loginpress_video-background' )[0];
                   loginpress_find( '#loginpress_video-background' )[0].pause();
@@ -250,7 +250,7 @@ jQuery(document).ready(function($) {
                   }
               }, // !success.
               error : function( xhr, textStatus, errorThrown ) {
-                console.log('Ajax Not Working');
+                // console.log('Ajax Not Working');
               }
             } );  // ! $.ajax().
 
@@ -399,7 +399,7 @@ jQuery(document).ready(function($) {
         // Control on footer text.
         if ( 'loginpress_customization[footer_display_text]' == setting && false == loginPressVal ) {
 
-          $( '#customize-preview iframe' ).contents().find( '.login #nav' ).css( 'display', 'none' );
+          $('#customize-preview iframe' ).contents().find( '.login #nav' ).css( 'display', 'none' );
           $('#customize-control-loginpress_customization-login_footer_text').fadeOut().css( 'display', 'none' );
           $('#customize-control-loginpress_customization-login_footer_text_decoration').fadeOut().css( 'display', 'none' );
           $('#customize-control-loginpress_customization-login_footer_color').fadeOut().css( 'display', 'none' );
@@ -409,7 +409,7 @@ jQuery(document).ready(function($) {
 
         } else if ('loginpress_customization[footer_display_text]' == setting && true == loginPressVal ) {
 
-          $( '#customize-preview iframe' ).contents().find( '.login #nav' ).css( 'display', 'block' );
+          $('#customize-preview iframe' ).contents().find( '.login #nav' ).css( 'display', 'block' );
           $('#customize-control-loginpress_customization-login_footer_text').fadeIn().css( 'display', 'list-item' );
           $('#customize-control-loginpress_customization-login_footer_text_decoration').fadeIn().css( 'display', 'list-item' );
           $('#customize-control-loginpress_customization-login_footer_color').fadeIn().css( 'display', 'list-item' );
@@ -427,16 +427,16 @@ jQuery(document).ready(function($) {
           $('#customize-control-loginpress_customization-login_back_color').fadeOut().css( 'display', 'none' );
           $('#customize-control-loginpress_customization-login_back_color_hover').fadeOut().css( 'display', 'none' );
           $('#customize-control-loginpress_customization-login_back_font_size').fadeOut().css( 'display', 'none' );
-          $('#customize-control-loginpress_customization-login_back_bg_color').fadeOut().css( 'display', 'none' );
-
+					$('#customize-control-loginpress_customization-login_back_bg_color').fadeOut().css( 'display', 'none' );
+				
         } else if ('loginpress_customization[back_display_text]' == setting && true == loginPressVal ) {
-
-          $( '#customize-preview iframe' ).contents().find( '.login #backtoblog' ).css( 'display', 'block' );
+					loginpress_find('.login').append('<p id="backtoblog"></p>');
+          $('#customize-preview iframe' ).contents().find( '.login #backtoblog' ).css( 'display', 'block' );
           $('#customize-control-loginpress_customization-login_back_text_decoration').fadeIn().css( 'display', 'list-item' );
           $('#customize-control-loginpress_customization-login_back_color').fadeIn().css( 'display', 'list-item' );
           $('#customize-control-loginpress_customization-login_back_color_hover').fadeIn().css( 'display', 'list-item' );
           $('#customize-control-loginpress_customization-login_back_font_size').fadeIn().css( 'display', 'list-item' );
-          $('#customize-control-loginpress_customization-login_back_bg_color').fadeIn().css( 'display', 'list-item' );
+					$('#customize-control-loginpress_customization-login_back_bg_color').fadeIn().css( 'display', 'list-item' );
 
         }
 
@@ -785,7 +785,7 @@ jQuery(document).ready(function($) {
          * @return {[URL]} loginpress_bg   [Image URL]
          */
         loginpress_customizer_bg(customizer_bg);
-        console.log(loginpress_bg);
+        // console.log(loginpress_bg);
         if ( 'default6' == customizer_bg ) {
           loginpress_find().html( "#login::after{background-image: " + loginpress_bg + "}" );
         } else if ( 'default8' == customizer_bg ) {
@@ -822,7 +822,7 @@ jQuery(document).ready(function($) {
   });
   // localStorage.removeItem("loginpress_bg");
   // localStorage.removeItem("loginpress_bg_check");
-  loginpress_display_control( 'loginpress_customization[footer_display_text]' );
+	loginpress_display_control( 'loginpress_customization[footer_display_text]' );
   loginpress_display_control( 'loginpress_customization[back_display_text]' );
   loginpress_display_control( 'loginpress_customization[loginpress_display_bg_video]' );
 
@@ -843,7 +843,8 @@ jQuery(document).ready(function($) {
     value.bind( function(loginPressVal) {
       if ( loginPressVal == true ) {
         loginpress_find('#login h1').fadeOut();
-        $('#customize-control-loginpress_customization-setting_logo_display').nextAll().hide();
+				$('#customize-control-loginpress_customization-setting_logo_display').nextAll().hide();
+				$('#customize-control-loginpress_customization-customize_login_page_title').show();
       } else {
         loginpress_find('#login h1').fadeIn();
         $('#customize-control-loginpress_customization-setting_logo_display').nextAll().show();
@@ -1210,6 +1211,8 @@ jQuery(document).ready(function($) {
     value.bind( function(loginPressVal) {
 
       if ( loginPressVal == '' ) {
+				loginPressFtrHvr = '';
+				loginPressFtrClr = '';
         loginpress_find('.login #nav a, .login #nav').css( 'color', '' );
         loginpress_find('.login #nav a, .login #nav').on( 'mouseover', function() {
           if ( typeof loginPressFtrHvr !== "undefined" || loginPressFtrHvr === null ) {
@@ -1241,6 +1244,7 @@ jQuery(document).ready(function($) {
     value.bind( function(loginPressVal) {
 
       if ( loginPressVal == '' ) {
+				loginPressFtrClr = '';
         loginpress_find('.login #nav a').css( 'color', '' );
         loginpress_find('.login #nav a').on( 'mouseover', function() {
           $(this).css( 'color', '' );
@@ -1270,8 +1274,7 @@ jQuery(document).ready(function($) {
   loginpress_new_css_property( 'loginpress_customization[customize_form_label]', '.login label[for="user_login"], .login label[for="user_pass"]', 'font-size', 'px' );
   loginpress_new_css_property( 'loginpress_customization[remember_me_font_size]', '.login form .forgetmenot label', 'font-size', 'px' );
   loginpress_css_property( 'loginpress_customization[login_footer_bg_color]', '.login #nav', 'background-color', 'transparent' );
-
-  // loginpress_css_property( 'loginpress_customization[back_display_text]', '.login #backtoblog', 'display' );
+  loginpress_css_property( 'loginpress_customization[back_display_text]', '.login #backtoblog', 'display' );
   loginpress_css_property( 'loginpress_customization[login_back_text_decoration]', '.login #backtoblog a', 'text-decoration' );
 
   var loginPressFtrBackClr;
@@ -1283,6 +1286,7 @@ jQuery(document).ready(function($) {
     value.bind(function( loginPressVal ) {
 
       if ( loginPressVal == '' ) {
+				loginPressFtrBackClr = '';
         loginpress_find('.login #backtoblog a').css( 'color', '' );
         loginpress_find('.login #backtoblog a').on( 'mouseover', function() {
           if ( typeof loginPressFtrBackHvr !== "undefined" || loginPressFtrBackHvr === null ) {
@@ -1320,7 +1324,31 @@ jQuery(document).ready(function($) {
   loginpress_new_css_property( 'loginpress_customization[login_button_radius]', '.login input[type="submit"]', 'border-radius', 'px' );
   loginpress_shadow_property( 'loginpress_customization[login_button_shadow]', '.login input[type="submit"]', 'box-shadow', 'px' );
   loginpress_shadow_opacity_property( 'loginpress_customization[login_button_shadow_opacity]', '.login input[type="submit"]', 'box-shadow', 'px' );
-  loginpress_new_css_property( 'loginpress_customization[login_button_text_size]', '.login input[type="submit"]', 'font-size', 'px' );
+  loginpress_css_property_imp( 'loginpress_customization[login_button_text_size]', '.login input[type="submit"]', 'font-size', 'px' );
+
+  /**
+   * function for change LoginPress CSS in real time with !important...
+   * @param  string setting  [Name of the setting]
+   * @param  string target   [Targeted CSS class/ID]
+   * @param  string property [CSS property]
+   * @param  string suffix   [unit value]
+   *
+   * @return string          [CSS property in real time]
+   * @since 1.4.6
+   */
+  function loginpress_css_property_imp( setting, target, property, suffix ) {
+    // Update the login logo width in real time...
+    wp.customize( setting, function( value ) {
+      value.bind( function( loginPressVal ) {
+
+        if ( loginPressVal == '' ) {
+          loginpress_find( target ).css( property, '' );
+        } else {
+          loginpress_find( target )[0].style.setProperty(property , loginPressVal + suffix , 'important' );
+        }
+      } );
+    } );
+  }
 
   /**
    * Change LoginPress 'Back to Blog(link)' hover color live.
@@ -1329,7 +1357,7 @@ jQuery(document).ready(function($) {
     value.bind( function( loginPressVal ) {
 
       if ( loginPressVal == '' ) {
-
+				loginPressFtrBackHvr = '';
         loginpress_find('.login #backtoblog a').css( 'color', '' );
 
         loginpress_find('.login #backtoblog a').on( 'mouseover', function() {
@@ -1363,7 +1391,10 @@ jQuery(document).ready(function($) {
    */
   loginpress_new_css_property( 'loginpress_customization[login_back_font_size]', '.login #backtoblog a', 'font-size', 'px' );
   loginpress_css_property( 'loginpress_customization[login_back_font_size]', '.login #backtoblog a', 'font-size' );
-  loginpress_css_property( 'loginpress_customization[login_back_bg_color]', '.login #backtoblog', 'background-color', 'transparent' );
+	loginpress_css_property( 'loginpress_customization[login_back_bg_color]', '.login #backtoblog', 'background-color', 'transparent' );
+	// loginpress_css_property( 'loginpress_customization[show_some_love_text_color]', '.loginpress-show-love, .loginpress-show-love a', 'color', 'transparent' );
+	// loginpress_css_property( 'loginpress_customization[copyright_text_color]', '.footer-cont .copyRight', 'color', '' );
+	// loginpress_css_property( 'loginpress_customization[copyright_background_color]', '.footer-cont .copyRight', 'background-color', 'transparent' );
   loginpress_footer_text_message( 'loginpress_customization[login_footer_copy_right]', '.copyRight' );
 
   /**
@@ -1421,8 +1452,36 @@ jQuery(document).ready(function($) {
         loginpress_find('.loginpress-show-love').removeClass('love-postion');
       }
     } );
-  } );
+	} );
+	
+	var footerBgClr;
 
+  // Update the form footer background color...
+	
+	wp.customize( 'loginpress_customization[copyright_background_color]', function(value) {
+		value.bind( function(loginPressVal) {
+			if ( loginPressVal == '' ) {
+				loginpress_find('.footer-cont .copyRight').css( 'background-color', 'transparent' );
+				footerBgClr = 'transparent';
+			} else {
+				footerBgClr = loginPressVal;
+				loginpress_find('.footer-cont .copyRight').css( 'background-color', footerBgClr );
+				}
+		});
+	});
+
+	var footerTextClr;
+	wp.customize( 'loginpress_customization[copyright_text_color]', function(value) {
+		value.bind( function(loginPressVal) {
+			if ( loginPressVal == '' ) {
+				loginpress_find('.footer-cont .copyRight').css( 'color', '' );
+				footerTextClr = loginPressVal;
+			} else {
+				footerTextClr = loginPressVal;
+				loginpress_find('.footer-cont .copyRight').css( 'color', footerTextClr );
+				}
+		});
+	});
   /**
    * Set position of Footer link.
    */
@@ -1431,15 +1490,25 @@ jQuery(document).ready(function($) {
       if ( loginPressVal == true ) {
         if( loginpress_find('.copyRight').length == 0 ){
           loginpress_find('.footer-cont').append('<div class="copyRight">'+$('[id="_customize-input-loginpress_customization[login_footer_copy_right]"]').val()+'</div>');
-        }
-        $('#customize-control-loginpress_customization-login_footer_copy_right').show();
+				}
+				$('#customize-control-loginpress_customization-login_footer_copy_right').show();
+				$('#customize-control-loginpress_customization-copyright_background_color').show();
+				$('#customize-control-loginpress_customization-copyright_text_color').show();
+				loginpress_find('.copyRight').css( 'background-color', footerBgClr );
+				loginpress_find('.copyRight').css( 'color', footerTextClr );
+				
+
+				// $('#customize-control-loginpress_customization-show_some_love_text_color').show();			
       } else {
         loginpress_find('.copyRight').remove();
-        $('#customize-control-loginpress_customization-login_footer_copy_right').hide();
+				$('#customize-control-loginpress_customization-login_footer_copy_right').hide();
+				$('#customize-control-loginpress_customization-copyright_background_color').hide();
+				$('#customize-control-loginpress_customization-copyright_text_color').hide();
+				// $('#customize-control-loginpress_customization-show_some_love_text_color').hide();
       }
-    } );
-  } );
-
+    });
+	});
+	
   /**
    * Change LoginPress Google reCaptcha size in real time...
    */
@@ -1462,15 +1531,17 @@ jQuery(document).ready(function($) {
   $(window).on('load', function() {
 
     if ( $('#customize-control-loginpress_customization-setting_logo_display input[type="checkbox"]').is(":checked") ) {
-      $('#customize-control-loginpress_customization-setting_logo_display').nextAll().hide();
+			$('#customize-control-loginpress_customization-setting_logo_display').nextAll().hide();
     } else {
-      $('#customize-control-loginpress_customization-setting_logo_display').nextAll().show();
+			$('#customize-control-loginpress_customization-setting_logo_display').nextAll().show();
     }
 
     if ( $('#customize-control-loginpress_customization-loginpress_show_love input[type="checkbox"]').is(":checked") ) {
-      $('#customize-control-loginpress_customization-loginpress_show_love').nextAll().show();
+			$('#customize-control-loginpress_customization-loginpress_show_love').nextAll().show();
+			// $('#customize-control-loginpress_customization-show_some_love_text_color').css( 'display', 'none' );
     } else {
-      $('#customize-control-loginpress_customization-loginpress_show_love').nextAll().hide();
+			$('#customize-control-loginpress_customization-loginpress_show_love').nextAll().hide();
+			// $('#customize-control-loginpress_customization-show_some_love_text_color').css( 'display', 'block' );
     }
 
     if ( $('#customize-control-loginpress_customization-loginpress_display_bg input[type="checkbox"]').is(":checked") ) {
@@ -1518,20 +1589,29 @@ jQuery(document).ready(function($) {
       $('#customize-control-loginpress_customization-login_back_color').css( 'display', 'list-item' );
       $('#customize-control-loginpress_customization-login_back_color_hover').css( 'display', 'list-item' );
       $('#customize-control-loginpress_customization-login_back_font_size').css( 'display', 'list-item' );
-      $('#customize-control-loginpress_customization-login_back_bg_color').css( 'display', 'list-item' );
+			$('#customize-control-loginpress_customization-login_back_bg_color').css( 'display', 'list-item' );
+			$('#customize-control-loginpress_customization-copyright_background_color').css( 'display', 'list-item' );
     } else {
 
       $('#customize-control-loginpress_customization-login_back_text_decoration').css( 'display', 'none' );
       $('#customize-control-loginpress_customization-login_back_color').css( 'display', 'none' );
       $('#customize-control-loginpress_customization-login_back_color_hover').css( 'display', 'none' );
       $('#customize-control-loginpress_customization-login_back_font_size').css( 'display', 'none' );
-      $('#customize-control-loginpress_customization-login_back_bg_color').css( 'display', 'none' );
+			$('#customize-control-loginpress_customization-login_back_bg_color').css( 'display', 'none' );
+			$('#customize-control-loginpress_customization-copyright_background_color').css( 'display', 'none' );
     }
 
     if ( $('#customize-control-loginpress_customization-login_copy_right_display input[type="checkbox"]').is(":checked") ) {
-      $('#customize-control-loginpress_customization-login_footer_copy_right').css( 'display', 'list-item' );
+			$('#customize-control-loginpress_customization-login_footer_copy_right').css( 'display', 'list-item' );
+			$('#customize-control-loginpress_customization-copyright_background_color').css( 'display', 'list-item' );
+			$('#customize-control-loginpress_customization-copyright_text_color').css( 'display', 'list-item' );
+			// $('#customize-control-loginpress_customization-show_some_love_text_color').css( 'display', 'list-item' );
+			
+			
     } else {
-      $('#customize-control-loginpress_customization-login_footer_copy_right').css( 'display', 'none' );
+			$('#customize-control-loginpress_customization-login_footer_copy_right').css( 'display', 'none' );
+			$('#customize-control-loginpress_customization-copyright_background_color').css( 'display', 'none' );
+			$('#customize-control-loginpress_customization-copyright_text_color').css( 'display', 'none' );
     }
 
     if ( $('#customize-control-loginpress_customization-loginpress_display_bg_video input[type="checkbox"]').is(":checked") ) {
@@ -1626,7 +1706,8 @@ jQuery(document).ready(function($) {
         }, 500);
       });
     } else {
-      loginpress_manage_customizer_controls( ['setting_logo', 'customize_logo_width', 'customize_logo_height'], 'on' );
+			//Disable toggle fix for Display Logo
+      loginpress_manage_customizer_controls( ['customize_login_page_title'], 'on' );
     }
 
 

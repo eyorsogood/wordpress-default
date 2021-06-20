@@ -51,7 +51,7 @@ if ( ! class_exists( 'LoginPress_AJAX' ) ) :
      * Activate Plugins.
      * @since 1.2.2
      */
-		function activate_addon() {
+		static function activate_addon() {
 
       $plugin = esc_html( $_POST['slug'] );
 
@@ -74,7 +74,7 @@ if ( ! class_exists( 'LoginPress_AJAX' ) ) :
      * Deactivate Plugins.
      * @since 1.2.2
      */
-		function deactivate_addon() {
+	static function deactivate_addon() {
 
       $plugin = esc_html( $_POST['slug'] );
 

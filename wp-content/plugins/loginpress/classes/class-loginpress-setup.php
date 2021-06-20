@@ -123,9 +123,12 @@ class LoginPress_Settings {
       ),
     );
 
+    /**
+     * Add Promotion tabs in settings page.
+     * @since 1.1.22
+     * @version 1.1.24
+     */
     if ( ! has_action( 'loginpress_pro_add_template' ) ) {
-
-      // Add Add-Ons Promotion tabs @since 1.1.22 @version 1.1.24
       include LOGINPRESS_DIR_PATH . 'classes/class-loginpress-promotion.php';
     }
 
@@ -156,7 +159,7 @@ class LoginPress_Settings {
         'step'              => '1',
         'type'              => 'number',
         'default'           => 'Title',
-        'sanitize_callback' => 'abs'
+        'sanitize_callback' => 'absint'
       ),
       // array(
       //   'name'  => 'enable_privacy_policy',

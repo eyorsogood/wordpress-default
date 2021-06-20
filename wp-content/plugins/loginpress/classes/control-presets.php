@@ -268,7 +268,7 @@ function loginpress_presets_control_css() {
   bottom: 0;
   right: 0;
   z-index: 100;
-  padding: 20px;
+  /* padding-top: 20px; */
   text-align: center;
   font-weight: bold;
   color: #000;
@@ -283,6 +283,8 @@ function loginpress_presets_control_css() {
   -ms-transform: scale(.5);
   transform: scale(.5);
   text-decoration: none !important;
+  display: flex;
+  align-items: center;
 }
 #customize-control-customize_presets_settings .loginpress_thumbnail:hover input[type="radio"]:disabled ~ .no-available{
   opacity: 1;

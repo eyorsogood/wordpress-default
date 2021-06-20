@@ -98,7 +98,7 @@ function first_presets() {
     .login form {
     	margin-top: 20px;
     	margin-left: 0;
-    	padding: 0 24px 12px !important;
+    	padding: 0 24px 12px;
     	background: #fff;
     	-webkit-box-shadow: none;
     	box-shadow: none;

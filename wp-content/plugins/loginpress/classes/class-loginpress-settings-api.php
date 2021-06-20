@@ -500,13 +500,13 @@ if ( !class_exists( 'LoginPress_Settings_API' ) ):
       foreach( $options as $option_slug => $option_value ) {
         $sanitize_callback = $this->get_sanitize_callback( $option_slug );
 
-        // If callback is set, call it
-        if ( $sanitize_callback ) {
+        // If callback is set and not false returned, call the sanitization function accordingly
+        if ( $sanitize_callback !== false ) {
           $options[ $option_slug ] = call_user_func( $sanitize_callback, $option_value );
           continue;
         }
       }
-
+	
       return $options;
     }
 

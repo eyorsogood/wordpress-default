@@ -1,10 +1,10 @@
 === Custom Login Page Customizer | LoginPress ===
 Requires at least: 4.0
-Tested up to: 5.4
+Tested up to: 5.7
 Contributors: WPBrigade, hiddenpearls, AbdulWahab610
-Author URI: https://wpbrigade.com
+Author URI: https://wpbrigade.com/?utm_source=loginpress-lite&utm_medium=author-url-link
 Tags: wp-login, login, login customizer, custom login, wordpress login,
-Stable tag: 1.4.4
+Stable tag: 1.5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -118,10 +118,13 @@ After going through this extensive list of features you can imagine Why LoginPre
 = What's Next =
 
 
-If you like this plugin, then consider checking out our other projects:
+If you like this plugin, then consider checking out our other amazing plugins:
 
-* <a href="https://analytify.io/" rel="friend" title="Google Analytics by Analytify">Google Analytics by Analytify</a> - Google Analytics by Analytify
-* <a href="https://wpbrigade.com/" rel="friend" title="Related Posts">Related Posts</a> - Best Related Posts Plugin
+* <a href="https://analytify.io/ref/73/?utm_source=loginpress&amp;utm_medium=readme&amp;utm_campaign=pro-upgrade" rel="friend" title="Google Analytics by Analytify">Analytify - Google Analytics WordPress Plugin</a>
+* <a href="https://wordpress.org/plugins/related-posts-thumbnails/" rel="friend" title="Related Posts">WordPress Related Posts</a> - Best Related Posts Plugin
+* <a href="https://simplesocialbuttons.com?utm_source=loginpress&amp;utm_medium=readme&amp;utm_campaign=pro-upgrade" rel="friend" title="Simple Social Buttons">Simple Social Buttons</a> - Simple Social Sharing WordPress Plugin
+* [Under Construction, Coming Soon & Maintenance Mode](https://wpbrigade.com/recommend/maintenance-mode?utm_source=loginpress&amp;utm_medium=readme&amp;utm_campaign=pro-upgrade) - Plugin for Under construction & Coming soon page
+
 
 == Notes ==
 
@@ -216,6 +219,41 @@ Please visit <a target="_blank" rel="friend" href="https://WPBrigade.com/wordpre
 23. Custom Login page (Company theme) Example #23 with Captcha [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
 
 == Changelog ==
+
+= 1.5.4 – 2021-06-16 =
+* Bugfix: Form padding was not working on default template;
+* Enhancement: Automate the current year in copyright note (Use `$YEAR$` variable for it in note).
+
+= 1.5.3 – 2021-05-18 =
+* Bugfix: Remove depreciative method jQuery.fn.load().
+* Enhancement: Translations added for custom login messages.
+* Enhancement: Added a filter `loginpress_llms_lostpassword_url` to prevent the redirection of lost password to Lifter LMS's lost password page.
+
+= 1.5.2 – 2021-04-08 =
+* Bugfix: Console error in customizer.
+* Bugfix: Optimized plugin speed and code improvement.
+* Compatibility: Compatible with PHP 8.0.
+
+= 1.5.1 – 2021-03-18 =
+* Update: French language.
+* Enhancement: "Password Reset" CSS update.
+* Compatibility: Compatible with WordPress 5.7.
+
+= 1.5.0 – 2020-11-09 =
+* New Feature: Created a new control for customization of login page footer.
+* Bugfix: "Back to" control in customizer.
+* Bugfix: Button text size control in customizer.
+* Bugfix: Logo control in customizer.
+* Enhancement: Update Deutsch German language strings.
+
+= 1.4.6 – 2020-08-12 =
+* New Feature: Created a new control for change wp-login.php page title.
+* Bugfix: Button text size control in customizer.
+* Compatibility: Compatible with WordPress 5.5.
+
+= 1.4.5 – 2020-07-16 =
+* Bugfix: Truncate a filter `loginpress_prevent_new_user_notification_email`.
+
 = 1.4.4 – 2020-05-19 =
 * Bugfix: Managing Free Add-On, Login Logout Menu from Add-Ons page.
 * Enhancement: Added a filter `loginpress_prevent_new_user_notification_email` to prevent sending the Login detail email during register on site.
@@ -563,5 +601,5 @@ Please visit <a target="_blank" rel="friend" href="https://WPBrigade.com/wordpre
 
 == Upgrade Notice ==
 
-= 1.4.4 =
-* Important Release, upgrade immediately.
+= 1.5.4 =
+* Important Release, upgrade immediately. Compatible with 5.7

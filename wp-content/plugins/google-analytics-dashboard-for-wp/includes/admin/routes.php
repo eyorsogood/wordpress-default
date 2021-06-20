@@ -19,18 +19,38 @@ class ExactMetrics_Rest_Routes {
 		add_action( 'wp_ajax_exactmetrics_vue_get_profile', array( $this, 'get_profile' ) );
 		add_action( 'wp_ajax_exactmetrics_vue_get_settings', array( $this, 'get_settings' ) );
 		add_action( 'wp_ajax_exactmetrics_vue_update_settings', array( $this, 'update_settings' ) );
+		add_action( 'wp_ajax_exactmetrics_vue_update_settings_bulk', array( $this, 'update_settings_bulk' ) );
 		add_action( 'wp_ajax_exactmetrics_vue_get_addons', array( $this, 'get_addons' ) );
 		add_action( 'wp_ajax_exactmetrics_update_manual_ua', array( $this, 'update_manual_ua' ) );
 		add_action( 'wp_ajax_exactmetrics_vue_get_report_data', array( $this, 'get_report_data' ) );
 		add_action( 'wp_ajax_exactmetrics_vue_install_plugin', array( $this, 'install_plugin' ) );
 		add_action( 'wp_ajax_exactmetrics_vue_notice_status', array( $this, 'get_notice_status' ) );
 		add_action( 'wp_ajax_exactmetrics_vue_notice_dismiss', array( $this, 'dismiss_notice' ) );
+		add_action( 'wp_ajax_exactmetrics_vue_grab_popular_posts_report', array(
+			$this,
+			'check_popular_posts_report'
+		) );
+		add_action( 'wp_ajax_exactmetrics_vue_popular_posts_update_theme_setting', array(
+			$this,
+			'update_popular_posts_theme_setting'
+		) );
+
+		// TODO: remove function from Google Optimize Addon.
+		add_action( 'wp_ajax_exactmetrics_get_posts', array( $this, 'get_posts' ) );
+
+		// Search for taxonomies.
+		add_action( 'wp_ajax_exactmetrics_get_terms', array( $this, 'get_taxonomy_terms' ) );
+
+		add_action( 'wp_ajax_exactmetrics_get_post_types', array( $this, 'get_post_types' ) );
 
 		add_action( 'wp_ajax_exactmetrics_handle_settings_import', array( $this, 'handle_settings_import' ) );
 
 		add_action( 'admin_notices', array( $this, 'hide_old_notices' ), 0 );
 
-		add_action( 'wp_ajax_exactmetrics_vue_dismiss_first_time_notice', array( $this, 'dismiss_first_time_notice' ) );
+		add_action( 'wp_ajax_exactmetrics_vue_dismiss_first_time_notice', array(
+			$this,
+			'dismiss_first_time_notice'
+		) );
 	}
 
 	/**
@@ -95,7 +115,7 @@ class ExactMetrics_Rest_Routes {
 
 		check_ajax_referer( 'mi-admin-nonce', 'nonce' );
 
-		if ( ! current_user_can( 'exactmetrics_save_settings' ) ) {
+		if ( ! current_user_can( 'exactmetrics_view_dashboard' ) ) {
 			return;
 		}
 
@@ -110,6 +130,37 @@ class ExactMetrics_Rest_Routes {
 		}
 		if ( isset( $options['custom_code'] ) ) {
 			$options['custom_code'] = stripslashes( $options['custom_code'] );
+		}
+
+		//add email summaries options
+		if ( exactmetrics_is_pro_version() ) {
+			$default_email = array(
+				'email' => get_option( 'admin_email' ),
+			);
+
+			if ( ! isset( $options['email_summaries'] ) ) {
+				$options['email_summaries'] = 'on';
+			}
+
+			if ( ! isset( $options['summaries_email_addresses'] ) ) {
+				$options['summaries_email_addresses'] = array(
+					$default_email,
+				);
+			}
+
+			if ( ! isset( $options['summaries_html_template'] ) ) {
+				$options['summaries_html_template'] = 'yes';
+			}
+
+
+			if ( ! isset( $options['summaries_carbon_copy'] ) ) {
+				$options['summaries_carbon_copy'] = 'no';
+			}
+
+
+			if ( ! isset( $options['summaries_header_image'] ) ) {
+				$options['summaries_header_image'] = '';
+			}
 		}
 
 		wp_send_json( $options );
@@ -132,8 +183,34 @@ class ExactMetrics_Rest_Routes {
 			if ( isset( $_POST['value'] ) ) {
 				$value = $this->handle_sanitization( $setting, $_POST['value'] );
 				exactmetrics_update_option( $setting, $value );
+				do_action( 'exactmetrics_after_update_settings', $setting, $value );
 			} else {
 				exactmetrics_update_option( $setting, false );
+				do_action( 'exactmetrics_after_update_settings', $setting, false );
+			}
+		}
+
+		wp_send_json_success();
+
+	}
+
+	/**
+	 * Ajax handler for updating the settings.
+	 */
+	public function update_settings_bulk() {
+
+		check_ajax_referer( 'mi-admin-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'exactmetrics_save_settings' ) ) {
+			return;
+		}
+
+		if ( isset( $_POST['settings'] ) ) {
+			$settings = json_decode( sanitize_text_field( wp_unslash( $_POST['settings'] ) ), true );
+			foreach ( $settings as $setting => $value ) {
+				$value = $this->handle_sanitization( $setting, $value );
+				exactmetrics_update_option( $setting, $value );
+				do_action( 'exactmetrics_after_update_settings', $setting, $value );
 			}
 		}
 
@@ -220,7 +297,7 @@ class ExactMetrics_Rest_Routes {
 		foreach ( $addons_data as $addons_type => $addons ) {
 			foreach ( $addons as $addon ) {
 				$slug = 'exactmetrics-' . $addon->slug;
-				if ( 'exactmetrics-ecommerce' === $slug ) {
+				if ( 'exactmetrics-ecommerce' === $slug && 'm' === $slug[0] ) {
 					$addon = $this->get_addon( $installed_plugins, $addons_type, $addon, $slug );
 					if ( empty( $addon->installed ) ) {
 						$slug  = 'ga-ecommerce';
@@ -250,6 +327,18 @@ class ExactMetrics_Rest_Routes {
 		$parsed_addons['lifterlms'] = array(
 			'active' => function_exists( 'LLMS' ) && version_compare( LLMS()->version, '3.32.0', '>=' ),
 		);
+		// Restrict Content Pro.
+		$parsed_addons['rcp'] = array(
+			'active' => class_exists( 'Restrict_Content_Pro' ) && version_compare( RCP_PLUGIN_VERSION, '3.5.4', '>=' ),
+		);
+		// GiveWP.
+		$parsed_addons['givewp'] = array(
+			'active' => function_exists( 'Give' ),
+		);
+		// GiveWP Analytics.
+		$parsed_addons['givewp_google_analytics'] = array(
+			'active' => function_exists( 'Give_Google_Analytics' ),
+		);
 		// Cookiebot.
 		$parsed_addons['cookiebot'] = array(
 			'active' => function_exists( 'cookiebot_active' ) && cookiebot_active(),
@@ -271,58 +360,100 @@ class ExactMetrics_Rest_Routes {
 			'active'    => function_exists( 'wpforms' ),
 			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-wpforms.png',
 			'title'     => 'WPForms',
-			'excerpt'   => __( 'The most beginner friendly drag & drop WordPress forms plugin allowing you to create beautiful contact forms, subscription forms, payment forms, and more in minutes, not hours!', 'google-analytics-dashboard-for-wp' ),
+			'excerpt'   => __( 'The best drag & drop WordPress form builder. Easily create beautiful contact forms, surveys, payment forms, and more with our 150+ form templates. Trusted by over 4 million websites as the best forms plugin', 'google-analytics-dashboard-for-wp' ),
 			'installed' => array_key_exists( 'wpforms-lite/wpforms.php', $installed_plugins ),
 			'basename'  => 'wpforms-lite/wpforms.php',
 			'slug'      => 'wpforms-lite',
+		);
+		// AIOSEO.
+		$parsed_addons['aioseo'] = array(
+			'active'    => function_exists( 'aioseo' ),
+			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-all-in-one-seo.png',
+			'title'     => 'AIOSEO',
+			'excerpt'   => __( 'The original WordPress SEO plugin and toolkit that improves your website’s search rankings. Comes with all the SEO features like Local SEO, WooCommerce SEO, sitemaps, SEO optimizer, schema, and more.', 'google-analytics-dashboard-for-wp' ),
+			'installed' => array_key_exists( 'all-in-one-seo-pack/all_in_one_seo_pack.php', $installed_plugins ),
+			'basename'  => 'all-in-one-seo-pack/all_in_one_seo_pack.php',
+			'slug'      => 'all-in-one-seo-pack',
 		);
 		// OptinMonster.
 		$parsed_addons['optinmonster'] = array(
 			'active'    => class_exists( 'OMAPI' ),
 			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-om.png',
 			'title'     => 'OptinMonster',
-			'excerpt'   => __( 'Our high-converting optin forms like Exit-Intent® popups, Fullscreen Welcome Mats, and Scroll boxes help you dramatically boost conversions and get more email subscribers.', 'google-analytics-dashboard-for-wp' ),
+			'excerpt'   => __( 'Instantly get more subscribers, leads, and sales with the #1 conversion optimization toolkit. Create high converting popups, announcement bars, spin a wheel, and more with smart targeting and personalization.', 'google-analytics-dashboard-for-wp' ),
 			'installed' => array_key_exists( 'optinmonster/optin-monster-wp-api.php', $installed_plugins ),
 			'basename'  => 'optinmonster/optin-monster-wp-api.php',
 			'slug'      => 'optinmonster',
 		);
-		// OptinMonster.
+		// WP Mail Smtp.
 		$parsed_addons['wp-mail-smtp'] = array(
 			'active'    => function_exists( 'wp_mail_smtp' ),
 			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-smtp.png',
 			'title'     => 'WP Mail SMTP',
-			'excerpt'   => __( 'SMTP (Simple Mail Transfer Protocol) is an industry standard for sending emails. SMTP helps increase email deliverability by using proper authentication.', 'google-analytics-dashboard-for-wp' ),
+			'excerpt'   => __( 'Improve your WordPress email deliverability and make sure that your website emails reach user’s inbox with the #1 SMTP plugin for WordPress. Over 2 million websites use it to fix WordPress email issues.', 'google-analytics-dashboard-for-wp' ),
 			'installed' => array_key_exists( 'wp-mail-smtp/wp_mail_smtp.php', $installed_plugins ),
 			'basename'  => 'wp-mail-smtp/wp_mail_smtp.php',
 			'slug'      => 'wp-mail-smtp',
 		);
 		// SeedProd.
-		$parsed_addons['coming-soon'] = array(
+		$parsed_addons['coming-soon']    = array(
 			'active'    => function_exists( 'seed_csp4_activation' ),
-			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/seedprod.png',
+			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-seedprod.png',
 			'title'     => 'SeedProd',
-			'excerpt'   => __( 'Better Coming Soon & Maintenance Mode Pages', 'google-analytics-dashboard-for-wp' ),
+			'excerpt'   => __( 'The fastest drag & drop landing page builder for WordPress. Create custom landing pages without writing code, connect them with your CRM, collect subscribers, and grow your audience. Trusted by 1 million sites.', 'google-analytics-dashboard-for-wp' ),
 			'installed' => array_key_exists( 'coming-soon/coming-soon.php', $installed_plugins ),
 			'basename'  => 'coming-soon/coming-soon.php',
 			'slug'      => 'coming-soon',
 		);
-		$parsed_addons['rafflepress'] = array(
+		// RafflePress
+		$parsed_addons['rafflepress']    = array(
 			'active'    => function_exists( 'rafflepress_lite_activation' ),
-			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/rafflepress.png',
+			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/pluign-rafflepress.png',
 			'title'     => 'RafflePress',
-			'excerpt'   => __( 'Get More Traffic with Viral Giveaways', 'google-analytics-dashboard-for-wp' ),
+			'excerpt'   => __( 'Turn your website visitors into brand ambassadors! Easily grow your email list, website traffic, and social media followers with the most powerful giveaways & contests plugin for WordPress.', 'google-analytics-dashboard-for-wp' ),
 			'installed' => array_key_exists( 'rafflepress/rafflepress.php', $installed_plugins ),
 			'basename'  => 'rafflepress/rafflepress.php',
 			'slug'      => 'rafflepress',
 		);
+		// TrustPulse
 		$parsed_addons['trustpulse-api'] = array(
 			'active'    => class_exists( 'TPAPI' ),
-			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/trustpulse.png',
+			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-trust-pulse.png',
 			'title'     => 'TrustPulse',
-			'excerpt'   => __( 'Social Proof Notifications that Boost Sales', 'google-analytics-dashboard-for-wp' ),
+			'excerpt'   => __( 'Boost your sales and conversions by up to 15% with real-time social proof notifications. TrustPulse helps you show live user activity and purchases to help convince other users to purchase.', 'google-analytics-dashboard-for-wp' ),
 			'installed' => array_key_exists( 'trustpulse-api/trustpulse.php', $installed_plugins ),
 			'basename'  => 'trustpulse-api/trustpulse.php',
 			'slug'      => 'trustpulse-api',
+		);
+		// Smash Balloon (Instagram)
+		$parsed_addons['smash-balloon-instagram'] = array(
+			'active'    => class_exists( 'sb_instagram_feed_init' ),
+			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-smash-balloon.png',
+			'title'     => 'Smash Balloon Instagram Feeds',
+			'excerpt'   => __( 'Easily display Instagram content on your WordPress site without writing any code. Comes with multiple templates, ability to show content from multiple accounts, hashtags, and more. Trusted by 1 million websites.', 'google-analytics-dashboard-for-wp' ),
+			'installed' => array_key_exists( 'instagram-feed/instagram-feed.php', $installed_plugins ),
+			'basename'  => 'instagram-feed/instagram-feed.php',
+			'slug'      => 'instagram-feed',
+		);
+		// PushEngage
+		$parsed_addons['pushengage'] = array(
+			'active'    => method_exists( 'Pushengage', 'init' ),
+			'icon'      => plugin_dir_url( EXACTMETRICS_PLUGIN_FILE ) . 'assets/images/plugin-pushengage.svg',
+			'title'     => 'PushEngage',
+			'excerpt'   => __( 'Connect with your visitors after they leave your website with the leading web push notification software. Over 10,000+ businesses worldwide use PushEngage to send 9 billion notifications each month.', 'google-analytics-dashboard-for-wp' ),
+			'installed' => array_key_exists( 'pushengage/main.php', $installed_plugins ),
+			'basename'  => 'pushengage/main.php',
+			'slug'      => 'pushengage',
+		);
+		// Pretty Links
+		$parsed_addons['pretty-link'] = array(
+			'active'    => class_exists( 'PrliBaseController' ),
+			'icon'      => '',
+			'title'     => 'Pretty Links',
+			'excerpt'   => __( 'Pretty Links helps you shrink, beautify, track, manage and share any URL on or off of your WordPress website. Create links that look how you want using your own domain name!', 'google-analytics-dashboard-for-wp' ),
+			'installed' => array_key_exists( 'pretty-link/pretty-link.php', $installed_plugins ),
+			'basename'  => 'pretty-link/pretty-link.php',
+			'slug'      => 'pretty-link',
 		);
 		// Gravity Forms.
 		$parsed_addons['gravity_forms'] = array(
@@ -567,7 +698,7 @@ class ExactMetrics_Rest_Routes {
 		$start     = ! empty( $_POST['start'] ) ? sanitize_text_field( wp_unslash( $_POST['start'] ) ) : $report->default_start_date();
 		$end       = ! empty( $_POST['end'] ) ? sanitize_text_field( wp_unslash( $_POST['end'] ) ) : $report->default_end_date();
 
-		$args      = array(
+		$args = array(
 			'start' => $start,
 			'end'   => $end,
 		);
@@ -616,9 +747,9 @@ class ExactMetrics_Rest_Routes {
 	public function install_plugin() {
 		check_ajax_referer( 'mi-admin-nonce', 'nonce' );
 
-		if ( ! current_user_can( 'install_plugins' ) ) {
+		if ( ! exactmetrics_can_install_plugins() ) {
 			wp_send_json( array(
-				'message' => esc_html__( 'You are not allowed to install plugins', 'exactmetrics-premium' ),
+				'error' => esc_html__( 'You are not allowed to install plugins', 'google-analytics-dashboard-for-wp' ),
 			) );
 		}
 
@@ -626,7 +757,7 @@ class ExactMetrics_Rest_Routes {
 
 		if ( ! $slug ) {
 			wp_send_json( array(
-				'message' => esc_html__( 'Missing plugin name.', 'exactmetrics-premium' ),
+				'message' => esc_html__( 'Missing plugin name.', 'google-analytics-dashboard-for-wp' ),
 			) );
 		}
 
@@ -683,14 +814,12 @@ class ExactMetrics_Rest_Routes {
 		}
 
 		// We do not need any extra credentials if we have gotten this far, so let's install the plugin.
-		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-		$base = ExactMetrics();
-		require_once plugin_dir_path( $base->file ) . '/includes/admin/licensing/skin.php';
+		exactmetrics_require_upgrader();
 
-		// Prevent languange upgrade in ajax calls.
+		// Prevent language upgrade in ajax calls.
 		remove_action( 'upgrader_process_complete', array( 'Language_Pack_Upgrader', 'async_upgrade' ), 20 );
 		// Create the plugin upgrader with our custom skin.
-		$installer = new Plugin_Upgrader( new ExactMetrics_Skin() );
+		$installer = new ExactMetrics_Plugin_Upgrader( new ExactMetrics_Skin() );
 		$installer->install( $download_url );
 
 		// Flush the cache and return the newly installed plugin basename.
@@ -742,5 +871,250 @@ class ExactMetrics_Rest_Routes {
 		ExactMetrics()->notices->dismiss( $notice_id );
 
 		wp_send_json_success();
+	}
+
+	/**
+	 * Retrieve posts/pages
+	 *
+	 * @access admin
+	 * @since 3.0.0
+	 */
+	public function get_posts() {
+
+		// Run a security check first.
+		check_ajax_referer( 'mi-admin-nonce', 'nonce' );
+
+		$post_type = isset( $_POST['post_type'] ) ? sanitize_text_field( wp_unslash( $_POST['post_type'] ) ) : 'any';
+
+		$args = array(
+			's'              => isset( $_POST['keyword'] ) ? sanitize_text_field( wp_unslash( $_POST['keyword'] ) ) : '',
+			'post_type'      => $post_type,
+			'posts_per_page' => isset( $_POST['numberposts'] ) ? sanitize_text_field( wp_unslash( $_POST['numberposts'] ) ) : 10,
+			'orderby'        => 'relevance',
+		);
+
+		$array = array();
+		$posts = get_posts( $args );
+
+		if ( in_array( $post_type, array( 'page', 'any' ), true ) ) {
+			$homepage = get_option( 'page_on_front' );
+			if ( ! $homepage ) {
+				$array[] = array(
+					'id'    => - 1,
+					'title' => __( 'Homepage', 'google-analytics-dashboard-for-wp' ),
+				);
+			}
+		}
+
+		if ( $posts ) {
+			foreach ( $posts as $post ) {
+				$array[] = array(
+					'id'    => $post->ID,
+					'title' => $post->post_title,
+				);
+			}
+		}
+
+		wp_send_json_success( $array );
+	}
+
+	/**
+	 * Search for taxonomy terms.
+	 *
+	 * @access admin
+	 * @since 3.0.0
+	 */
+	public function get_taxonomy_terms() {
+
+		// Run a security check first.
+		check_ajax_referer( 'mi-admin-nonce', 'nonce' );
+
+		$keyword  = isset( $_POST['keyword'] ) ? sanitize_text_field( wp_unslash( $_POST['keyword'] ) ) : '';
+		$taxonomy = isset( $_POST['taxonomy'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy'] ) ) : 'category';
+
+		$args = array(
+			'taxonomy'   => array( $taxonomy ),
+			'hide_empty' => false,
+			'name__like' => $keyword,
+		);
+
+		$terms = get_terms( $args );
+		$array = array();
+
+		if ( ! empty( $terms ) ) {
+			foreach ( $terms as $term ) {
+				$array[] = array(
+					'id'   => esc_attr( $term->term_id ),
+					'text' => esc_attr( $term->name ),
+				);
+			}
+		}
+
+		wp_send_json_success( $array );
+	}
+
+	/**
+	 * Get the post types in a name => Label array.
+	 */
+	public function get_post_types() {
+
+		// Run a security check first.
+		check_ajax_referer( 'mi-admin-nonce', 'nonce' );
+
+		$post_types_args = array(
+			'public' => true,
+		);
+		$post_types      = get_post_types( $post_types_args, 'objects' );
+
+		$post_types_parsed = array();
+
+		foreach ( $post_types as $post_type ) {
+			// Exclude post types that don't support the content editor.
+			// Exclude the WooCommerce product post type as that doesn't use the "the_content" filter and we can't auto-add popular posts to it.
+			if ( ! post_type_supports( $post_type->name, 'editor' ) || 'product' === $post_type->name ) {
+				continue;
+			}
+			$post_types_parsed[ $post_type->name ] = $post_type->labels->singular_name;
+		}
+
+		$post_types_parsed = apply_filters( 'exactmetrics_vue_post_types_editor', $post_types_parsed );
+
+		wp_send_json( $post_types_parsed );
+
+	}
+
+
+	public function check_popular_posts_report() {
+
+		check_ajax_referer( 'mi-admin-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'exactmetrics_view_dashboard' ) ) {
+			wp_send_json_error( array( 'message' => __( "You don't have permission to view ExactMetrics reports.", 'google-analytics-dashboard-for-wp' ) ) );
+		}
+
+		if ( ! empty( $_REQUEST['isnetwork'] ) && $_REQUEST['isnetwork'] ) {
+			define( 'WP_NETWORK_ADMIN', true );
+		}
+		$settings_page = admin_url( 'admin.php?page=exactmetrics_settings' );
+
+		// Only for Pro users, require a license key to be entered first so we can link to things.
+		if ( exactmetrics_is_pro_version() ) {
+			if ( ! ExactMetrics()->license->is_site_licensed() && ! ExactMetrics()->license->is_network_licensed() ) {
+				wp_send_json_error( array(
+					'message' => __( "You can't view ExactMetrics reports because you are not licensed.", 'google-analytics-dashboard-for-wp' ),
+					'footer'  => '<a href="' . $settings_page . '">' . __( 'Add your license', 'google-analytics-dashboard-for-wp' ) . '</a>',
+				) );
+			} else if ( ExactMetrics()->license->is_site_licensed() && ! ExactMetrics()->license->site_license_has_error() ) {
+				// Good to go: site licensed.
+			} else if ( ExactMetrics()->license->is_network_licensed() && ! ExactMetrics()->license->network_license_has_error() ) {
+				// Good to go: network licensed.
+			} else {
+				wp_send_json_error( array( 'message' => __( 'You can\'t view ExactMetrics reports due to license key errors.', 'google-analytics-dashboard-for-wp' ) ) );
+			}
+		}
+
+		// We do not have a current auth.
+		$site_auth = ExactMetrics()->auth->get_viewname();
+		$ms_auth   = is_multisite() && ExactMetrics()->auth->get_network_viewname();
+		if ( ! $site_auth && ! $ms_auth ) {
+			wp_send_json_error( array( 'message' => __( 'You must authenticate with ExactMetrics before you can view reports.', 'google-analytics-dashboard-for-wp' ) ) );
+		}
+
+		$report_name = 'popularposts';
+
+		if ( empty( $report_name ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unknown report. Try refreshing and retrying. Contact support if this issue persists.', 'google-analytics-dashboard-for-wp' ) ) );
+		}
+
+		$report = ExactMetrics()->reporting->get_report( $report_name );
+
+		$isnetwork = ! empty( $_REQUEST['isnetwork'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['isnetwork'] ) ) : '';
+		$start     = ! empty( $_POST['start'] ) ? sanitize_text_field( wp_unslash( $_POST['start'] ) ) : $report->default_start_date();
+		$end       = ! empty( $_POST['end'] ) ? sanitize_text_field( wp_unslash( $_POST['end'] ) ) : $report->default_end_date();
+
+		$args = array(
+			'start' => $start,
+			'end'   => $end,
+		);
+
+		if ( $isnetwork ) {
+			$args['network'] = true;
+		}
+
+		if ( exactmetrics_is_pro_version() && ! ExactMetrics()->license->license_can( $report->level ) ) {
+			$data = array(
+				'success' => false,
+				'error'   => 'license_level',
+			);
+		} else {
+			$data = apply_filters( 'exactmetrics_vue_reports_data', $report->get_data( $args ), $report_name, $report );
+		}
+
+		if ( ! empty( $data['success'] ) && ! empty( $data['data'] ) ) {
+			wp_send_json_success( $data['data'] );
+		} else if ( isset( $data['success'] ) && false === $data['success'] && ! empty( $data['error'] ) ) {
+			// Use a custom handler for invalid_grant errors.
+			if ( strpos( $data['error'], 'invalid_grant' ) > 0 ) {
+				wp_send_json_error(
+					array(
+						'message' => 'invalid_grant',
+						'footer'  => '',
+					)
+				);
+			}
+
+			wp_send_json_error(
+				array(
+					'message' => $data['error'],
+					'footer'  => isset( $data['data']['footer'] ) ? $data['data']['footer'] : '',
+				)
+			);
+		}
+
+		wp_send_json_error( array( 'message' => __( 'We encountered an error when fetching the report data.', 'google-analytics-dashboard-for-wp' ) ) );
+
+	}
+
+	/**
+	 * Ajax handler for popular posts theme customization settings.
+	 * Specific theme styles are stored separately so we can handle 20+ themes with their specific settings.
+	 */
+	public function update_popular_posts_theme_setting() {
+
+		check_ajax_referer( 'mi-admin-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'exactmetrics_save_settings' ) ) {
+			return;
+		}
+
+		if ( ! empty( $_POST['type'] ) && ! empty( $_POST['theme'] ) && ! empty( $_POST['object'] ) && ! empty( $_POST['key'] ) && ! empty( $_POST['value'] ) ) {
+			$settings_key = 'exactmetrics_popular_posts_theme_settings';
+			$type         = sanitize_text_field( wp_unslash( $_POST['type'] ) ); // Type of Popular Posts instance: inline/widget/products.
+			$theme        = sanitize_text_field( wp_unslash( $_POST['theme'] ) );
+			$object       = sanitize_text_field( wp_unslash( $_POST['object'] ) ); // Style object like title, label, background, etc.
+			$key          = sanitize_text_field( wp_unslash( $_POST['key'] ) ); // Style key for the object like color, font size, etc.
+			$value        = sanitize_text_field( wp_unslash( $_POST['value'] ) ); // Value of custom style like 12px or #fff.
+			$settings     = get_option( $settings_key, array() );
+
+			if ( ! isset( $settings[ $type ] ) ) {
+				$settings[ $type ] = array();
+			}
+			if ( ! isset( $settings[ $type ][ $theme ] ) ) {
+				$settings[ $type ][ $theme ] = array();
+			}
+
+			if ( ! isset( $settings[ $type ][ $theme ][ $object ] ) ) {
+				$settings[ $type ][ $theme ][ $object ] = array();
+			}
+
+			$settings[ $type ][ $theme ][ $object ][ $key ] = $value;
+
+			update_option( $settings_key, $settings );
+
+			wp_send_json_success();
+		}
+
+		wp_send_json_error();
+
 	}
 }

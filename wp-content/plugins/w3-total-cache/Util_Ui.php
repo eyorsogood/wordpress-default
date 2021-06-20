@@ -155,6 +155,13 @@ class Util_Ui {
 	/**
 	 * Returns postbox header
 	 *
+	 * WordPress 5.5 introduced .postbox-header, which broke the styles of our postboxes. This was
+	 * resolved by adding additional css to /pub/css/options.css and pub/css/widget.css tagged with
+	 * a "WP 5.5" comment.
+	 *
+	 * @todo Add .postbox-header to our postboxes and cleanup css.
+	 * @link https://github.com/W3EDGE/w3-total-cache/issues/237
+	 *
 	 * @param string  $title
 	 * @param string  $class
 	 * @param string  $id
@@ -640,10 +647,30 @@ class Util_Ui {
 				'value' => $a['value'],
 				'disabled' => $a['disabled']
 			) );
+		} elseif ( 'none' === $a['control'] ) {
+			esc_html_e( $a['none_label'] );
 		}
 	}
 
+	/**
+	 * Get table classes for tables including pro features.
+	 *
+	 * When on the free version, tables with pro features have additional classes added to help highlight
+	 * the premium feature. If the user is on pro, this class is omitted.
+	 *
+	 * @since 0.14.3
+	 *
+	 * @return string
+	 */
+	public static function table_class() {
+		$table_class[] = 'form-table';
 
+		if ( ! Util_Environment::is_w3tc_pro( Dispatcher::config() ) ) {
+			$table_class[] = 'w3tc-pro-feature';
+		}
+
+		return implode( ' ', $table_class );
+	}
 
 	/**
 	 * Renders <tr> element with controls
@@ -721,6 +748,17 @@ class Util_Ui {
 	 *   description => description shown to the user below
 	 */
 	static public function config_item( $a ) {
+		/*
+		 * Some items we do not want shown in the free edition.
+		 *
+		 * By default, they will show in free, unless 'show_in_free' is specifically passed in as false.
+		 */
+		$is_w3tc_free = ! Util_Environment::is_w3tc_pro( Dispatcher::config() );
+		$show_in_free = ! isset( $a['show_in_free'] ) || (bool) $a['show_in_free'];
+		if ( ! $show_in_free && $is_w3tc_free ) {
+			return;
+		}
+
 		$a = Util_Ui::config_item_preprocess( $a );
 
 		if ( $a['label_class'] == 'w3tc_single_column' ) {
@@ -894,6 +932,7 @@ class Util_Ui {
 					__( 'Dedicated / Virtual Server:', 'w3-total-cache' ),
 					__( 'Multiple Servers:', 'w3-total-cache' )
 				),
+				'control_after' => isset( $a['control_after'] ) ? $a['control_after'] : null,
 			) );
 	}
 
@@ -938,7 +977,6 @@ class Util_Ui {
 		?>
 			</div>
 			<div class="w3tc-gopro-action">
-				<i>Pro Feature!</i>
 				<button class="button w3tc-gopro-button button-buy-plugin" data-src="<?php echo esc_attr( $button_data_src ) ?>">
 					Learn more about Pro
 				</button>
@@ -1006,16 +1044,13 @@ class Util_Ui {
 	}
 
 	/**
+	 * Get the admin URL based on the path and the interface (network or site).
 	 *
-	 *
-	 * @param string  $path
-	 * @return string|void
+	 * @param  string $path Admin path/URI.
+	 * @return string
 	 */
-	static public function admin_url( $path ) {
-		if ( is_network_admin() ) {
-			return network_admin_url( $path );
-		}
-		return admin_url( $path );
+	public static function admin_url( $path ) {
+		return is_network_admin() ? network_admin_url( $path ) : admin_url( $path );
 	}
 
 	/**

@@ -1,10 +1,11 @@
-﻿=== Google Analytics Dashboard for WP by ExactMetrics (formerly GADWP) ===
+﻿=== ExactMetrics - Google Analytics Dashboard for WordPress (Website Stats Plugin) ===
 Contributors: chriscct7, smub
 Donate link: http://www.wpbeginner.com/wpbeginner-needs-your-help/
 Tags: analytics,google analytics,google analytics dashboard,google analytics plugin,google analytics widget,gtag
 Requires at least: 3.8.0
-Tested up to: 5.4
-Stable tag: 6.0.2
+Tested up to: 5.7
+Stable tag: 6.7.0
+Requires PHP: 5.2
 License: GPL v3
 
 Connects Google Analytics with your WordPress site. Displays stats to help you understand your users and site content on a whole new level!
@@ -48,14 +49,17 @@ See what one business owner is saying about ExactMetrics:
 * File Download Tracking - Track every file download with just one-click.
 * Outbound link tracking - Track your outbound link clicks inside Google Analytics.
 * Custom Dimensions Tracking – Enable Google analytics custom dimensions tracking for WordPress events.
+* Email Summaries - Get a weekly report of your website’s traffic directly in your inbox without having to login to your site.
 * Author Tracking – See author stats and discover who’s the most popular author on your site.
 * Google Analytics for AMP – Add proper Google Analytics tracking for Google AMP.
 * Form Conversion Tracking – Track conversions for your WordPress forms. Works with all popular plugins including WPForms, Contact Form 7, Gravity Forms, Formidable Forms, default WordPress comment form, and more.
 * Performance Addon - Adjust Google Analytics speed & sample rate, along with other advanced performance features.
 * Google Optimize Addon - Enable A/B Testing with Google Optimize and connect it with Google Analytics.
 * Custom Events Tracking - Track custom button, menu links, and banner clicks with Google Analytics.
+* Contextual Insights - Get tips on how to improve your site's traffic and engagement based on real traffic data.
 * Referral Tracking - See your top traffic referrals so you can unlock new opportunities.
 * Page level insights - Get detailed insights for each post, page, and products, so you can see the most popular areas and sections of your site.
+* Headline Analyzer - Get instant feedback on your post titles directly from the WordPress editor to improve SEO and get more clicks.
 * Popular post tracking - See which pages, posts, and products are the most popular with Google Analytics.
 * Scroll Depth tracking - See how far users scroll on your website with automatic scroll tracking in Google Analytics.
 
@@ -70,7 +74,10 @@ See what one business owner is saying about ExactMetrics:
 * Real Time Report - see who is online on your website in real-time, right inside your WordPress dashboard.
 * Customizable Google Analytics Dashboard Widget - Our dashboard widget allows you to have quick access to your most important stats at the moment you login to your WordPress dashboard.
 * Page Insights in Admin Bar - Easily view analytics for each individual page and post from the ExactMetrics menu in WordPress admin bar while browsing your website.
-
+* Email Summaries - Get the most important metrics delivered to you and/or your client's email inboxes weekly with our brandable Email Summaries, allowing you to keep up to date on your website's Google Analytics results even without needing to login to the Google Analytics dashboard.
+* PDF Exports - Easily take your ExactMetrics reports with you or send them to clients or colleagues by exporting all ExactMetrics reports as a brandable PDF.
+* Site Speed Report - helps you improve your website’s performance by displaying key metrics and actionable tips to improve those based on WordPress-specific solutions.
+* Popular Posts - Display popular posts in your post content automatically or using Gutenberg blocks and shortcodes. Show off your top posts to your visitors using sidebar widgets, Gutenberg blocks or shortcodes
 
 = Integrations =
 
@@ -112,10 +119,13 @@ If you like this plugin, then consider checking out our other projects:
 
 * <a href="https://optinmonster.com/" rel="friend" title="OptinMonster">OptinMonster</a> - Get More Email Subscribers
 * <a href="https://wpforms.com/" rel="friend" title="WPForms">WPForms</a> - Best WordPress Contact Form Plugin
-* <a href="https://www.seedprod.com/" rel="friend">SeedProd</a> - Most popular coming soon & maintenance mode plugin for WordPress
-* <a href="https://rafflepress.com/" rel="friend">RafflePress</a> - Popular WordPress giveaway and contest plugin.
-* <a href="https://wpmailsmtp.com/" rel="friend">WP Mail SMTP</a> - Fix WordPress email deliverability issue with SMTP.
-* <a href="https://semperplugins.com/" rel="friend">All in One SEO Pack</a> - Popular WordPress SEO plugin to help you rank higher.
+* <a href="https://aioseo.com/" rel="friend" title="AIOSEO">AIOSEO</a> - The original WordPress SEO plugin to help you rank higher in search results (trusted by over 2 million sites)
+* <a href="https://www.seedprod.com/" rel="friend" title="SeedProd">SeedProd</a> - Most popular coming soon & maintenance mode plugin for WordPress
+* <a href="https://wpmailsmtp.com/" rel="friend" title="WP Mail SMTP">WP Mail SMTP</a> - Improve email deliverability for your contact form with the most popular SMTP plugin for WordPress
+* <a href="https://rafflepress.com/" rel="friend" title="RafflePress">RafflePress</a> - Best WordPress giveaway and contest plugin to grow traffic and social followers
+* <a href="https://smashballoon.com/" rel="friend" title="Smash Balloon">Smash Balloon</a> - #1 social feeds plugin for WordPress - display social media content in WordPress without code
+* <a href="https://pushengage.com/" rel="friend" title="PushEngage">PushEngage</a> - Connect with visitors after they leave your website with the leading web push notification plugin
+* <a href="https://trustpulse.com/" rel="friend" title="TrustPulse">TrustPulse</a> - Add real-time social proof notifications to boost your store conversions by up to 15%
 
 This plugin would not be possible without the help and support of <a href="https://www.wpbeginner.com/" rel="friend" title="WPBeginner">WPBeginner</a>, the largest free WordPress resource site for beginners. You can learn from our <a href="https://www.wpbeginner.com/category/wp-tutorials/" rel="friend" title="WordPress Tutorials">free WordPress Tutorials</a> like <a href="https://www.wpbeginner.com/how-to-install-wordpress/" rel="friend" title="How to Install WordPress - Step by Step">how to install WordPress</a>, <a href="https://www.wpbeginner.com/wordpress-hosting/" rel="friend" title="How to choose the best WordPress hosting">choose the best WordPress hosting</a>, <a href="https://www.wpbeginner.com/glossary/" rel="friend" title="WordPress Glossary Terms for Beginners">WordPress glossary</a>, and more.
 
@@ -154,6 +164,81 @@ You can translate Google Analytics Dashboard for WP by ExactMetrics on [translat
 4. Want more features? <a href="https://www.exactmetrics.com/?utm_source=wprepo&utm_medium=link&utm_campaign=liteversion">Purchase ExactMetrics Pro</a>!
 
 == Changelog ==
+= 6.7.0: March 18, 2021 =
+- New: See exactly what report or setting is mentioned in the contextual education message with our new highlight feature.
+- Tweak: The Popular Posts Widget curated posts are now randomly displayed.
+- Tweak: The method used for sending server-side events now prevents preloading plugins from creating false events for more accurate stats.
+- Tweak: The Popular Posts styles are now loaded only when needed on the current page.
+- Tweak: A new filter to disable the random order of the posts in the Popular Posts widget was added.
+- Fix: The loading prompts in the reports area are now more consistent to avoid confusion.
+- Fix: Our compatibility layer for analytics.js was missing some parameters that could interfere with the bounce rate.
+
+= 6.6.2: February 22, 2021 =
+- Tweak: Our gtag.js compatibility layer now supports custom trackers used in some integrations loaded by other scripts.
+
+= 6.6.1: February 17, 2021 =
+- Tweak: We improved our gtag.js to analytics.js compatibility layer for better support on events added by other plugins.
+- Fix: Our link tracking feature was interfering with certain lightbox scripts when using externally hosted images.
+
+= 6.6.0: February 9, 2021 =
+- New: We've updated the plugin to use Google's Global Site Tag (gtag.js) tracking solution for a futureproof setup combined with our exclusive compatibility layer that enables existing analytics.js events integrations to continue to work seamlessly.
+- Tweak: We updated some CSS styles on our admin panel for improved compatibility with other plugins.
+- Tweak: We adjusted the order of some parameters to improve compatibility with upcoming PHP8.
+
+= 6.5.1: January 27, 2021 =
+- Fix: We made an adjustment to fix an issue with the cross-domain tracking for the gtag.js tracking option.
+
+= 6.5.0: January 19, 2021 =
+- New: We added support for Google’s global site tag (gtag.js) with a seamless upgrade experience for all your existing events or integrations with analytics.js. Upgrading to this version will give you the option to manually opt-in to gtag.js that will become the standard tracking code in a future version.
+- Fix: We added an extra check to prevent a potential error on older PHP versions from our Popular Posts feature.
+
+= 6.4.0: December 16, 2020 =
+- New: With our new, limited-time only, Year in Review report you’ll be able to see how your site performed in 2020 and how to improve in 2021.
+- Tweak: Our contextual notifications are now more efficient when using report data.
+- Tweak: Selecting the “no styles” option in the Popular Posts settings now also prevents any inline styles from being output.
+- Tweak: Our campaign URL tool now encodes values better.
+- Tweak: We removed a JavaScript dependency in the Popular Posts Widget settings.
+- Tweak: We added a limit to the number of dismissed notifications for better storage usage.
+- Fix: We added a value for the alt parameter of the images used in the Popular Posts widgets.
+- Fix: Our Popular Posts widgets had a potential infinite recursion error in certain situations so we added a check to prevent that.
+
+= 6.3.3: December 10, 2020 =
+- Fix: Prevent a notice from showing up in WordPress 5.6 when editing a post.
+
+= 6.3.2: November 24, 2020 =
+- Tweak: We improved performance by tweaking some of the contextual insights using report data.
+- Fix: Automatic inserting of the inline popular posts widget was not working as expected for sites using languages with multi-byte characters.
+
+= 6.3.0: November 3, 2020 =
+- New: Brand new Popular Posts feature to showcase your best posts using Gutenberg Blocks, Sidebar Widgets or directly in the post content. You can choose from multiple themes and customise styles individually.
+- New: Contextual Insights - get smart tips based on your analytics data directly in your ExactMetrics dashboard.
+- Tweak: We improved our site health checks for multiple trackers to support more legitimate uses of multiple UA codes.
+- Tweak: We adjusted our reports area to avoid some boxes not displaying when there was no data available.
+- Tweak: We made an adjustment to our dashboard widget for better compatibility with the WordPress 5.5 changes
+- Tweak: We adjusted our Headline Analyzer option loading to better match WordPress version compatibility.
+- Fix: We fixed an issue with the PDF export of the Overview Report getting cut off.
+- Fix: We adjusted our autoupdate integration to avoid a PHP notice in certain instances.
+
+= 6.2.2: August 10, 2020 =
+- Tweak: We adjusted our Headline Analyzer dependencies to improve reported compatibility issues with some page builder plugins.
+
+= 6.2.1: August 6, 2020 =
+- Tweak: WordPress Core decided to merge some additional work into 5.5 later than usual into the release process. This update adds additional work to enable perfect compatibility with those changes.
+
+= 6.2.0: August 5, 2020 =
+- New: Our plugin now includes a Headline Analyzer tool to help you write more SEO-friendly headlines that drive traffic and social-media shares directly in the Gutenberg editor.
+- Tweak: Large numbers are now better formatted across all reports so they are easier to read.
+- Tweak: We made some tweaks to ensure better compatibility with the WordPress 5.5 release.
+- Tweak: Our automatic duplicate tracker detection now includes support for more scenarios to avoid false positives.
+- Fixed: Loading custom translations from the plugin folder is now working correctly.
+
+= 6.1.0: June 24, 2020 =
+- New: On our UTM builder in our Tools submenu page, we’ve integrated with PrettyLinks to enable conversion of generated URLs into PrettyLinks.
+- Tweak: The multisite setup process has been streamlined for users who network activate ExactMetrics. We’ve introduced a new setup wizard for those users, and worked on ironing out the experience.
+- Tweak: Our integration with WordPress’s Site Health feature now handles detection of Coming Soon plugins to reduce false positives for the automatic check of the tracking code output.
+- Tweak: The “Tracking code not output” error will no longer appear for users who have the PHP constant in use to disable tracking on testing and staging sites.
+- Fixed: A bug that caused the enhanced link attribution code to not output for some users has been fixed.
+
 = 6.0.2: February 25, 2020 =
 - New: We added a new "classic" mode to the dashboard based on user feedback. This new mode allows for a more compact, compressed widget to see all the most important information at a glance..
 - Tweak: We disabled the eCommerce settings and reports for users that are not using any eCommerce plugin.
@@ -176,109 +261,83 @@ You can translate Google Analytics Dashboard for WP by ExactMetrics on [translat
 - New: We've worked on dramatically improving performance, and aggressively eliminating bugs reported in previous versions.
 
 = 5.3.10 =
-* Enhancements:
-	* Adds ability for users to apply to be the first to try new features
-
-* Bug Fixes:
-	* Compatibility fixes for the newly released PHP 7.4 version.
+- New: Adds ability for users to apply to be the first to try new features
+- Fixed: Compatibility fixes for the newly released PHP 7.4 version.
 
 = 5.3.9 =
-* Enhancements:
-	* Fixes conflict with WordFence
+- Fixed: Fixes conflict with WordFence
 
 = 5.3.8 =
-* Enhancements:
-	* Updates dependency libraries.
-	* Confirms compatibility with WordPress 5.1 and 5.2.
-
-* Enhancements:
-	* Updates dependency libraries.
-	* Confirms compatibility with WordPress 5.0.
-	* Replaces "Cheating Huh?"" with "You don’t have permission to do this" to align the error message with recent WP core changes. (core.trac.wordpress.org/ticket/38332)
+- New: Updates dependency libraries.
+- New: Confirms compatibility with WordPress 5.1 and 5.2.
+- Tweak: Updates dependency libraries.
+- Tweak: Confirms compatibility with WordPress 5.0.
+- Tweak: Replaces "Cheating Huh?"" with "You don’t have permission to do this" to align the error message with recent WP core changes. (core.trac.wordpress.org/ticket/38332)
 
 = 5.3.5 =
-* Bug Fixes:
-	* Re-tagging release to fix a deployment issue.
+- Fixed: Re-tagging release to fix a deployment issue.
 
 = 5.3.4 =
-* Enhancements:
-	* Adds more robust settings to control various ExactMetrics configuration warnings.
-	* Adds the ability to opt-into usage tracking.
-
+- New: Adds more robust settings to control various ExactMetrics configuration warnings.
+- New: Adds the ability to opt-into usage tracking.
 
 = 5.3.3 =
-* Bug Fixes:
-	* Updated endpoint for GA auth to use updated system.
-	* Fixed a bug where the opt-out and exclude DNT options were listed twice.
+- Fixed: Updated endpoint for GA auth to use updated system.
+- Fixed: Fixed a bug where the opt-out and exclude DNT options were listed twice.
 
 = 5.3.2 =
-* Bug Fixes:
-	* fixes for user opt-out feature
-* Enhancements:
-	* use <em>gadwp_useroptout</em> shortcode to easily generate opt-out buttons and links, [more details](https://exactmetrics.com/google-analytics-gdpr-and-user-data-privacy-compliance)
-	* adding <em>gadwp_gtag_commands</em> and <em>gadwp_gtag_script_path</em> hooks to allow further gtag (Global Site Tag) code customization
-	* adds opt-out and DNT support for Google Tag Manager
+- Fixed: fixes for user opt-out feature
+- Tweak: use <em>gadwp_useroptout</em> shortcode to easily generate opt-out buttons and links, [more details](https://exactmetrics.com/google-analytics-gdpr-and-user-data-privacy-compliance)
+- Tweak: adding <em>gadwp_gtag_commands</em> and <em>gadwp_gtag_script_path</em> hooks to allow further gtag (Global Site Tag) code customization
+- Tweak: adds opt-out and DNT support for Google Tag Manager
 
 = 5.3.1.1 =
-* Bug Fixes:
-	* avoid tracking issues by not clearing the profiles list on automatic token resets
+- Fixed: avoid tracking issues by not clearing the profiles list on automatic token resets
 
 = 5.3.1 =
-* Bug Fixes:
-	* frontend_item_reports PHP notice when upgrading from a version lower than v4.8.0.1
+- Fixed: frontend_item_reports PHP notice when upgrading from a version lower than v4.8.0.1
 
 = 5.3 =
-* Enhancements:
-	* adds full support for Global Site Tag (gtag.js)
-	* remove Scroll Depth functionality, since this is now available as a trigger on Google Tag Manager
-	* adds custom dimensions support for AMP pages with Google Tag Manager tracking
-	* adds support for button submits
-* Bug Fixes:
-	* form submit events were not following the non-interaction settings
+- New: adds full support for Global Site Tag (gtag.js)
+- New: adds custom dimensions support for AMP pages with Google Tag Manager tracking
+- New: adds support for button submits
+- Tweak: remove Scroll Depth functionality, since this is now available as a trigger on Google Tag Manager
+- Fixed: form submit events were not following the non-interaction settings
 
 = 5.2.3.1 =
-* Bug Fixes:
-	* fixing a small reporting issue
+- Fixed: fixing a small reporting issue
 
 = 5.2.3 =
-* Enhancements:
-	* add Google Analytics user opt-out support
-	* add option to exclude tracking for users sending the <em>Do Not Track</em> header
-	* add System tab to Errors & Debug screen
-	* check to avoid using a redeemed access code
-* Bug Fixes:
-	* remove a debugging message
-	* cURL options were overwritten during regular API calls
+- New: add Google Analytics user opt-out support
+- New: add option to exclude tracking for users sending the <em>Do Not Track</em> header
+- New: add System tab to Errors & Debug screen
+- Tweak: check to avoid using a redeemed access code
+- Fixed: remove a debugging message
+- Fixed: cURL options were overwritten during regular API calls
 
 = 5.2.2 =
-* Enhancements:
-	* more informative alerts and suggestions on the authorization screen
-	* disable autocomplete for the access code input field to avoid reuse of the same unique authorization code
-	* GADWP Endpoint improvements
-	* Error reporting improvements
-	* introducing the gadwp_maps_api_key filter
-* Bug Fixes:
-	* use the theme color palette for the frontend widget
+- New: more informative alerts and suggestions on the authorization screen
+- New: introducing the gadwp_maps_api_key filter
+- Tweak: disable autocomplete for the access code input field to avoid reuse of the same unique authorization code
+- Tweak: GADWP Endpoint improvements
+- Tweak: Error reporting improvements
+- Fixed: use the theme color palette for the frontend widget
 
 = 5.2.1 =
-* Enhancements:
-	* avoid submitting empty error reports
-* Bug Fixes:
-	* fixes a bug for custom PHP cURL options
+- Tweak: avoid submitting empty error reports
+- Fixed: fixes a bug for custom PHP cURL options
 
 = 5.2 =
-* Enhancements:
-	* improvements on exponential backoff system
-	* introduces a new authentication method with endpoints
-	* multiple updates of plugin's options
-	* code cleanup
-	* improvements on error reporting system
-	* option to report errors to developer
-	* move the upgrade notice from the Dashboard to plugin's settings page
-	* enable PHP cURL proxy support using WordPress settings, props by [Joe Hobson](https://github.com/joehobson)
-	* hide unusable options based on plugin's settings
-* Bug Fixes:
-	* some thrown errors were not displayed on Errors & Debug screen
-	* analytics icon disappears from post list after quick edit, props by [karex](https://github.com/karex)
-	* fix for inline SVG links, props by [Andrew Minion](https://github.com/macbookandrew)
-	* fixes a bug on affiliate events tracking
+- New: introduces a new authentication method with endpoints
+- New: option to report errors to developer
+- Tweak: improvements on exponential backoff system
+- Tweak: multiple updates of plugin's options
+- Tweak: code cleanup
+- Tweak: improvements on error reporting system
+- Tweak: move the upgrade notice from the Dashboard to plugin's settings page
+- Tweak: enable PHP cURL proxy support using WordPress settings, props by [Joe Hobson](https://github.com/joehobson)
+- Tweak: hide unusable options based on plugin's settings
+- Fixed: some thrown errors were not displayed on Errors & Debug screen
+- Fixed: analytics icon disappears from post list after quick edit, props by [karex](https://github.com/karex)
+- Fixed: fix for inline SVG links, props by [Andrew Minion](https://github.com/macbookandrew)
+- Fixed: fixes a bug on affiliate events tracking

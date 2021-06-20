@@ -1,4 +1,4 @@
-<?php // Block Bad Queries - Settings
+<?php // BBQ - Settings
 
 if (!defined('ABSPATH')) exit;
 
@@ -70,7 +70,7 @@ function bbq_validate_options($input) {
 function bbq_settings_section_general() {
 	
 	echo '<p>'. esc_html__('Thanks for using the free version of ', 'block-bad-queries');
-	echo '<a target="_blank" rel="noopener noreferrer" href="https://wordpress.org/plugins/block-bad-queries/">'. esc_html__('Block Bad Queries (BBQ)', 'block-bad-queries') .'</a>.</p>';
+	echo '<a target="_blank" rel="noopener noreferrer" href="https://wordpress.org/plugins/block-bad-queries/">'. esc_html__('BBQ Firewall', 'block-bad-queries') .'</a>.</p>';
 	echo '<p>'. esc_html__('The free version is completely plug-&amp;-play, protecting your site automatically with no settings required.', 'block-bad-queries') .'</p>';
 	
 }
@@ -175,7 +175,7 @@ add_action('admin_menu', 'bbq_menu_page');
 function bbq_display_settings() { ?>
 	
 	<div class="wrap">
-		<h1><?php esc_html_e('Block Bad Queries', 'block-bad-queries'); ?></h1>
+		<h1><?php esc_html_e('BBQ Firewall', 'block-bad-queries'); ?></h1>
 		<form method="post" action="options.php">
 			<?php 
 				settings_fields('bbq_options_free');

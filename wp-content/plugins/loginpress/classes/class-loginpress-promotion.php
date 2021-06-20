@@ -4,7 +4,7 @@
  *
  * @package LoginPress
  * @since 1.1.24
- *
+ * @version 1.4.5
  */
 
 if ( ! class_exists( 'LoginPress_Promotion_tabs' ) ) :
@@ -26,43 +26,45 @@ if ( ! class_exists( 'LoginPress_Promotion_tabs' ) ) :
 
 		/**
 		* [loginpress_login_redirects_tab Setting tab for Login Redirects.]
-		* @param  [array] $loginpress_tabs [ Tabs of free version ]
-		* @return [array]                	[ Login Redirects tab ]
+		* @param  array $loginpress_tabs [ Tabs of free version ]
+		* @return array $loginpress_promotion_tab [ Promotion tabs ]
+		* @since 1.1.24
+		* @version 1.4.5
 		*/
 		public function loginpress_promotion_tab( $loginpress_tabs ) {
-			$_login_redirects_tab = array(
-				array(
-					'id'    => 'loginpress_login_redirects',
-					'title' => __( 'Login Redirects', 'loginpress' ),
-					'desc'  => $this->_tabs_description( 'loginpress-login-redirects' )
-				),
-				array(
-					'id'    => 'loginpress_social_logins',
-					'title' => __( 'Social Login', 'loginpress' ),
-					'desc'  => $this->_tabs_description( 'loginpress-social-login' )
-				),
-				array(
-					'id'    => 'loginpress_limit_login_attempts',
-					'title' => __( 'Limit Login Attempts', 'loginpress' ),
-					'desc'  => $this->_tabs_description( 'loginpress-limit-login-attempts' )
-				),
-				array(
-					'id'    => 'loginpress_autologin',
-					'title' => __( 'Auto Login', 'loginpress' ),
-					'desc'  => $this->_tabs_description( 'loginpress-auto-login' )
-				),
-				array(
-					'id'    => 'loginpress_hidelogin',
-					'title' => __( 'Hide Login', 'loginpress' ),
-					'desc'  => $this->_tabs_description( 'loginpress-hide-login' )
-				),
+			$_loginpress_promotion_tab = array(
+				// array(
+				// 	'id'    => 'loginpress_login_redirects',
+				// 	'title' => __( 'Login Redirects', 'loginpress' ),
+				// 	'desc'  => $this->_tabs_description( 'loginpress-login-redirects' )
+				// ),
+				// array(
+				// 	'id'    => 'loginpress_social_logins',
+				// 	'title' => __( 'Social Login', 'loginpress' ),
+				// 	'desc'  => $this->_tabs_description( 'loginpress-social-login' )
+				// ),
+				// array(
+				// 	'id'    => 'loginpress_limit_login_attempts',
+				// 	'title' => __( 'Limit Login Attempts', 'loginpress' ),
+				// 	'desc'  => $this->_tabs_description( 'loginpress-limit-login-attempts' )
+				// ),
+				// array(
+				// 	'id'    => 'loginpress_autologin',
+				// 	'title' => __( 'Auto Login', 'loginpress' ),
+				// 	'desc'  => $this->_tabs_description( 'loginpress-auto-login' )
+				// ),
+				// array(
+				// 	'id'    => 'loginpress_hidelogin',
+				// 	'title' => __( 'Hide Login', 'loginpress' ),
+				// 	'desc'  => $this->_tabs_description( 'loginpress-hide-login' )
+				// ),
 				array(
 	        'id'    => 'loginpress_premium',
 	        'title' => __( 'Upgrade to Pro for More Features', 'loginpress' )
 	      )
 			);
-			$login_redirects_tab = array_merge( $loginpress_tabs, $_login_redirects_tab );
-			return $login_redirects_tab;
+			$loginpress_promotion_tab = array_merge( $loginpress_tabs, $_loginpress_promotion_tab );
+			return $loginpress_promotion_tab;
 		}
 
 		/**

@@ -34,7 +34,7 @@
 					activateAddon( pluginSlug, nonce, addonWrapper, addonBtn );
 				},
 				error  : function (res) {
-					console.log(res);
+					// console.log(res);
           addonWrapper.find('.loginpress-uninstalling').hide();
           addonWrapper.find('.loginpress-uninstall').hide();
           addonWrapper.find('.loginpress-addon-enable').hide();
@@ -83,7 +83,7 @@
           }, 3000);
         },
         error: function (res) {
-          console.log(res);
+          // console.log(res);
           addonWrapper.find('.loginpress-uninstalling').hide();
           addonWrapper.find('.loginpress-uninstall').hide();
           addonWrapper.find('.loginpress-wrong').show();
@@ -146,7 +146,7 @@
           }, 3000);
 				},
 				error  : function ( xhr, textStatus, errorThrown ) {
-					console.log('Ajax Not Working');
+					// console.log('Ajax Not Working');
           addonWrapper.find('.loginpress-uninstalling').hide();
           addonWrapper.find('.loginpress-uninstall').hide();
           addonWrapper.find('.loginpress-wrong').show();

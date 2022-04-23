@@ -193,9 +193,9 @@ class LoginPress_Settings {
         'type'    => 'radio',
         'default' => 'default',
         'options' => array(
-            'default'  => 'Both Username Or Email Address',
-            'username' => 'Only Username',
-            'email'    => 'Only Email Address'
+            'default'  => __( 'Both Username Or Email Address', 'loginpress' ),
+            'username' => __( 'Only Username', 'loginpress' ),
+            'email'    => __( 'Only Email Address', 'loginpress' )
         )
       ),
       // array(
@@ -222,10 +222,19 @@ class LoginPress_Settings {
     //   ) );
     // }
 
-    // Add WooCommerce lostpassword_url field in version 1.1.7
+	/**
+	 * Add option to remove language switcher option
+	 *
+	 * @since 1.5.11
+	 */
+	if ( version_compare( $GLOBALS['wp_version'], '5.9', '>=' ) && ! empty( get_available_languages() ) ) {
+		$_free_fields = $this->loginpress_language_switcher( $_free_fields );
+	}
+
+	// Add WooCommerce lostpassword_url field in version 1.1.7
     if ( class_exists( 'WooCommerce' ) ) {
-      $_free_fields = $this->loginpress_woocommerce_lostpasword_url( $_free_fields );
-    }
+		$_free_fields = $this->loginpress_woocommerce_lostpasword_url( $_free_fields );
+	  }
 
     // Add loginpress_uninstall field in version 1.1.9
     $_free_fields     = $this->loginpress_uninstallation_tool( $_free_fields );
@@ -322,9 +331,9 @@ class LoginPress_Settings {
 
   /**
    * loginpress_woocommerce_lostpasword_url [merge a woocommerce lostpassword url field with the last element of array.]
-   * @param  array $fields_list
+   * @param array $fields_list The free fields of LoginPress.
    * @since 1.1.7
-   * @return array
+   * @return array the total fields including the added field of WooCommerce lost password field.
    */
   function loginpress_woocommerce_lostpasword_url( $fields_list ) {
 
@@ -340,11 +349,32 @@ class LoginPress_Settings {
     return array_merge( $array_elements, $last_two_elements ); // merge an array and return.
   }
 
+   /**
+    * loginpress_language_switcher [merge a language switcher in the settings element of array.]
+    *
+    * @param  array $fields_list The free fields of LoginPress.
+    * @since 1.5.11
+    * @return array the total fields including the added field of language switcher
+    */
+  function loginpress_language_switcher( $fields_list ) {
+
+    $array_elements   = array_slice( $fields_list, 0, -1 ); //slice a last element of array.
+    $last_element     = end( $fields_list ); // last element of array.
+    $switcher_option  = array(
+		'name'  => 'enable_language_switcher',
+		'label' => __( 'Language Switcher', 'loginpress' ),
+		'desc'  => __( 'Remove Language Switcher Dropdown On Login Page. ', 'loginpress' ),
+		'type'  => 'checkbox'
+	);
+    $lang_switch_element = array_merge( array( $switcher_option , $last_element ) ); // merge last 2 elements of array.
+    return array_merge( $array_elements, $lang_switch_element ); // merge an array and return.
+  }
+
   /**
    * loginpress_uninstallation_filed [merge a uninstall loginpress field with array of element.]
-   * @param  array $fields_list
+   * @param  array $fields_list The free fields of LoginPress.
    * @since 1.1.9
-   * @return array
+   * @return array the total fields which are to be removed on uninstall.
    */
   function loginpress_uninstallation_filed( $fields_list ) {
 

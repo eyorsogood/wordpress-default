@@ -15,18 +15,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 
 /**
- * Get frontend tracking options.
+ * Print Monsterinsights frontend tracking script.
  *
- * This function is used to return an array of parameters
- * for the frontend_output() function to output. These are
- * generally dimensions and turned on GA features.
- *
- * @return array Array of the options to use.
+ * @return void
  * @since 7.0.0
  * @access public
  *
  */
 function exactmetrics_tracking_script() {
+    if ( exactmetrics_skip_tracking() ) {
+        return;
+    }
+
 	require_once plugin_dir_path( EXACTMETRICS_PLUGIN_FILE ) . 'includes/frontend/class-tracking-abstract.php';
 
 	$mode = is_preview() ? 'preview' : ExactMetrics()->get_tracking_mode();
@@ -37,13 +37,9 @@ function exactmetrics_tracking_script() {
 		require_once plugin_dir_path( EXACTMETRICS_PLUGIN_FILE ) . 'includes/frontend/tracking/class-tracking-preview.php';
 		$tracking = new ExactMetrics_Tracking_Preview();
 		echo $tracking->frontend_output();
-	} else if ( 'gtag' === $mode ) {
+	} else {
 		require_once plugin_dir_path( EXACTMETRICS_PLUGIN_FILE ) . 'includes/frontend/tracking/class-tracking-gtag.php';
 		$tracking = new ExactMetrics_Tracking_Gtag();
-		echo $tracking->frontend_output();
-	} else {
-		require_once plugin_dir_path( EXACTMETRICS_PLUGIN_FILE ) . 'includes/frontend/tracking/class-tracking-analytics.php';
-		$tracking = new ExactMetrics_Tracking_Analytics();
 		echo $tracking->frontend_output();
 	}
 
@@ -67,17 +63,15 @@ add_action( 'wp_head', 'exactmetrics_tracking_script', 6 );
  *
  */
 function exactmetrics_events_tracking() {
+	if ( exactmetrics_skip_tracking() ) {
+		return;
+	}
+
 	$track_user = exactmetrics_track_user();
 
 	if ( $track_user ) {
-		$tracking_mode = ExactMetrics()->get_tracking_mode();
-		if ( 'analytics' === $tracking_mode ) {
-			require_once plugin_dir_path( EXACTMETRICS_PLUGIN_FILE ) . 'includes/frontend/events/class-analytics-events.php';
-			new ExactMetrics_Analytics_Events();
-		} else {
-			require_once plugin_dir_path( EXACTMETRICS_PLUGIN_FILE ) . 'includes/frontend/events/class-gtag-events.php';
-			new ExactMetrics_Gtag_Events();
-		}
+		require_once plugin_dir_path( EXACTMETRICS_PLUGIN_FILE ) . 'includes/frontend/events/class-gtag-events.php';
+		new ExactMetrics_Gtag_Events();
 	} else {
 		// User is in the disabled group or events mode is off
 	}

@@ -189,7 +189,7 @@ class ExactMetrics_Popular_Posts {
 
 		wp_enqueue_script( 'exactmetrics-popular-posts-js' );
 
-		wp_localize_script( 'exactmetrics-popular-posts-js', 'exactmetrics_pp', array(
+		exactmetrics_localize_script( 'exactmetrics-popular-posts-js', 'exactmetrics_pp', array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
 			'post_id' => get_the_ID(),
 		) );
@@ -307,10 +307,10 @@ class ExactMetrics_Popular_Posts {
 			}
 			$posts = get_posts( $posts_args );
 
-			$posts = $this->process_posts( $posts );
-
 			$this->get_cache()->save_posts_to_cache( $posts_args, $posts );
 		}
+
+		$posts = $this->process_posts( $posts );
 
 		return apply_filters( 'exactmetrics_popular_posts_posts', $posts );
 
@@ -333,11 +333,11 @@ class ExactMetrics_Popular_Posts {
 			$post_image        = '';
 			$post_image_srcset = '';
 			if ( ! empty( $post_thumbnail ) ) {
-				$post_image = wp_get_attachment_image_src( $post_thumbnail, 'small' );
+				$post_image = wp_get_attachment_image_src( $post_thumbnail, 'medium' );
 				if ( is_array( $post_image ) && ! empty( $post_image[0] ) ) {
 					$post_image = $post_image[0];
 				}
-				$post_image_srcset = wp_get_attachment_image_srcset( $post_thumbnail, 'small' );
+				$post_image_srcset = wp_get_attachment_image_srcset( $post_thumbnail, 'medium' );
 			}
 
 			$author_data = get_userdata( $post->post_author );
@@ -369,6 +369,7 @@ class ExactMetrics_Popular_Posts {
 		$args = array(
 			'numberposts'         => $this->posts_count,
 			'ignore_sticky_posts' => true,
+			'fields'              => 'ids',
 		);
 		$args = wp_parse_args( $this->query_args(), $args );
 

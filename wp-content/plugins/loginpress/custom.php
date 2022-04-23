@@ -45,6 +45,10 @@ class LoginPress_Entities {
     add_action( 'admin_menu',			array( $this, 'menu_url' ), 10 );
     add_filter( 'wp_login_errors',    	array( $this, 'remove_error_messages_in_wp_customizer' ), 10, 2 );
 
+	if ( version_compare( $GLOBALS['wp_version'], '5.9', '>=' ) ) {
+		add_filter( 'login_display_language_dropdown',	array( $this, 'loginpress_language_switch' ) );
+	}
+
     /**
      * This function enqueues scripts and styles in the Customizer.
      */
@@ -894,9 +898,9 @@ class LoginPress_Entities {
     $this->loginpress_color_setting( $wp_customize, $form_color_control, $form_color_label, 'section_form', 4, 100 );
 
     // customize_form_label.
-    // $this->loginpress_rangle_seting( $wp_customize, $form_range_control, $form_range_default, $form_range_label, $form_range_attrs, $form_range_unit, 'section_form', 9, 105 );
+    $this->loginpress_rangle_seting( $wp_customize, $form_range_control, $form_range_default, $form_range_label, $form_range_attrs, $form_range_unit, 'section_form', 9, 105 );
     // remember_me_font_size.
-    // $this->loginpress_rangle_seting( $wp_customize, $form_range_control, $form_range_default, $form_range_label, $form_range_attrs, $form_range_unit, 'section_form', 10, 110 );
+    $this->loginpress_rangle_seting( $wp_customize, $form_range_control, $form_range_default, $form_range_label, $form_range_attrs, $form_range_unit, 'section_form', 10, 110 );
     $this->loginpress_hr_setting( $wp_customize, $close_control, 'section_form', 5, 111 );
 
     //	=============================
@@ -1631,8 +1635,10 @@ class LoginPress_Entities {
 		/**
 		 * Replace the "$YEAR$" with current year if and where found.
 		 * @since 1.5.4
+		 * @version 1.5.6
 		 */
-		if( strpos( $this->loginpress_key['login_footer_copy_right'], '$YEAR$' ) !== false ) {
+		if( isset( $this->loginpress_key['login_footer_copy_right'] ) && ! empty( $this->loginpress_key['login_footer_copy_right'] ) && strpos( $this->loginpress_key['login_footer_copy_right'], '$YEAR$' ) !== false ) {
+
 			$year = date( "Y" );
 			//Setting the value with current year and saving in the 'login_footer_copy_right' key
 			$this->loginpress_key['login_footer_copy_right'] = str_replace( '$YEAR$', $year, $this->loginpress_key['login_footer_copy_right'] );
@@ -1691,6 +1697,26 @@ class LoginPress_Entities {
 	 */
 	if( apply_filters( 'loginpress_llms_lostpassword_url', false ) ) {
 		remove_filter( 'lostpassword_url', 'llms_lostpassword_url', 10 );
+	}
+  }
+
+  /**
+   * Filters the Languages select input activation on the login screen.
+   *
+   * @param bool $arg Whether to display the Languages select input on the login screen.
+   *
+   * @since 1.5.11
+   * @return bool
+   */
+  function loginpress_language_switch( $arg ) {
+
+    $loginpress_setting = get_option( 'loginpress_setting' );
+    $language_switcher 	= isset( $loginpress_setting['enable_language_switcher'] ) ? $loginpress_setting['enable_language_switcher'] : 'off';
+
+	if ( 'off' === $language_switcher ) {
+		return true;
+	} else {
+		return false;
 	}
   }
   /**
@@ -1927,7 +1953,7 @@ class LoginPress_Entities {
       }
 
       //Logged In messages.
-      else if ( strpos( $message, __( "Please enter your username or email address. You will receive a link to create a new password via email." ) ) == true ) {
+      else if ( isset( $_GET['action'] ) && 'lostpassword' == $_GET['action'] ) {
 
         if ( array_key_exists( 'lostpwd_welcome_message', $this->loginpress_key ) && ! empty( $this->loginpress_key['lostpwd_welcome_message'] ) ) {
 
@@ -1935,7 +1961,7 @@ class LoginPress_Entities {
         }
       }
 
-      else if( strpos( $message, __( "Register For This Site" ) ) == true ) {
+      else if( isset( $_GET['action'] ) && 'register' == $_GET['action'] ) {
 
         if ( array_key_exists( 'register_welcome_message', $this->loginpress_key ) && ! empty( $this->loginpress_key['register_welcome_message'] ) ) {
 

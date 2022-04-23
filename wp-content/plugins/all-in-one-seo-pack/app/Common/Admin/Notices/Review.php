@@ -30,7 +30,7 @@ class Review {
 	 */
 	public function maybeShowNotice() {
 		$dismissed = get_user_meta( get_current_user_id(), '_aioseo_plugin_review_dismissed', true );
-		if ( '1' === $dismissed ) {
+		if ( '1' === $dismissed || '2' === $dismissed ) {
 			return;
 		}
 
@@ -83,8 +83,11 @@ class Review {
 			'https://aioseo.com/plugin-feedback/'
 		);
 
-		// Translators: 1 - The plugin name ("All in One SEO").
-		$string1  = sprintf( __( 'Are you enjoying %1$s?', 'all-in-one-seo-pack' ), AIOSEO_PLUGIN_NAME );
+		$string1 = sprintf(
+			// Translators: 1 - The plugin short name ("AIOSEO").
+			__( 'Are you enjoying %1$s?', 'all-in-one-seo-pack' ),
+			AIOSEO_PLUGIN_NAME
+		);
 		$string2  = __( 'Yes I love it', 'all-in-one-seo-pack' );
 		$string3  = __( 'Not Really...', 'all-in-one-seo-pack' );
 		// Translators: The plugin name ("All in One SEO").
@@ -137,6 +140,7 @@ class Review {
 	 * Print the script for dismissing the notice.
 	 *
 	 * @since 4.0.13
+	 *
 	 * @return void
 	 */
 	public function printScript() {
@@ -165,6 +169,7 @@ class Review {
 				aioseoSetupButton = function (dismissBtn) {
 					var notice      = document.querySelector('.notice.aioseo-review-plugin-cta'),
 						delay       = false,
+						relay       = true,
 						stepOne     = notice.querySelector('.step-1'),
 						stepTwo     = notice.querySelector('.step-2'),
 						stepThree   = notice.querySelector('.step-3')
@@ -176,6 +181,7 @@ class Review {
 
 						// Build the data to send in our request.
 						postData += '&delay=' + delay
+						postData += '&relay=' + relay
 						postData += '&action=aioseo-dismiss-review-plugin-cta'
 						postData += '&nonce=<?php echo esc_html( $nonce ); ?>'
 
@@ -200,12 +206,14 @@ class Review {
 						if (event.target.matches('.aioseo-dismiss-review-notice-delay')) {
 							event.preventDefault()
 							delay = true
+							relay = false
 							dismissBtn.click()
 						}
 						if (event.target.matches('.aioseo-dismiss-review-notice')) {
 							if ('#' === event.target.getAttribute('href')) {
 								event.preventDefault()
 							}
+							relay = false
 							dismissBtn.click()
 						}
 					})
@@ -245,9 +253,11 @@ class Review {
 
 		check_ajax_referer( 'aioseo-dismiss-review', 'nonce' );
 		$delay = isset( $_POST['delay'] ) ? 'true' === wp_unslash( $_POST['delay'] ) : false; // phpcs:ignore HM.Security.ValidatedSanitizedInput.InputNotSanitized
+		$relay = isset( $_POST['relay'] ) ? 'true' === wp_unslash( $_POST['relay'] ) : false; // phpcs:ignore HM.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		if ( ! $delay ) {
-			update_user_meta( get_current_user_id(), '_aioseo_plugin_review_dismissed', true );
+			update_user_meta( get_current_user_id(), '_aioseo_plugin_review_dismissed', $relay ? '2' : '1' );
+
 			return wp_send_json_success();
 		}
 

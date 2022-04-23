@@ -224,6 +224,9 @@ font-weight: bold;
 .loginpress-notification.loginpress-notice-success .loginpress-notification-close:before{
   color: #21573a;
 }
+.loginpress-alert-notice .notice-dismiss:before{
+    color: #ececec !important;
+  }
 @media screen and (max-width: 1300px) {
   .loginpress-alert-thumbnail{
     width: 200px;
@@ -267,7 +270,7 @@ font-weight: bold;
     color: #fff;
   }
   .loginpress-alert-notice .notice-dismiss:before{
-    color: #fff;
+    color: #ffffff !important;
   }
   .black_friday_sale_btn .loginpress-alert-button{
     width: 310px;

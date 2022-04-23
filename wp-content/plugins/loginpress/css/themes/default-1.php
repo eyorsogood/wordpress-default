@@ -16,6 +16,16 @@ function first_presets() {
     	  content: url('data:image/svg+xml;utf8,<svg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2020%2020%27><path%20d%3D%27M14.83%204.89l1.34.94-5.81%208.38H9.02L5.78%209.67l1.34-1.25%202.57%202.4z%27%20fill%3D%27%231e8cbe%27%2F><%2Fsvg>');
     	  margin: -0.25rem 0 0 -0.275rem !important;
       }
+      body .language-switcher{
+        margin-top: 10px;
+        clear: both;
+        z-index: 1;
+        position: absolute;
+        top: 100%;
+      }
+      body #login{
+        position: relative;
+      }
       .wp-core-ui #login .button-primary{
           margin-left: 0;
       }

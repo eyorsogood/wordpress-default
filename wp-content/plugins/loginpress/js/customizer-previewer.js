@@ -127,6 +127,11 @@
                     var newHtml = $(this).html().replace(currentText, "<span>" + currentText + "</span>");
                     $(this).html(newHtml);
                 });
+                if($('.login-container').length==0){
+                    $('.language-switcher').appendTo($('#login'));
+                }else{
+                    $('.language-switcher').appendTo($('.login-container'));
+                }
             });
 
 

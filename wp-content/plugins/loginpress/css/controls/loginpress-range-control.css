@@ -30,7 +30,7 @@
 
 .loginpress-range-slider_range {
     -webkit-appearance: none;
-    width: calc(100% - (100px));
+    width: calc(100% - (100px)) !important;
     height: 5px;
     border-radius: 2.5px;
     background: #d7dcdf;

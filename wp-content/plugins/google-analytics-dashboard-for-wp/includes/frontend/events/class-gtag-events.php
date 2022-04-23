@@ -100,7 +100,7 @@ class ExactMetrics_Gtag_Events {
 			$suffix = '';
 		}
 		wp_enqueue_script( 'exactmetrics-frontend-script', plugins_url( 'assets/js/frontend-gtag' . $suffix . '.js', EXACTMETRICS_PLUGIN_FILE ), array(), exactmetrics_get_asset_version(), false );
-		wp_localize_script(
+		exactmetrics_localize_script(
 			'exactmetrics-frontend-script',
 			'exactmetrics_frontend',
 			array(
@@ -110,6 +110,7 @@ class ExactMetrics_Gtag_Events {
 				'home_url'            => home_url(), /* Let's get the url to compare for external/internal use */
 				'hash_tracking'       => $hash_tracking, /* Should hash track */
 				'ua'                  => exactmetrics_get_ua(), /* UA code used for tracking */
+				'v4_id'               => exactmetrics_get_v4_id(), /* V4 ID used for tracking */
 			)
 		);
 	}

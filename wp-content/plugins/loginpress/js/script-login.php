@@ -119,7 +119,11 @@ document.addEventListener( 'DOMContentLoaded', function() {
       image.setAttribute( "style", "display: block;margin: 0 auto;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);" );
       subButton[0].appendChild(image);
     }
-
+    if(jQuery('.login-container').length==0){
+        jQuery('.language-switcher').appendTo(jQuery('#login'));
+    }else{
+        jQuery('.language-switcher').appendTo(jQuery('.login-container'));
+    }
   };
 
   <?php if ( 'off' != $loginpress_autorm ) : ?>

@@ -4,6 +4,7 @@
 * Class for Promotion.
 *
 * @since  1.0.17
+* @version 1.5.12
 * @access public
 */
 class LoginPress_Promo extends WP_Customize_Control {
@@ -91,63 +92,66 @@ class LoginPress_Promo extends WP_Customize_Control {
 
 
 }
-function loginpress_promo_control_css() {
-  ?>
-  <style>
-  .loginpress_promo_thumbnail a{
-    display: inline-block;
-    position: relative;
-    border:5px solid transparent;
-  }
-  .loginpress_promo_thumbnail a .customizer-promo-overlay{
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(204, 204, 204, 0.8);
-      content: '';
-      -webkit-transition: all 0.2s ease-in-out;
-      -moz-transition: all 0.2s ease-in-out;
-      -ms-transition: all 0.2s ease-in-out;
-      transition: all 0.2s ease-in-out;
-      opacity: 0;
-      visibility: hidden;
-      -webkit-transform: scale(.5);
-      -moz-transform: scale(.5);
-      -ms-transform: scale(.5);
-      transform: scale(.5);
-    }
-    .customizer-promo-text{
-      line-height:1.2;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      -webkit-transform:translate(-50%, -50%);
-      transform:translate(-50%, -50%);
-      width: 100%;
-      font-size: 25px;
-      color: #000;
-      z-index: 100;
-      text-align: center;
-      opacity: 0;
-    }
-    .loginpress_promo_thumbnail a:hover{
-      border-color: #ccc;
-    }
-    .loginpress_promo_thumbnail a:hover .customizer-promo-text{
-      opacity: 1;
-    }
-    .loginpress_promo_thumbnail a:hover .customizer-promo-overlay{
-      opacity: 1;
-      visibility: visible;
-      -webkit-transform: scale(1);
-      -moz-transform: scale(1);
-      -ms-transform: scale(1);
-      transform: scale(1);
-    }
-  </style>
-  <?php
+
+if ( !function_exists( 'loginpress_promo_control_css' ) ) {
+	function loginpress_promo_control_css() {
+	?>
+	<style>
+	.loginpress_promo_thumbnail a{
+		display: inline-block;
+		position: relative;
+		border:5px solid transparent;
+	}
+	.loginpress_promo_thumbnail a .customizer-promo-overlay{
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(204, 204, 204, 0.8);
+		content: '';
+		-webkit-transition: all 0.2s ease-in-out;
+		-moz-transition: all 0.2s ease-in-out;
+		-ms-transition: all 0.2s ease-in-out;
+		transition: all 0.2s ease-in-out;
+		opacity: 0;
+		visibility: hidden;
+		-webkit-transform: scale(.5);
+		-moz-transform: scale(.5);
+		-ms-transform: scale(.5);
+		transform: scale(.5);
+		}
+		.customizer-promo-text{
+		line-height:1.2;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		-webkit-transform:translate(-50%, -50%);
+		transform:translate(-50%, -50%);
+		width: 100%;
+		font-size: 25px;
+		color: #000;
+		z-index: 100;
+		text-align: center;
+		opacity: 0;
+		}
+		.loginpress_promo_thumbnail a:hover{
+		border-color: #ccc;
+		}
+		.loginpress_promo_thumbnail a:hover .customizer-promo-text{
+		opacity: 1;
+		}
+		.loginpress_promo_thumbnail a:hover .customizer-promo-overlay{
+		opacity: 1;
+		visibility: visible;
+		-webkit-transform: scale(1);
+		-moz-transform: scale(1);
+		-ms-transform: scale(1);
+		transform: scale(1);
+		}
+	</style>
+	<?php
+	}
 }
 add_action( 'customize_controls_print_styles', 'loginpress_promo_control_css' );
 ?>

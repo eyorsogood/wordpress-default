@@ -37,7 +37,10 @@ $tablesToDrop = [
 	'aioseo_redirects',
 	'aioseo_redirects_404_logs',
 	'aioseo_redirects_hits',
-	'aioseo_redirects_logs'
+	'aioseo_redirects_logs',
+	'aioseo_cache',
+	'aioseo_links',
+	'aioseo_links_suggestions'
 ];
 
 // Delete all our custom tables.

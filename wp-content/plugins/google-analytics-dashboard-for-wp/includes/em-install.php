@@ -196,10 +196,11 @@ class ExactMetrics_Install {
 		$data = array(
 			'installed_version' => EXACTMETRICS_VERSION,
 			'installed_date'    => time(),
-			'installed_pro'     => exactmetrics_is_pro_version(),
+			'installed_pro'     => exactmetrics_is_pro_version() ? time() : false,
+			'installed_lite'     => exactmetrics_is_pro_version() ? false : time(),
 		);
 
-		update_option( 'exactmetrics_over_time', $data );
+		update_option( 'exactmetrics_over_time', $data, false );
 
 		// Let addons + MI Pro/Lite hook in here. @todo: doc as nonpublic
 		do_action( 'exactmetrics_after_new_install_routine', EXACTMETRICS_VERSION );
@@ -403,9 +404,6 @@ class ExactMetrics_Install {
 		// Transfer Demographics
 		$settings['demographics'] = ! empty( $em_legacy_options['ga_dash_remarketing'] ) ? 1 : 0;
 
-		// Enable compat mode
-		$settings['gatracker_compatibility_mode'] = true;
-
 
 		$settings['gadwp_migrated'] = time();
 
@@ -456,7 +454,6 @@ class ExactMetrics_Install {
 			'tag_links_in_rss'                         => true,
 			'allow_anchor'                             => 0,
 			'add_allow_linker'                         => 0,
-			'custom_code'                              => '',
 			'save_settings'                            => array( 'administrator' ),
 			'view_reports'                             => array( 'administrator', 'editor' ),
 			'events_mode'                              => 'js',

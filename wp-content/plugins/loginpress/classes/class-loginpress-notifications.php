@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 * Handling all the Notification calls in LoginPress.
 *
 * @since  1.1.14
-* @version 1.1.15
+* @version 1.5.10
 * @class LoginPress_Notification
 */
 
@@ -28,7 +28,7 @@ if ( ! class_exists( 'LoginPress_Notification' ) ) :
     /**
     * Hook into actions and filters
     * @since  1.0.0
-    * @version 1.2.1
+    * @version 1.5.10
     */
     private function _hooks() {
       add_action( 'admin_init',             array( $this, 'loginpress_review_notice' ) );
@@ -61,10 +61,10 @@ if ( ! class_exists( 'LoginPress_Notification' ) ) :
   		endif;
 
   		// 1296000 = 15 Days in seconds.
-  		if ( time() - $activation_time > 1296000 ) :
+  		if ( ( time() - $activation_time > 1296000 ) && current_user_can( 'manage_options' ) ) :
 
-        wp_enqueue_style( 'loginpress_review_stlye', plugins_url( '../css/style-review.css', __FILE__ ), array(), LOGINPRESS_VERSION );
-  			add_action( 'admin_notices' , array( $this, 'loginpress_review_notice_message' ) );
+			wp_enqueue_style( 'loginpress_review_stlye', plugins_url( '../css/style-review.css', __FILE__ ), array(), LOGINPRESS_VERSION );
+			add_action( 'admin_notices' , array( $this, 'loginpress_review_notice_message' ) );
   		endif;
 
   	}
@@ -157,7 +157,7 @@ if ( ! class_exists( 'LoginPress_Notification' ) ) :
         <a href="<?php echo $dismiss_url ?>" class="notice-dismiss" ><span class="screen-reader-text"></span></a>
         <a href="https://wpbrigade.com/wordpress/plugins/loginpress/addons/?utm_source=loginpress-lite&utm_medium=addons-notice-banner&utm_campaign=pro-upgrade" class="loginpress-addon-notice-link" target="_blank">
         <div class="loginpress-alert-thumbnail">
-          <img src="<?php echo plugins_url( '../img/notification_logo.svg', __FILE__ ) ?>" alt="">
+          <img src="<?php echo plugins_url( '../img/loginpress_logo.svg', __FILE__ ) ?>" alt="">
         </div>
         <div class="loginpress-alert-text">
           <h3><?php _e( 'Introducing LoginPress Addons!', 'loginpress' ) ?></h3>
@@ -223,26 +223,20 @@ if ( ! class_exists( 'LoginPress_Notification' ) ) :
      * Ask users to review our plugin on wordpress.org
      *
      * @since 1.1.3
-     * @version 1.2.1
+     * @version 1.5.10
      * @return boolean false
      */
     public function loginpress_friday_sale_notice() {
 
-      $this->loginpress_deals_notice_dismis( 'loginpress-friday-sale-nonce', 'loginpress_friday_sale_dismiss' );
+      $this->loginpress_deals_notice_dismis( 'loginpress-friday-sale-nonce', 'loginpress_friday_21_sale_dismiss' );
 
       $activation_time 	= get_site_option( 'loginpress_friday_sale_active_time' );
-      $addon_dismissal	= get_site_option( 'loginpress_friday_sale_dismiss' );
+      $addon_dismissal	= get_site_option( 'loginpress_friday_21_sale_dismiss' );
 
       if ( 'yes' == $addon_dismissal ) return;
 
-      if ( ! $activation_time ) :
-
-        $activation_time = time();
-        add_site_option( 'loginpress_friday_sale_active_time', $activation_time );
-      endif;
-
       if ( ! has_action( 'loginpress_pro_add_template' ) ) :
-        // add_action( 'admin_notices' , array( $this, 'loginpress_friday_sale_notice_text' ) );
+        // add_action( 'admin_notices' , array( $this, 'loginpress_friday_sale_notice_text' ) ); // turn off on update v1.5.10
         // add_action( 'admin_notices', array( $this, 'new_loginpress_friday_sale_notice_text' ) ); // turn off on update 1.1.19
       endif;
     }
@@ -281,22 +275,22 @@ if ( ! class_exists( 'LoginPress_Notification' ) ) :
     public function loginpress_friday_sale_notice_text() {
 
       $scheme      = ( wp_parse_url( $_SERVER['REQUEST_URI'], PHP_URL_QUERY ) ) ? '&' : '?';
-      $url         = $_SERVER['REQUEST_URI'] . $scheme . 'loginpress_friday_sale_dismiss=yes';
+      $url         = $_SERVER['REQUEST_URI'] . $scheme . 'loginpress_friday_21_sale_dismiss=yes';
       $dismiss_url = wp_nonce_url( $url, 'loginpress-friday-sale-nonce' );
 
       wp_enqueue_style( 'loginpress_review_stlye', plugins_url( '../css/style-review.css', __FILE__ ), array(), LOGINPRESS_VERSION );
       ?>
       <div class="loginpress-alert-notice black_friday_notic">
         <a href="<?php echo $dismiss_url ?>" class="notice-dismiss" ><span class="screen-reader-text"></span></a>
-        <a href="https://wpbrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=freepluginbanner&utm_campaign=early20" target="_blank">
+        <a href="https://loginpress.pro/black-friday/?utm_source=loginpress-lite&utm_medium=freepluginbanner&utm_campaign=blackfriday2021" target="_blank">
         <div class="loginpress-alert-thumbnail">
-          <img src="<?php echo plugins_url( '../img/notification_logo.svg', __FILE__ ) ?>" alt="">
+          <img src="<?php echo plugins_url( '../img/loginpress_logo.svg', __FILE__ ) ?>" alt="">
         </div>
         <div class="loginpress-alert-text black_friday">
-          <img src="<?php echo plugins_url( '../img/black-friday.png', __FILE__ ) ?>" alt="">
+          <img src="<?php echo plugins_url( '../img/black-friday.png', __FILE__ ) ?>" alt="Black Friday 2021">
 
          <div class="loginpress-alert-button-section black_friday_sale_btn">
-          <a href="https://wpbrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=freepluginbanner-button&utm_campaign=early20" class="loginpress-alert-button" target="_blank"><?php _e( 'FLAT 51% OFF', 'loginpress' ) ?></a>
+          <a href="https://loginpress.pro/black-friday/?utm_source=loginpress-lite&utm_medium=freepluginbanner-button&utm_campaign=blackfriday2021" class="loginpress-alert-button" target="_blank"><?php _e( 'FLAT 50% OFF', 'loginpress' ) ?></a>
         </div>
         </div>
         </a>
@@ -313,7 +307,7 @@ if ( ! class_exists( 'LoginPress_Notification' ) ) :
     function new_loginpress_friday_sale_notice_text() {
 
       $scheme      = ( wp_parse_url( $_SERVER['REQUEST_URI'], PHP_URL_QUERY ) ) ? '&' : '?';
-      $url         = $_SERVER['REQUEST_URI'] . $scheme . 'loginpress_friday_sale_dismiss=yes';
+      $url         = $_SERVER['REQUEST_URI'] . $scheme . 'loginpress_friday_21_sale_dismiss=yes';
       $dismiss_url = wp_nonce_url( $url, 'loginpress-friday-sale-nonce' );
 
 			if ( current_user_can( 'install_plugins' ) && ! has_action( 'loginpress_pro_add_template' ) ) {

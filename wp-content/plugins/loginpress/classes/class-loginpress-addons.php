@@ -4,7 +4,7 @@
  *
  * @package LoginPress
  * @since 1.0.19
- * @since 1.1.24
+ * @version 1.5.8
  *
  */
 
@@ -29,48 +29,52 @@ if ( ! class_exists( 'LoginPress_Addons' ) ) :
 			$this->plugins_list = get_plugins();
 		}
 
+		/**
+		 * The Addons listings
+		 */
 		function _get_addons() {
 
 			// For Testing
-			//delete_transient( 'loginpress_api_addons' );
+			// delete_transient( 'loginpress_api_addons' );
+			// Get the transient where the addons are stored on-site.
+			$data = get_transient( 'loginpress_api_addons' );
 
-		    // Get the transient where the addons are stored on-site.
-		    $data = get_transient( 'loginpress_api_addons' );
+			// If we already have data, return it.
+			if ( ! empty( $data ) && is_array( $data ) ) {
+				return $data;
+			}
 
-		    // If we already have data, return it.
-		    if ( ! empty( $data ) )
-		        return $data;
+			// Make sure this matches the exact URL from your site.
+			$url = 'https://wpbrigade.com/wp-json/wpbrigade/v1/plugins?addons=loginpress-pro-add-ons';
 
-		    // Make sure this matches the exact URL from your site.
-		    //$url = 'http://localhost/wpbrigade.local/wp-json/wpbrigade/v1/plugins?addons=loginpress-pro-add-ons';
-		    $url = 'https://wpbrigade.com/wp-json/wpbrigade/v1/plugins?addons=loginpress-pro-add-ons';
+			// Get data from the remote URL.
+			$response = wp_remote_get( $url, array( 'timeout' => 20 ) );
 
-		    // Get data from the remote URL.
-		    $response = wp_remote_get( $url, array( 'timeout' => 20 ) );
+			if ( ! is_wp_error( $response ) ) {
 
-		    if ( ! is_wp_error( $response ) ) {
+				// Decode the data that we got.
+				$data = json_decode( wp_remote_retrieve_body( $response ) );
 
-		        // Decode the data that we got.
-		        $data = json_decode( wp_remote_retrieve_body( $response ) );
+				if ( ! empty( $data ) && is_array( $data ) ) {
 
-		        if ( ! empty( $data ) && is_array( $data ) ) {
+					// Store the data for a week.
+					set_transient( 'loginpress_api_addons', $data, 7 * DAY_IN_SECONDS );
 
-		            // Store the data for a week.
-		            set_transient( 'loginpress_api_addons', $data, 7 * DAY_IN_SECONDS );
+					return $data;
+				} else {
+					return array( 'error_message' => __( 'Something went wrong in loading the Add-Ons, Try again later!', 'loginpress' ) );
+				}
+			}
 
-		            return $data;
-		        }
-		    }
-
-		    return false;
+			return array( 'error_message' => __( 'Something went wrong in loading the Add-Ons, Try again later!', 'loginpress' ) );
 		}
 
 		function _addon_card( $addon ) { ?>
 
 			<div class="loginpress-extension<?php if( in_array('loginpress-free-add-ons', $this->convert_to_array($addon->categories) ) ){ echo ' loginpress-free-add-ons'; } ?>">
-				<a target="_blank" href="https://wpbrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=addons-coming-soon&utm_campaign=pro-upgrade" class="logoinpress_addons_links">
+				<a target="_blank" href="https://wpbrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=addons-coming-soon&utm_campaign=pro-upgrade" class="loginpress_addons_links">
 
-				  <h3><img src=<?php if ( $addon->media->icon->url ) echo $addon->media->icon->url; else echo plugins_url( '../img/thumbnail/gray-loginpress.png', __FILE__ );?> class="logoinpress_addons_thumbnails"/><span><?php echo esc_html( $addon->title ); ?></span></h3>
+				  <h3><img src=<?php if ( $addon->media->icon->url ) echo $addon->media->icon->url; else echo plugins_url( '../img/thumbnail/gray-loginpress.png', __FILE__ );?> class="loginpress_addons_thumbnails"/><span><?php echo esc_html( $addon->title ); ?></span></h3>
 				</a>
 
 				<?php echo wpautop( wp_strip_all_tags( $addon->excerpt ) ); ?>
@@ -80,12 +84,14 @@ if ( ! class_exists( 'LoginPress_Addons' ) ) :
 					$this->sa_check_plugin_status( $addon->id, $addon->slug, $this->convert_to_array( $addon->categories ) );
 					?>
 				</p>
-				<?php echo $this->_ajax_responce( $addon->title, $addon->slug ); ?>
+				<?php 
+				echo $this->_ajax_responce( $addon->title, $addon->slug ); ?>
 				<!-- <input id="<?php // echo $addon->slug ?>" type="checkbox" class="loginpress-radio loginpress-radio-ios" value="<?php // echo $addon->slug ?>"> -->
 				<!-- <label for="<?php // echo $addon->slug ?>" class="loginpress-radio-btn"></label> -->
 			</div>
 
 		<?php }
+
 
 		function _ajax_responce( $text, $slug ){
 			$html = '<div id="loginpressEnableAddon' . $slug . '" class="loginpress-addon-enable" style="display:none;">
@@ -133,9 +139,9 @@ if ( ! class_exists( 'LoginPress_Addons' ) ) :
 		function _addon_card_free( $addon ) { ?>
 
 			<div class="loginpress-extension<?php if( in_array('loginpress-free-add-ons', $this->convert_to_array($addon->categories) ) ){ echo ' loginpress-free-add-ons'; } ?>">
-				<a target="_blank" href="https://wpbrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=addons-coming-soon&utm_campaign=pro-upgrade" class="logoinpress_addons_links">
+				<a target="_blank" href="https://wpbrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=addons-coming-soon&utm_campaign=pro-upgrade" class="loginpress_addons_links">
 
-				  <h3><img src=<?php if ( $addon->media->icon->url ) echo $addon->media->icon->url; else echo plugins_url( '../img/thumbnail/gray-loginpress.png', __FILE__ );?> class="logoinpress_addons_thumbnails"/><span><?php echo esc_html( $addon->title ); ?></span></h3>
+				  <h3><img src=<?php if ( $addon->media->icon->url ) echo $addon->media->icon->url; else echo plugins_url( '../img/thumbnail/gray-loginpress.png', __FILE__ );?> class="loginpress_addons_thumbnails"/><span><?php echo esc_html( $addon->title ); ?></span></h3>
 				</a>
 
 				<?php echo wpautop( wp_strip_all_tags( $addon->excerpt ) );
@@ -229,6 +235,10 @@ if ( ! class_exists( 'LoginPress_Addons' ) ) :
 			else if( LoginPress_Pro::get_license_id() == 3 and in_array('loginpress-pro-agency', $categories) ){
 				return true;
 			}else if( LoginPress_Pro::get_license_id() == 4 and in_array('loginpress-pro-agency', $categories) ){
+				return true;
+			}else if( LoginPress_Pro::get_license_id() == 5){
+				return true;
+			}else if( LoginPress_Pro::get_license_id() == 6){
 				return true;
 			}else if( LoginPress_Pro::get_license_id() == 7 and in_array('loginpress-pro-agency', $categories) ){
 				return true;
@@ -378,8 +388,16 @@ if ( ! class_exists( 'LoginPress_Addons' ) ) :
 			            }
 
 			    	?> <div class="addon_cards_wraper"> <?php
-					foreach( $this->_get_addons() as $addon ) {
-
+					foreach( $this->_get_addons() as $key => $addon ) {
+						if ( 'error_message' === $key) {
+							include_once( LOGINPRESS_DIR_PATH . 'include/loginpress-static-addons.php' );
+							if ( class_exists('LoginPress_Pro') && LoginPress_Pro::is_activated() && LoginPress_Pro::get_license_type() ) {
+								LoginPress_Static_Addons::pro_static_addon_cards();
+							} else {
+								LoginPress_Static_Addons::free_static_addon_cards();
+							}
+							return;
+						}
 						$this->_addon_card( $addon );
 					}
 					?> </div> <?php
@@ -390,8 +408,16 @@ if ( ! class_exists( 'LoginPress_Addons' ) ) :
 
 					// Show full list of add-ons
 					?> <div class="addon_cards_wraper"> <?php
-					foreach( $this->_get_addons() as $addon ) {
-
+					foreach( $this->_get_addons() as $key => $addon ) {
+						if ( 'error_message' === $key) {
+							include_once( LOGINPRESS_DIR_PATH . 'include/loginpress-static-addons.php' );
+							if ( class_exists( 'LoginPress_Pro' ) && LoginPress_Pro::is_activated() && LoginPress_Pro::get_license_type() ) {
+								LoginPress_Static_Addons::pro_static_addon_cards();
+							} else {
+								LoginPress_Static_Addons::free_static_addon_cards();
+							}
+							return;
+						}
 						$this->_addon_card_free( $addon );
 					}
 					?> </div> <?php
@@ -403,8 +429,16 @@ if ( ! class_exists( 'LoginPress_Addons' ) ) :
 
 				// Show full list of add-ons
 				?> <div class="addon_cards_wraper"> <?php
-				foreach( $this->_get_addons() as $addon ) {
-
+				foreach( $this->_get_addons() as $key => $addon ) {
+					if ( 'error_message' === $key) {
+						include_once( LOGINPRESS_DIR_PATH . 'include/loginpress-static-addons.php' );
+						if ( class_exists('LoginPress_Pro') && LoginPress_Pro::is_activated() && LoginPress_Pro::get_license_type() ) {
+							LoginPress_Static_Addons::pro_static_addon_cards();
+						} else {
+							LoginPress_Static_Addons::free_static_addon_cards();
+						}
+						return;
+					}
 					$this->_addon_card_free( $addon );
 				}
 				?> </div> <?php
@@ -516,7 +550,7 @@ if ( ! class_exists( 'LoginPress_Addons' ) ) :
 				outline: none;
 				box-shadow: none;
 			  }
-			  .logoinpress_addons_thumbnails{
+			  .loginpress_addons_thumbnails{
 
 				max-width: 100px;
 				position: absolute;
@@ -526,7 +560,7 @@ if ( ! class_exists( 'LoginPress_Addons' ) ) :
 				height: auto;
 				width: auto;
 			  }
-			  .loginpress-extension .logoinpress_addons_links{
+			  .loginpress-extension .loginpress_addons_links{
 				position: relative;
 				background-color: #d3f3ff;
 			  }
@@ -554,7 +588,7 @@ if ( ! class_exists( 'LoginPress_Addons' ) ) :
 			    height: 100px;
 			     color: #000000;
 			}
-				a.logoinpress_addons_links {
+				a.loginpress_addons_links {
 				    display: inline-block;
 				    width: 100%;
 				    line-height: 90px;
@@ -562,7 +596,7 @@ if ( ! class_exists( 'LoginPress_Addons' ) ) :
 				    height: auto;
 						text-decoration: none;
 				}
-				.logoinpress_addons_thumbnails {
+				.loginpress_addons_thumbnails {
 				    max-width: 100px;
 				    position: absolute;
 				    top: 5px;

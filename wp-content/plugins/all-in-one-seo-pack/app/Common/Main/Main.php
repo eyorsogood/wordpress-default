@@ -6,6 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use AIOSEO\Plugin\Common\Models;
+
 /**
  * Abstract class that Pro and Lite both extend.
  *
@@ -33,34 +35,24 @@ class Main {
 	 * @return void
 	 */
 	public function enqueueAssets() {
-		// Scripts.
-		aioseo()->helpers->enqueueScript(
-			'aioseo-app',
-			'js/app.js'
-		);
-		aioseo()->helpers->enqueueScript(
-			'aioseo-vendors',
-			'js/chunk-vendors.js'
-		);
-		aioseo()->helpers->enqueueScript(
-			'aioseo-common',
-			'js/chunk-common.js'
-		);
+		$this->enqueueTranslations();
 
-		// Styles.
-		$rtl = is_rtl() ? '.rtl' : '';
-		aioseo()->helpers->enqueueStyle(
-			'aioseo-common',
-			"css/chunk-common$rtl.css"
-		);
-		aioseo()->helpers->enqueueStyle(
-			'aioseo-vendors',
-			"css/chunk-vendors$rtl.css"
-		);
-		aioseo()->helpers->enqueueStyle(
-			'aioseo-app-style',
-			"css/app$rtl.css"
-		);
+		aioseo()->core->assets->load( 'src/vue/standalone/notifications/main.js', [], [
+			'newNotifications' => count( Models\Notification::getNewNotifications() )
+		], 'aioseoNotifications' );
+	}
+
+	/**
+	 * Enqueues the translations seperately so it can be called from anywhere.
+	 *
+	 * @since 4.1.9
+	 *
+	 * @return void
+	 */
+	public function enqueueTranslations() {
+		aioseo()->core->assets->load( 'src/vue/standalone/app/main.js', [], [
+			'translations' => aioseo()->helpers->getJedLocaleData( 'all-in-one-seo-pack' )
+		], 'aioseoTranslations' );
 	}
 
 	/**
@@ -71,15 +63,15 @@ class Main {
 	 * @return void
 	 */
 	public function enqueueFrontEndAssets() {
-		if ( ! is_user_logged_in() || ! current_user_can( 'aioseo_manage_seo' ) ) {
+		$canManageSeo = apply_filters( 'aioseo_manage_seo', 'aioseo_manage_seo' );
+		if (
+			! is_admin_bar_showing() ||
+			! ( current_user_can( $canManageSeo ) || aioseo()->access->canManage() )
+		) {
 			return;
 		}
 
-		// Styles.
-		aioseo()->helpers->enqueueStyle(
-			'aioseo-admin-bar',
-			'css/aioseo-admin-bar.css'
-		);
+		aioseo()->core->assets->enqueueCss( 'admin-bar.css', [], 'src/vue/assets/scss/app/admin-bar.scss' );
 	}
 
 	/**

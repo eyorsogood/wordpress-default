@@ -8,10 +8,10 @@ Author: Jeff Starr
 Author URI: https://plugin-planet.com/
 Contributors: specialk, aldolat, WpBlogHost, jameswilkes, juliobox, lernerconsult
 Donate link: https://monzillamedia.com/donate.html
-Requires at least: 4.1
-Tested up to: 5.7
-Stable tag: 20210211
-Version: 20210211
+Requires at least: 4.6
+Tested up to: 5.9
+Stable tag: 20220122
+Version:    20220122
 Requires PHP: 5.6.20
 Text Domain: block-bad-queries
 Domain Path: /languages
@@ -45,7 +45,8 @@ BBQ protects your site against many threats:
 * XSS, XXE, and related attacks
 * Protects against bad bots
 * Protects against bad referrers
-* Plus many other bad requests
+* Protects against bad POST content
+* Protects against many other bad requests
 
 > Works great with [Blackhole for Bad Bots](https://wordpress.org/plugins/blackhole-bad-bots/)
 
@@ -69,6 +70,7 @@ BBQ provides all the best firewall features:
 * Extremely low rate of false positives
 * Compatible with other security plugins
 * Regularly updated and "future proof"
+* Firewall &lt; 10 kilobytes in size
 * Lightweight, fast and flexible
 
 > For advanced protection and features, check out [BBQ Pro &raquo;](https://plugin-planet.com/bbq-pro/)
@@ -143,9 +145,15 @@ To test that the plugin is working, you can request any of the blocked patterns.
 Replace `example.com` with your site's actual domain. If BBQ is active, the request for that URL will be blocked (with a "403 Forbidden" status). This means the plugin is working properly. You can test other patterns as well. To view all the patterns blocked by BBQ, look at the function `bbq_core()` located in `block-bad-queries.php`.
 
 
-**What other security plugins do you recommend?**
+**Do you offer any other security plugins?**
 
-I recently recorded a video tutorial series for Lynda.com on [how to secure WordPress sites](https://m0n.co/securewp). That's a good place to learn more about the best techniques and WP plugins for protecting your site against threats.
+Yes, three of them:
+
+* [BBQ Firewall](https://wordpress.org/plugins/block-bad-queries/) for super-fast firewall security
+* [Blackhole for Bad Bots](https://wordpress.org/plugins/blackhole-bad-bots/) to protect your site against bad bots
+* [Banhammer](https://wordpress.org/plugins/banhammer/) to monitor and ban any user or IP address
+
+Pro versions with more features available at [Plugin Planet](https://plugin-planet.com/).
 
 
 **Do I need to do anything else for BBQ to work?**
@@ -180,7 +188,7 @@ Yes, BBQ scans any arrays that are included in the URI request. If any matching 
 
 **My PHP scanner/checker plugin says there is an error?**
 
-For example, if your PHP/plugin scanner reports something like, "found `0x3c62723e` which is bad." Normally you would not want to find such bad strings of code, but there is an exception for security plugins. Think about it: in order to block some nasty string, BBQ must _know_ about it. So each bad string that is blocked by BBQ is included in the plugin "blacklist". That means, when some PHP scanner looks at BBQ and finds some known bad strings, it just means that the scanner has discovered BBQ's list of blocked terms. In other words, BBQ contains static strings of non-functional text, in order to match and block malicious requests to your site. I hope this makes sense, feel free to [contact me](https://perishablepress.com/contact/) if I may provide any further infos.
+For example, if your PHP/plugin scanner reports something like, "found `0x3c62723e` which is bad." Normally you would not want to find such bad strings of code, but there is an exception for security plugins. Think about it: in order to block some nasty string, BBQ must _know_ about it. So each bad string that is blocked by BBQ is included in the plugin "blacklist". That means, when some PHP scanner looks at BBQ and finds some known bad strings, it just means that the scanner has discovered BBQ's list of blocked terms. In other words, BBQ contains static strings of non-functional text, in order to match and block malicious requests to your site. I hope this makes sense, feel free to [contact me](https://plugin-planet.com/support/#contact) if I may provide any further infos.
 
 
 **Do I need WordPress to run BBQ?**
@@ -201,11 +209,6 @@ __Full question:__ "Except most of the rules overlapping, is it counter producti
 __Answer:__ It's fine to run both BBQ and 6G/7G Firewall at the same time. Both firewalls are super fast, so they won't slow things down. In other words the two firewalls play well together. The only downside is that some of the rules will be redundant, but there should be no negative impact on performance. The upside is that you get extra protection when using both, as there are variations in the firewall rules and patterns, etc.
 
 
-**Do you offer any other security plugins?**
-
-Yes, check out [Blackhole for Bad Bots](https://wordpress.org/plugins/blackhole-bad-bots/) to protect your site against bad bots. I also have a [video course on WordPress security](https://m0n.co/securewp), for more plugin recommendations and lots of tips and tricks.
-
-
 **My PHP checker found something?**
 
 If you are using some PHP checker that's reporting an error or bad string in BBQ, it's a false positive and safe to ignore. Why? Because the PHP checker is finding the static strings/patterns that BBQ uses to identify and block bad requests. In other words, your PHP checker is finding a static string thinking it is live code. It's not. If possible, please take a moment to report this to the developers of your PHP checker. They should be happy to improve the accuracy and quality of their plugin. [More info](https://wordpress.org/support/topic/on-php-checker-results/).
@@ -218,7 +221,7 @@ BBQ can be configured to log the matching pattern for any blocked request. By de
 
 **Got a question?**
 
-Send any questions or feedback via my [contact form](https://perishablepress.com/contact/).
+Send any questions or feedback via my [contact form](https://plugin-planet.com/support/#contact).
 
 
 
@@ -230,6 +233,7 @@ I develop and maintain this free plugin with love for the WordPress community. T
 * [Digging into WordPress](https://digwp.com/)
 * [.htaccess made easy](https://htaccessbook.com/)
 * [WordPress Themes In Depth](https://wp-tao.com/wordpress-themes-book/)
+* [Wizard's SQL Recipes for WordPress](https://books.perishablepress.com/downloads/wizards-collection-sql-recipes-wordpress/)
 
 And/or purchase one of my premium WordPress plugins:
 
@@ -247,6 +251,30 @@ Links, tweets and likes also appreciated. Thank you! :)
 
 If you like BBQ, please take a moment to [give a 5-star rating](https://wordpress.org/support/plugin/block-bad-queries/reviews/?rate=5#new-post). It helps to keep development and support going strong. Thank you!
 
+
+**2022/01/22**
+
+* Disables POST data scanning by default
+* Tests on WordPress 5.9
+
+**2022/01/18**
+
+* Refactors for improved performance
+* Improves checking of POST requests
+* Adds filter hook `post_items`
+* Adds filter hook `bbq_post_scanning`
+* Adds `/.env` to Request URI patterns
+* Adds `c99.php` to Request URI patterns
+* Updates [blacklist](https://perishablepress.com/bbq-whitelist-blacklist/) and [customize](https://perishablepress.com/customize-bbq-firewall/) addons
+* Improves loading of translations
+* Updates some links to external resources
+* Changes minimum required WP version to 4.6
+* Tests on WordPress 5.9
+
+**2021/07/19**
+
+* Removes `ambien` from referrer patterns
+* Tests on WordPress 5.8
 
 **2021/02/11**
 

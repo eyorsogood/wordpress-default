@@ -1,3 +1,13 @@
+<?php
+
+/**
+* Structure for Optin Form.
+*
+* @since  1.0.9
+* @version 1.5.12
+* @access public
+*/
+?>
 <style media="screen">
 #wpwrap {
   background-color: #fdfdfd
@@ -290,7 +300,7 @@ $website = get_site_url();
 $default_login_press_redirect = 'loginpress-settings';
 
 if ( isset( $_GET['redirect-page'] ) ) {
-  $default_login_press_redirect = sanitize_text_field( wp_unslash( $_GET['redirect-page'] ) );
+  $default_login_press_redirect = esc_attr( sanitize_text_field( wp_unslash( $_GET['redirect-page'] ) ) );
 }
 
 echo '<form method="post" action="' . admin_url( 'admin.php?page=' . $default_login_press_redirect ) . '">';

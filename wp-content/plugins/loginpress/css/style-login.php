@@ -3,7 +3,7 @@
  * Get option and check the key exists in it.
  *
  * @since 1.0.0
- * @version 1.5.2
+ * @version 1.5.8
  * * * * * * * * * * * * * * * */
 
 
@@ -231,6 +231,7 @@ $loginpress_bg_video_position  		= loginpress_get_option_key( 'video_obj_positio
 $loginpress_bg_video_muted      	= loginpress_bg_option( 'background_video_muted', $loginpress_array );
 $loginpress_theme_tem           	= get_option( 'customize_presets_settings', 'default1' );
 $loginpress_video_voice 			= ( 1 == $loginpress_bg_video_muted ) ? 'muted' : '';
+$login_copy_right_display 			= loginpress_get_option_key( 'login_copy_right_display', $loginpress_array );
 
 /**
  * loginpress_box_shadow [if user pass 0 then we're not going to set the value of box-shedow because it effects the pro templates.]
@@ -258,7 +259,11 @@ function loginpress_box_shadow( $shadow, $opacity, $default_shadow = 0, $inset =
 *{
 	box-sizing: border-box;
 }
-
+<?php if ( isset( $login_copy_right_display )  &&  '' === $login_copy_right_display ) { ?>
+.footer-cont{ 
+	height: 0 !important;
+}
+<?php } ?>
 
 .login form input[type=checkbox]:focus{
 	box-shadow: none;
@@ -272,6 +277,7 @@ function loginpress_box_shadow( $shadow, $opacity, $default_shadow = 0, $inset =
 	margin: 0;
 }
 #login::after{
+	<?php $loginpress_background_img = apply_filters( 'loginpress_login_after_background_image', $loginpress_background_img ); ?>
   <?php if ( ( $loginpress_theme_tem == 'default6' || $loginpress_theme_tem == 'default10' ) && ! empty( $loginpress_background_img ) && $loginpress_display_bg ) : ?>
 	background-image: url(<?php echo $loginpress_background_img; ?>);
 
@@ -295,6 +301,7 @@ function loginpress_box_shadow( $shadow, $opacity, $default_shadow = 0, $inset =
 }
 
 #login{
+	<?php $loginpress_background_img = apply_filters( 'loginpress_login_background_image', $loginpress_background_img ); ?>
   <?php if ( $loginpress_theme_tem == 'default17' && ! empty( $loginpress_background_img ) && $loginpress_display_bg ) : ?>
 	background-image: url(<?php echo $loginpress_background_img; ?>);
   <?php elseif ( $loginpress_theme_tem == 'default17' &&  isset( $loginpress_display_bg ) && ! $loginpress_display_bg ) : ?>
@@ -402,6 +409,7 @@ body.login #loginpress_video-background{
 	<?php endif; ?>
 }
 body.login:after{
+	<?php $loginpress_background_img = apply_filters( 'loginpress_body_after_background_image', $loginpress_background_img ); ?>
   <?php if ( $loginpress_theme_tem == 'default8' && ! empty( $loginpress_background_img ) && $loginpress_display_bg ) : ?>
 	background-image: url(<?php echo $loginpress_background_img; ?>);
   <?php elseif ( $loginpress_theme_tem == 'default8' &&  isset( $loginpress_display_bg ) && ! $loginpress_display_bg ) : ?>
@@ -424,7 +432,7 @@ body.login:after{
 	<?php endif; ?>
 }
 body.login {
-
+	<?php $loginpress_background_img = apply_filters( 'loginpress_body_background_image', $loginpress_background_img ); ?>
   <?php if ( in_array( $loginpress_theme_tem, array( 'default6', 'default8', 'default10', 'default17' ) ) && ! empty( $loginpress_background_img ) && $loginpress_display_bg ) : ?>
 	background-image: url();
   <?php elseif ( in_array( $loginpress_theme_tem, array( 'default6', 'default8', 'default10', 'default17' ) ) &&  isset( $loginpress_display_bg ) && ! $loginpress_display_bg ) : ?>
@@ -465,6 +473,7 @@ body.login {
 }
 
 .login h1 a {
+	<?php $loginpress_logo_img = apply_filters( 'loginpress_form_logo', $loginpress_logo_img ); ?>
 	<?php if ( ! empty( $loginpress_logo_img ) ) : ?>
 	background-image: url( <?php echo $loginpress_logo_img; ?> ) <?php echo loginpress_important(); ?>;
 	<?php endif; ?>
@@ -540,7 +549,7 @@ body.login {
 	<?php endif; ?>
 }
 #loginform {
-
+	<?php $loginpress_form_background_img = apply_filters( 'loginpress_login_form_background_image', $loginpress_form_background_img ); ?>
 	<?php if ( ! empty( $loginpress_form_display_bg ) && true == $loginpress_form_display_bg ) : ?>
 	background: transparent;
 	<?php endif; ?>
@@ -621,6 +630,7 @@ box-shadow: <?php echo loginpress_box_shadow( $loginpress_textfield_shadow, $log
 }
 
 #lostpasswordform {
+	<?php $loginpress_forget_form_bg_img = apply_filters( 'loginpress_lostpassword_form_background_image', $loginpress_forget_form_bg_img ); ?>
 	<?php if ( ! empty( $loginpress_forget_form_bg_img ) ) : ?>
 	background-image: url(<?php echo $loginpress_forget_form_bg_img; ?>);
 	<?php endif; ?>
@@ -1125,12 +1135,40 @@ body.login{
 	display: flex;
 	flex-direction: column;
 }
+body #login{
+	margin-bottom: 0;
+}
 body.login label[for="authcode"]:after{
 	display: none;
 }
 body.login label[for="authcode"]+input{
-padding-left: 15px;
+	padding-left: 15px;
 }
+<?php
+/**
+ * Load the following the Language Switcher with the language availability.
+ *
+ * @since 1.5.11
+ */
+if ( version_compare( $GLOBALS['wp_version'], '5.9', '>=' ) && ! empty( get_available_languages() ) ) : ?>
+[for="language-switcher-locales"]:after{
+	display: none;
+}
+.language-switcher{
+	clear: both;
+	padding-top: 1px;
+}
+.login #language-switcher input[type="submit"]{
+	margin: 0;
+	color: #2271b1;
+	border-color: #2271b1;
+	background: #f6f7f7;
+	vertical-align: top;
+	height: inherit;
+	width: inherit;
+	font-size: inherit;
+}
+<?php endif; ?>
 </style>
 
 <?php // $content = ob_get_clean(); ?>
@@ -1147,8 +1185,9 @@ padding-left: 15px;
 			var el = document.getElementById('login');
 			var elChild = document.createElement('div');
 			elChild.setAttribute( 'id', 'loginpress_video-background-wrapper' );
-			elChild.innerHTML = '<video autoplay loop id=\"loginpress_video-background\" <?php echo $loginpress_video_voice; ?> playsinline>\n" + "<source src=\"<?php echo $loginpress_bg_video; ?>\">\n" + "</video>';
-
+			// elChild.innerHTML = '<video autoplay loop id=\"loginpress_video-background\" <?php echo $loginpress_video_voice; ?> playsinline>\n" + "<source src=\"<?php echo $loginpress_bg_video; ?>\">\n" + "</video>';
+			
+			elChild.innerHTML = '<iframe id=\"loginpress_video-background\" src=\"<?php echo $loginpress_bg_video; ?>\">\n</iframe>';
 			// Prepend it
 			el.appendChild(elChild);
 		}, false );

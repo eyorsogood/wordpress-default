@@ -1,10 +1,10 @@
-=== Custom Login Page Customizer | LoginPress ===
+=== LoginPress | Custom Login Page Customizer ===
 Requires at least: 4.0
-Tested up to: 5.7
+Tested up to: 5.9
 Contributors: WPBrigade, hiddenpearls, AbdulWahab610
 Author URI: https://wpbrigade.com/?utm_source=loginpress-lite&utm_medium=author-url-link
 Tags: wp-login, login, login customizer, custom login, wordpress login,
-Stable tag: 1.5.4
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,39 +12,39 @@ LoginPress is a Custom Login Page Customizer plugin allows you to easily customi
 
 == Description ==
 
-<a href="https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=link&utm_campaign=pro-upgrade" rel="friend">LoginPress Plugin</a> by LoginPress holds a lot of customization fields to change the layout of the login page of WordPress. You can modify the look and feel of login page completely even the login error messages, forgot error messages, registration error messages, forget password hint message and many more.
+<a href="https://loginpress.pro?utm_source=loginpress-lite&utm_medium=link&utm_campaign=pro-upgrade" rel="friend">LoginPress Plugin</a> by LoginPress holds a lot of customization fields to change the layout of the login page of WordPress. You can modify the look and feel of login page completely even the login error messages, forgot error messages, registration error messages, forget password hint message and many more.
 LoginPress Plugin would give you and your users a feeling that it is a custom login page and a part of the site layout. You must checkout the Demo video of how you can customize WordPress login page.
 
 **Getting Started video for customizing login page using LoginPress**
 
 `[youtube https://www.youtube.com/watch?v=GMAwsHomJlE]`
 
-**[Why You Should Upgrade to PRO ??](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=link&utm_campaign=pro-upgrade)**
+**[Why You Should Upgrade to LoginPress Pro?](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=link&utm_campaign=pro-upgrade)**
 `[youtube https://www.youtube.com/watch?v=9snT9rWxO4g]`
 
-[Checkout the Pro version](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=link&utm_campaign=pro-upgrade)
+[Checkout the Pro version](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=link&utm_campaign=pro-upgrade)
 
 LoginPress plugin is built using The Customizer API which is getting popular for live-previewing any changes to the layouts of WordPress. So, with LoginPress you can preview your login page changes instantly. This login customizer plugin is easy enough & required no coding skills. Just have options for each element on the login form and make a new customized login page within seconds.
 
-[LoginPress Documentation](https://wpbrigade.com/docs-article/loginpress-documentation/)
+[LoginPress Documentation](https://loginpress.pro/documentation/?utm_source=loginpress-lite)
 
 > Multilingual & Translatable
 > WPML Compatible
 
-** LoginPress Addons **
+**LoginPress Addons:**
 
-We have a collection of great Free and Pro addons that makes LoginPress more powerfull. Upgrade to Pro package and enjoy the show.
+We have a collection of great Free and Pro addons that makes LoginPress more powerful. Upgrade to Pro package and enjoy the show.
 
 * [Login Logout Menu (FREE)](https://wordpress.org/plugins/login-logout-menu/)
-* Social Login
-* Login Widget
-* Login Redirects
-* Limit Login Attempts
-* Hide Login
-* Auto Login
+* [Social Login](https://loginpress.pro/add-ons/?utm_source=loginpress-lite)
+* [Login Widget](https://loginpress.pro/add-ons/?utm_source=loginpress-lite)
+* [Login Redirects](https://loginpress.pro/add-ons/?utm_source=loginpress-lite)
+* [Limit Login Attempts](https://loginpress.pro/add-ons/?utm_source=loginpress-lite)
+* [Hide Login](https://loginpress.pro/add-ons/?utm_source=loginpress-lite)
+* [Auto Login](https://loginpress.pro/add-ons/?utm_source=loginpress-lite)
 
 
-**Features:**
+**LoginPress Features:**
 
 * Logo: Can change the login logo {image, width, height, padding, URL and Title}.
 
@@ -124,13 +124,14 @@ If you like this plugin, then consider checking out our other amazing plugins:
 * <a href="https://wordpress.org/plugins/related-posts-thumbnails/" rel="friend" title="Related Posts">WordPress Related Posts</a> - Best Related Posts Plugin
 * <a href="https://simplesocialbuttons.com?utm_source=loginpress&amp;utm_medium=readme&amp;utm_campaign=pro-upgrade" rel="friend" title="Simple Social Buttons">Simple Social Buttons</a> - Simple Social Sharing WordPress Plugin
 * [Under Construction, Coming Soon & Maintenance Mode](https://wpbrigade.com/recommend/maintenance-mode?utm_source=loginpress&amp;utm_medium=readme&amp;utm_campaign=pro-upgrade) - Plugin for Under construction & Coming soon page
+* [Insert Scripts in Headers and Footers](https://wordpress.org/plugins/wp-headers-and-footers/)
 
 
 == Notes ==
 
-LoginPress is absolutely, positively the most <a href="https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=link&utm_campaign=pro-upgrade" rel="friend" title="Best Custom login form plugin">beginner friendly WordPress custom login form plugin</a> on the market. It is both easy and powerful.
+LoginPress is absolutely, positively the most <a href="https://loginpress.pro?utm_source=loginpress-lite&utm_medium=link&utm_campaign=pro-upgrade" rel="friend" title="Best Custom login form plugin">beginner friendly WordPress custom login form plugin</a> on the market. It is both easy and powerful.
 
-Also, I'm the founder of <a href="https://WPBrigade.com/" rel="friend">WPBrigade</a>, We do custom WordPress themes for clients and can transform any website in WordPress. It was a huge priority for me to make a WordPress custom login form plugin that beginners can use without any training.
+Also, I'm the founder of <a href="https://WPBrigade.com/?utm_source=loginpress-lite" rel="friend">WPBrigade</a>, We do custom WordPress themes for clients and can transform any website in WordPress. It was a huge priority for me to make a WordPress custom login form plugin that beginners can use without any training.
 
 I feel that we have done that here. I hope you enjoy using LoginPress.
 
@@ -151,7 +152,7 @@ In your WordPress Dashboard, navigate to LoginPress > Settings to get started.
 
 = Who should use LoginPress? =
 
-Every WordPress user should use LoginPress. It is easy to use and can tranform your boring wp-login.php login page into a beautiful customized login form page.
+Every WordPress user should use LoginPress. It is easy to use and can transform your boring wp-login.php login page into a beautiful customized login form page.
 
 = Do I need to have coding skills to use LoginPress? =
 
@@ -171,14 +172,14 @@ If you have a WordPress Website, and you want to add a cool looking login page. 
 
 = How to upgrade to LoginPress Pro? =
 
-Buy Pro version from <a target="_blank" rel="friend" href="https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=readme-faqs&utm_campaign=pro-upgrade">this link</a>. LoginPress Pro is a premium plugin which works if you have installed Free version already. So, first install our Free version and then install the Pro package.
+Buy Pro version from <a target="_blank" rel="friend" href="https://loginpress.pro?utm_source=loginpress-lite&utm_medium=readme-faqs&utm_campaign=pro-upgrade">this link</a>. LoginPress Pro is a premium plugin which works if you have installed Free version already. So, first install our Free version and then install the Pro package.
 
 LoginPress Pro version extends the Premium functionality to our Core Free version of LoginPress.
 
 = Step-by-step instructions on How to Upgrade from existing Free version to Pro =
 
 1. You have installed and setup Free version already.
-2. Buy Pro version from <a target="_blank" rel="friend" href="https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=readme-faqs&utm_campaign=pro-upgrade">this link</a>.
+2. Buy Pro version from <a target="_blank" rel="friend" href="https://loginpress.pro?utm_source=loginpress-lite&utm_medium=readme-faqs&utm_campaign=pro-upgrade">this link</a>.
 3. Upload the Pro version.
 4. Pro features will be enabled automatically.
 5. You don't need to setup Free version options again.
@@ -190,35 +191,84 @@ You can find it in the email Sales Receipt.
 
 = How to donate or contribute? =
 
-Please visit <a target="_blank" rel="friend" href="https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=readme-donate&utm_campaign=pro-upgrade">this link</a> for more info.
+Please visit <a target="_blank" rel="friend" href="https://loginpress.pro?utm_source=loginpress-lite&utm_medium=readme-donate&utm_campaign=pro-upgrade">this link</a> for more info.
 
 == Screenshots ==
 
 1. Custom Login page Example #1 with Default Background
-2. Custom Login page (Company theme) Example #2 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-3. Custom Login page (Company theme) Example #3 with Captcha [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-4. Custom Login page (Persona theme) Example #4 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-5. Custom Login page (Corporate theme) Example #5 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-6. Custom Login page (Corporate theme) Example #6 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-7. Custom Login page (Startup theme) Example #7 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-8. Custom Login page (Wedding theme) Example #8 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-9. Custom Login page (Wedding theme) Example #9 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-10. Custom Login page (Company theme) Example #10 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-11. Custom Login page (Company theme) Example #11 with Captcha [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-12. Custom Login page (Bikers theme) Example #12 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-13. Custom Login page (Fitness theme) Example #13 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-14. Custom Login page (Shopping theme) Example #14 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-15. Custom Login page (Writers theme) Example #15 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-16. Custom Login page (Writers theme) Example #16 with reCaptcha [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-17. Custom Login page (Persona theme) Example #17 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-18. Custom Login page (Persona theme) Example #18 with reCaptcha [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-19. Custom Login page (Geek theme) Example #19 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-20. Custom Login page (Geek theme) Example #20 with reCaptcha [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-21. Custom Login page (Innovation theme) Example #21 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-22. Custom Login page (Photographers theme) Example #22 [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
-23. Custom Login page (Company theme) Example #23 with Captcha [Pro feature](https://WPBrigade.com/wordpress/plugins/loginpress-pro/?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+2. Custom Login page (Company theme) Example #2 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+3. Custom Login page (Company theme) Example #3 with Captcha [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+4. Custom Login page (Persona theme) Example #4 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+5. Custom Login page (Corporate theme) Example #5 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+6. Custom Login page (Corporate theme) Example #6 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+7. Custom Login page (Startup theme) Example #7 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+8. Custom Login page (Wedding theme) Example #8 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+9. Custom Login page (Wedding theme) Example #9 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+10. Custom Login page (Company theme) Example #10 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+11. Custom Login page (Company theme) Example #11 with Captcha [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+12. Custom Login page (Bikers theme) Example #12 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+13. Custom Login page (Fitness theme) Example #13 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+14. Custom Login page (Shopping theme) Example #14 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+15. Custom Login page (Writers theme) Example #15 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+16. Custom Login page (Writers theme) Example #16 with reCaptcha [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+17. Custom Login page (Persona theme) Example #17 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+18. Custom Login page (Persona theme) Example #18 with reCaptcha [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+19. Custom Login page (Geek theme) Example #19 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+20. Custom Login page (Geek theme) Example #20 with reCaptcha [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+21. Custom Login page (Innovation theme) Example #21 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+22. Custom Login page (Photographers theme) Example #22 [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
+23. Custom Login page (Company theme) Example #23 with Captcha [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
 
 == Changelog ==
+
+= 1.6.0 – 2022-03-16 =
+* New Feature: Created a new control for customizing the font size of the login form labels.
+* Enhancement: For multisite, excluded the LoginPress page from YOAST SEO sitemap.
+* Enhancement: Update log file info.
+
+= 1.5.13 – 2022-03-01 =
+* BugFix: Slider control layout in customizer.
+* BugFix: Show LoginPress addons to download after activating on agency license.
+
+= 1.5.12 – 2022-02-02 =
+* BugFix: Apply escaping at `redirect-page` attribute on the optin page.
+* Bugfix: Apply check to restrict method name duplication. (Fix for WP-CLI)
+* Compatibility: Compatible with WordPress 5.9.
+
+= 1.5.11 – 2022-01-31 =
+* New Feature: Introducing Language Switcher (Enable / Disable) settings on Login wp-login Page.
+* Enhancement: Code refactoring.
+* Compatibility: Compatible with WordPress 5.9.
+
+= 1.5.10 – 2021-12-10 =
+* Enhancement: Code refactoring.
+
+= 1.5.9 – 2021-11-26 =
+* BugFix: Only administrator can view the review banner now.
+
+= 1.5.8 – 2021-11-01 =
+* BugFix: Footer div spacing issue.
+* Bugfix: Add-Ons page - List all LoginPress addons.
+
+= 1.5.7 – 2021-09-24 =
+* Bugfix: Login button {text & hover} color live preview in customizer.
+* Enhancement: Added a filter `loginpress_form_logo` to change the form logo.
+* Enhancement: Added a filter `loginpress_body_background_image` to change the background image.
+* Enhancement: Added a filter `loginpress_body_after_background_image` to change the background image for theme 8 `Wedding #2`.
+* Enhancement: Added a filter `loginpress_login_background_image` to change the background image for theme 17 `Photographers`.
+* Enhancement: Added a filter `loginpress_login_after_background_image` to change the background image for theme 6 `Startup` & theme 10 `Bikers`.
+* Enhancement: Added a filter `loginpress_login_form_background_image` to change the login form background image.
+* Enhancement: Added a filter `loginpress_lostpassword_form_background_image` to change the lost password form background image.
+
+= 1.5.6 – 2021-09-07 =
+* Bugfix: PHP warning if footer string is empty.
+* Enhancement: Translations added for {Login Order} settings.
+* Enhancement: Updated the POT file.
+
+= 1.5.5 – 2021-07-24 =
+* Bugfix: Welcome message for the lost password & register page.
+* Bugfix: A live preview of current year in copyright note (A `$YEAR$` variable will change in current year).
+* Compatibility: Compatible with WordPress 5.8.
 
 = 1.5.4 – 2021-06-16 =
 * Bugfix: Form padding was not working on default template;
@@ -317,7 +367,7 @@ Please visit <a target="_blank" rel="friend" href="https://WPBrigade.com/wordpre
 * New Feature: One click Install / Activate / Deactivate Add-Ons on addons page.
 * Bugfix: Enable / Disable "Back To" link issue in customizer.
 * Bugfix: "remember me" color issue in customizer.
-* Bugfix: Login form transparacny issue in customizer.
+* Bugfix: Login form transparency issue in customizer.
 * Bugfix: Optimized plugin speed and code improvement.
 * Enhancement: Allow SVG file type if SVG mime enable in WordPress.
 
@@ -601,5 +651,5 @@ Please visit <a target="_blank" rel="friend" href="https://WPBrigade.com/wordpre
 
 == Upgrade Notice ==
 
-= 1.5.4 =
-* Important Release, upgrade immediately. Compatible with 5.7
+= 1.6.0 =
+* Important Release, upgrade immediately. Compatible with 5.9

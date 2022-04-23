@@ -7,6 +7,8 @@
  * Gutenberg editor assets.
  */
 function exactmetrics_gutenberg_editor_assets() {
+	global $wp_scripts;
+
 	// stop loading gutenberg related assets/blocks/sidebars if WP version is less than 5.4
 	if ( ! exactmetrics_load_gutenberg_app() ) {
 		return;
@@ -19,7 +21,6 @@ function exactmetrics_gutenberg_editor_assets() {
 	$js_dependencies = array(
 		'wp-plugins',
 		'wp-element',
-		'wp-edit-post',
 		'wp-i18n',
 		'wp-api-request',
 		'wp-data',
@@ -27,9 +28,17 @@ function exactmetrics_gutenberg_editor_assets() {
 		'wp-plugins',
 		'wp-components',
 		'wp-blocks',
-		'wp-editor',
+		'wp-block-editor',
 		'wp-compose',
 	);
+
+	if (
+		! $wp_scripts->query( 'wp-edit-widgets', 'enqueued' ) &&
+		! $wp_scripts->query( 'wp-customize-widgets', 'enqueued' )
+	) {
+		$js_dependencies[] = 'wp-editor';
+		$js_dependencies[] = 'wp-edit-post';
+	}
 
 	// Enqueue our plugin JavaScript.
 	wp_enqueue_script(
@@ -59,6 +68,8 @@ function exactmetrics_gutenberg_editor_assets() {
 		}
 	}
 
+	$posttype = exactmetrics_get_current_post_type();
+
 	// Localize script for sidebar plugins.
 	wp_localize_script(
 		'exactmetrics-gutenberg-editor-js',
@@ -67,7 +78,7 @@ function exactmetrics_gutenberg_editor_assets() {
 			'ajaxurl'                      => admin_url( 'admin-ajax.php' ),
 			'nonce'                        => wp_create_nonce( 'exactmetrics_gutenberg_headline_nonce' ),
 			'allowed_post_types'           => apply_filters( 'exactmetrics_headline_analyzer_post_types', array( 'post' ) ),
-			'current_post_type'            => exactmetrics_get_current_post_type(),
+			'current_post_type'            => $posttype,
 			'translations'                 => wp_get_jed_locale_data( exactmetrics_is_pro_version() ? 'exactmetrics-premium' : 'google-analytics-dashboard-for-wp' ),
 			'is_headline_analyzer_enabled' => apply_filters( 'exactmetrics_headline_analyzer_enabled', true ) && 'true' !== exactmetrics_get_option( 'disable_headline_analyzer' ),
 			'reports_url'                  => add_query_arg( 'page', 'exactmetrics_reports', admin_url( 'admin.php' ) ),
@@ -76,6 +87,7 @@ function exactmetrics_gutenberg_editor_assets() {
 			'license_type'                 => ExactMetrics()->license->get_license_type(),
 			'upgrade_url'                  => exactmetrics_get_upgrade_link( 'gutenberg', 'products' ),
 			'install_woocommerce_url'      => $install_woocommerce_url,
+			'supports_custom_fields'       => post_type_supports( $posttype, 'custom-fields' ),
 		)
 	);
 }

@@ -4,10 +4,10 @@ if (!defined('ABSPATH')) exit;
 
 function bbq_languages() {
 	
-	load_plugin_textdomain('block-bad-queries', false, BBQ_DIR .'languages/');
+	load_plugin_textdomain('block-bad-queries', false, dirname(plugin_basename(__FILE__)) .'/languages/');
 	
 }
-add_action('plugins_loaded', 'bbq_languages');
+add_action('init', 'bbq_languages');
 
 function bbq_options() {
 	

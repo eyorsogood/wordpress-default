@@ -28,16 +28,30 @@ class Image {
 	 */
 	public function __construct() {
 		// Column may not have been created yet.
-		if ( ! aioseo()->db->columnExists( 'aioseo_posts', 'image_scan_date' ) ) {
+		if ( ! aioseo()->core->db->columnExists( 'aioseo_posts', 'image_scan_date' ) ) {
 			return;
 		}
 
+		// NOTE: This needs to go above the is_admin check in order for it to run at all.
 		add_action( $this->imageScanAction, [ $this, 'scanPosts' ] );
+
+		// Don't schedule a scan if we are not in the admin.
+		if ( ! is_admin() ) {
+			return;
+		}
 
 		if ( wp_doing_ajax() || wp_doing_cron() ) {
 			return;
 		}
 
+		// Don't schedule a scan if an importer or the V3 migration is running.
+		// We'll do our scans there.
+		if (
+			aioseo()->importExport->isImportRunning() ||
+			aioseo()->migration->isMigrationRunning()
+		) {
+			return;
+		}
 		// Action Scheduler hooks.
 		add_filter( 'init', [ $this, 'scheduleScan' ], 3001 );
 	}
@@ -76,8 +90,8 @@ class Image {
 		$postsPerScan = apply_filters( 'aioseo_image_sitemap_posts_per_scan', 10 );
 		$postTypes    = implode( "', '", aioseo()->helpers->getPublicPostTypes( true ) );
 
-		$posts = aioseo()->db
-			->start( aioseo()->db->db->posts . ' as p', true )
+		$posts = aioseo()->core->db
+			->start( aioseo()->core->db->db->posts . ' as p', true )
 			->select( '`p`.`ID`, `p`.`post_type`, `p`.`post_content`, `p`.`post_excerpt`, `p`.`post_modified_gmt`' )
 			->leftJoin( 'aioseo_posts as ap', '`ap`.`post_id` = `p`.`ID`' )
 			->whereRaw( '( `ap`.`id` IS NULL OR `p`.`post_modified_gmt` > `ap`.`image_scan_date` OR `ap`.`image_scan_date` IS NULL )' )
@@ -88,7 +102,8 @@ class Image {
 			->result();
 
 		if ( ! $posts ) {
-			aioseo()->helpers->scheduleSingleAction( $this->imageScanAction, 15 * MINUTE_IN_SECONDS );
+			aioseo()->helpers->scheduleSingleAction( $this->imageScanAction, 15 * MINUTE_IN_SECONDS, [], true );
+
 			return;
 		}
 
@@ -96,7 +111,7 @@ class Image {
 			$this->scanPost( $post );
 		}
 
-		aioseo()->helpers->scheduleSingleAction( $this->imageScanAction, 30 );
+		aioseo()->helpers->scheduleSingleAction( $this->imageScanAction, 30, [], true );
 	}
 
 	/**
@@ -105,7 +120,7 @@ class Image {
 	 * @since 4.0.0
 	 *
 	 * @param  WP_Post|int $post The post object or ID.
-	 * @return array             The image entries.
+	 * @return void
 	 */
 	public function scanPost( $post ) {
 		if ( is_numeric( $post ) ) {
@@ -113,47 +128,47 @@ class Image {
 		}
 
 		if ( ! empty( $post->post_password ) ) {
-			return $this->updatePost( $post->ID );
+			$this->updatePost( $post->ID );
+
+			return;
 		}
 
 		if ( 'attachment' === $post->post_type ) {
 			if ( ! wp_attachment_is( 'image', $post ) ) {
-				return $this->updatePost( $post->ID );
+				$this->updatePost( $post->ID );
+
+				return;
 			}
 			$image = $this->buildEntries( [ $post->ID ] );
-			return $this->updatePost( $post->ID, $image );
+			$this->updatePost( $post->ID, $image );
+
+			return;
 		}
 
-		$postContent = $this->doShortcodes( $post->post_content );
-		// Trim both internal and external whitespace.
-		$postContent = preg_replace( '/\s\s+/u', ' ', trim( $postContent ) );
+		$images = $this->extract( $post );
 
-		$urls = $this->extract( $postContent );
-
+		// Get the featured image.
 		if ( has_post_thumbnail( $post ) ) {
-			$urls[] = get_the_post_thumbnail_url( $post );
+			$images[] = get_the_post_thumbnail_url( $post );
 		}
 
-		$urls = $this->filter( $urls );
-		$urls = $this->removeImageDimensions( $urls );
+		$images = $this->removeImageDimensions( $images );
 
-		if ( ! $urls ) {
-			return $this->updatePost( $post->ID );
+		if ( aioseo()->helpers->isWooCommerceActive() && 'product' === $post->post_type ) {
+			$images = array_merge( $images, $this->getProductImages( $post ) );
 		}
 
-		$ids = [];
-		foreach ( $urls as $url ) {
-			// Get the ID of the image so we can get its meta data. If there's no ID, then it's probably an external image.
-			$id = aioseo()->helpers->attachmentUrlToPostId( $url );
-			if ( $id ) {
-				$ids[] = $id;
-				continue;
-			}
-			$ids[] = $url;
+		$images = apply_filters( 'aioseo_sitemap_images', $images, $post );
+
+		if ( ! $images ) {
+			$this->updatePost( $post->ID );
+
+			return;
 		}
 
-		$images = array_slice( $this->buildEntries( $ids ), 0, 1000 );
-		return $this->updatePost( $post->ID, $images );
+		// Limit to a 1,000 URLs, in accordance to Google's specifications.
+		$images = array_slice( $images, 0, 1000 );
+		$this->updatePost( $post->ID, $this->buildEntries( $images ) );
 	}
 
 	/**
@@ -173,7 +188,27 @@ class Image {
 		if ( ! $id ) {
 			return [];
 		}
+
 		return $this->buildEntries( [ $id ] );
+	}
+
+	/**
+	 * Gets the gallery images for the given WooCommerce product.
+	 *
+	 * @since 4.1.2
+	 *
+	 * @param  \WP_Post $post The post object.
+	 * @return array          The product gallery images.
+	 */
+	private function getProductImages( $post ) {
+		$productImageIds = get_post_meta( $post->ID, '_product_image_gallery', true );
+		if ( ! $productImageIds ) {
+			return [];
+		}
+
+		$productImageIds = explode( ',', $productImageIds );
+
+		return is_array( $productImageIds ) ? $productImageIds : [];
 	}
 
 	/**
@@ -181,12 +216,13 @@ class Image {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  array $ids Either a numeric post ID or the image URL if the ID of the image couldn't be found.
-	 * @return array      The image entries.
+	 * @param  array $images The images, consisting of attachment IDs or external URLs.
+	 * @return array         The image entries.
 	 */
-	private function buildEntries( $ids ) {
+	private function buildEntries( $images ) {
 		$entries = [];
-		foreach ( $ids as $id ) {
+		foreach ( $images as $image ) {
+			$id = $this->getImageId( $image );
 			if ( ! is_numeric( $id ) ) {
 				$entries[] = [ 'image:loc' => aioseo()->sitemap->helpers->formatUrl( $id ) ];
 				continue;
@@ -198,58 +234,102 @@ class Image {
 				'image:caption' => wp_get_attachment_caption( $id )
 			];
 		}
+
 		return $entries;
 	}
 
 	/**
-	 * Extracts all image URls from the post content.
+	 * Returns the ID of the image if it's hosted on the site. Otherwise it returns the external URL.
+	 *
+	 * @since 4.1.3
+	 *
+	 * @param  int|string $image The attachment ID or URL.
+	 * @return int|string        The attachment ID or URL.
+	 */
+	private function getImageId( $image ) {
+		if ( is_numeric( $image ) ) {
+			return $image;
+		}
+
+		$attachmentId = false;
+		if ( aioseo()->helpers->isValidAttachment( $image ) ) {
+			$attachmentId = aioseo()->helpers->attachmentUrlToPostId( $image );
+		}
+
+		return $attachmentId ? $attachmentId : $image;
+	}
+
+	/**
+	 * Extracts all image URls from the post.
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  string $content The post content.
-	 * @return array           The image URLs.
+	 * @param  Object $post The post object.
+	 * @return array        The image URLs.
 	 */
-	private function extract( $content ) {
-		preg_match_all( '#<img[^>]+src="([^">]+)"#', $content, $matches );
-		if ( ! $matches[1] ) {
-			return [];
+	private function extract( $post ) {
+		$urls        = [];
+		$postContent = $post->post_content;
+
+		// Get the galleries here instead of through doShortcodes to prevent buggy behaviour.
+		// WordPress is supposed to only return the attached images but returns more if the shortcode has no valid attributes, so we need to grab them ourselves.
+		$galleries = get_post_galleries( $post, false );
+		foreach ( $galleries as $gallery ) {
+			foreach ( $gallery['src'] as $imageUrl ) {
+				$urls[] = $imageUrl;
+			}
 		}
 
-		$urls = [];
+		// Now, get rid of them so that we don't process the shortcodes again.
+		$regex       = get_shortcode_regex( [ 'gallery' ] );
+		$postContent = preg_replace( "/$regex/i", '', $postContent );
+
+		// Get images from Divi if it's active.
+		$urls = array_merge( $urls, $this->extractDiviImages( $postContent ) );
+
+		// Now, get the remaining images from image tags in the post content.
+		$postContent = $this->doShortcodes( $postContent, $post->ID );
+		$postContent = preg_replace( '/\s\s+/u', ' ', trim( $postContent ) ); // Trim both internal and external whitespace.
+
+		preg_match_all( '#<img[^>]+src="([^">]+)"#', $postContent, $matches );
 		foreach ( $matches[1] as $url ) {
 			$urls[] = aioseo()->helpers->makeUrlAbsolute( $url );
 		}
+
 		return array_unique( $urls );
 	}
 
 	/**
-	 * Removes all URLs that aren't on our domain whitelist.
+	 * Extracts images from Divi shortcodes and returns them.
 	 *
-	 * @since 4.0.0
+	 * @since 4.1.8
 	 *
-	 * @param  array $urls The image URLs.
-	 * @return array       The remaining image URLs.
+	 * @param  string $content The post content.
+	 * @return array           The URLs.
 	 */
-	private function filter( $urls ) {
-		$allowedDomains = apply_filters( 'aioseo_sitemap_image_domains', [
-			aioseo()->helpers->localizedUrl( '/' ),
-			'wp.com'
-		] );
-
-		if ( ! count( $allowedDomains ) ) {
+	private function extractDiviImages( $content ) {
+		if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
 			return [];
 		}
 
-		$remainingUrls = [];
-		foreach ( $urls as $url ) {
-			foreach ( $allowedDomains as $domain ) {
-				if ( preg_match( "#.*$domain.*#", $url ) ) {
-					$remainingUrls[] = $url;
-					continue;
+		$urls  = [];
+		$regex = get_shortcode_regex( [ 'et_pb_image', 'et_pb_gallery' ] );
+		preg_match_all( "/$regex/i", $content, $matches, PREG_SET_ORDER );
+		foreach ( $matches as $shortcode ) {
+			$attributes = shortcode_parse_atts( $shortcode[3] );
+			if ( ! empty( $attributes['src'] ) ) {
+				$urls[] = $attributes['src'];
+			}
+
+			if ( ! empty( $attributes['gallery_ids'] ) ) {
+				$attachmentIds = explode( ',', $attributes['gallery_ids'] );
+				foreach ( $attachmentIds as $attachmentId ) {
+					$urls[] = wp_get_attachment_url( $attachmentId );
 				}
 			}
 		}
-		return $remainingUrls;
+
+		return $urls;
 	}
 
 	/**
@@ -265,6 +345,7 @@ class Image {
 		foreach ( $urls as $url ) {
 			$preparedUrls[] = aioseo()->helpers->removeImageDimensions( $url );
 		}
+
 		return array_filter( $preparedUrls );
 	}
 
@@ -274,29 +355,18 @@ class Image {
 	 * @since 4.0.0
 	 *
 	 * @param  string $content The post content.
+	 * @param  int    $postId  The post ID.
 	 * @return string          The parsed post content.
 	 */
-	private function doShortcodes( $content ) {
-		$shortcodes = apply_filters( 'aioseo_sitemap_image_galleries', [
+	private function doShortcodes( $content, $postId = null ) {
+		$shortcodes = apply_filters( 'aioseo_image_sitemap_allowed_shortcodes', [
 			'WordPress Core' => 'gallery',
 			'NextGen #1'     => 'ngg',
 			'NextGen #2'     => 'ngg_images'
 		] );
+		$wildcards  = apply_filters( 'aioseo_image_sitemap_allowed_wildcards', [ 'image', 'img', 'gallery' ] );
 
-		if ( ! count( $shortcodes ) ) {
-			return $content;
-		}
-
-		$matches = [];
-		foreach ( $shortcodes as $k => $v ) {
-			preg_match_all( "#\[.*$v.*]#", $content, $found );
-			$matches = $matches + $found;
-		}
-
-		if ( count( $matches ) ) {
-			$content = do_shortcode( $content );
-		}
-		return $content;
+		return aioseo()->helpers->doAllowedShortcodes( $content, $shortcodes, $wildcards, $postId );
 	}
 
 	/**

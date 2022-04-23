@@ -24,6 +24,9 @@ class LoginPress_Log_Info {
 		$login_order 	       = isset( $loginpress_setting['login_order'] ) ? $loginpress_setting['login_order'] : 'Default';
 		$customization 			 = isset( $loginpress_config ) ? print_r( $loginpress_config, true ) : 'No customization yet';
 		$lostpassword_url 	 = isset( $loginpress_setting['lostpassword_url'] ) ? $loginpress_setting['lostpassword_url'] : 'off';
+		if ( version_compare( $GLOBALS['wp_version'], '5.9', '>=' ) && ! empty( get_available_languages() ) ) {
+			$lang_switcher = isset( $loginpress_setting['enable_language_switcher'] ) ? $loginpress_setting['enable_language_switcher'] : 'Off';
+		}
 		$_loginpassword_url  = ( $lostpassword_url == 'on' ) ? 'WordPress Default' : "WooCommerce Custom URL";
 		$loginpress_uninstall= isset( $loginpress_setting['loginpress_uninstall'] ) ? $loginpress_setting['loginpress_uninstall'] : 'off';
 
@@ -46,9 +49,18 @@ class LoginPress_Log_Info {
 		$html .= 'Expiration:           	  ' . $session_expiration . "\n";
 		$html .= 'Login Order:              ' . ucfirst( $login_order ) . "\n";
 		if ( class_exists( 'WooCommerce' ) ) {
-		$html .= 'Lost Password URL:        ' . $_loginpassword_url . "\n";
+			$html .= 'Lost Password URL:        ' . $_loginpassword_url . "\n";
 		}
-		$html .= 'Uninstallation:       	  ' . $loginpress_uninstall . "\n";
+
+		/**
+		 * Add option to remove language switcher option
+		 *
+		 * @since 1.5.13
+		 */
+		if ( version_compare( $GLOBALS['wp_version'], '5.9', '>=' ) && ! empty( get_available_languages() ) ) {
+			$html .= 'Language Switcher:        ' . ucfirst( $lang_switcher ) . "\n";
+		}
+		$html .= 'Uninstallation:       	  ' . ucfirst( $loginpress_uninstall ) . "\n";
 		$html .= 'Total Customized Fields:  ' . count( $loginpress_config ) . "\n";
 		$html .= 'Customization Detail:     ' . $customization . "\n";
 

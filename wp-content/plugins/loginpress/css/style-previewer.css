@@ -2,6 +2,9 @@
  * Style Sceet for Customizer Previewer.
  * @since 1.0.23
  */
+.login form .forgetmenot{
+	float: none;
+}
 .login form .input, .login input[type=text],.login form input[type=checkbox]{
 	border-radius: 0;
 }

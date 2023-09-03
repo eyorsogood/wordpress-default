@@ -32,11 +32,7 @@ class File {
 	 * @return void
 	 */
 	public function generate( $force = false ) {
-		foreach ( aioseo()->sitemap->addons as $classes ) {
-			if ( ! empty( $classes['file'] ) ) {
-				$classes['file']->generate( $force );
-			}
-		}
+		aioseo()->addons->doAddonFunction( 'file', 'generate', [ $force ] );
 
 		// Exit if static sitemap generation isn't enabled.
 		if (
@@ -54,7 +50,7 @@ class File {
 
 		$files           = [];
 		self::$isUpdated = true;
-		// We need to set these values here as determineContext() doesn't run.
+		// We need to set these values here as setContext() doesn't run.
 		// Subsequently, we need to manually reset the index name below for each query we run.
 		// Also, since we need to chunck the entries manually, we cannot limit any queries and need to reset the amount of allowed URLs per index.
 		aioseo()->sitemap->offset        = 0;
@@ -62,22 +58,29 @@ class File {
 		$sitemapName                     = aioseo()->sitemap->helpers->filename();
 		aioseo()->sitemap->indexes       = aioseo()->options->sitemap->general->indexes;
 		aioseo()->sitemap->linksPerIndex = PHP_INT_MAX;
+		aioseo()->sitemap->isStatic      = true;
 
-		$pages = [];
-		foreach ( aioseo()->options->sitemap->general->additionalPages->pages as $page ) {
-			$additionalPage = json_decode( $page );
-			if ( empty( $additionalPage->url ) ) {
-				continue;
+		$additionalPages = [];
+		if ( aioseo()->options->sitemap->general->additionalPages->enable ) {
+			foreach ( aioseo()->options->sitemap->general->additionalPages->pages as $additionalPage ) {
+				$additionalPage = json_decode( $additionalPage );
+				if ( empty( $additionalPage->url ) ) {
+					continue;
+				}
+
+				$additionalPages[] = $additionalPage;
 			}
-
-			$pages[] = $additionalPage;
 		}
+
+		$postTypes       = aioseo()->sitemap->helpers->includedPostTypes();
+		$additionalPages = apply_filters( 'aioseo_sitemap_additional_pages', $additionalPages );
 
 		if (
 			'posts' === get_option( 'show_on_front' ) ||
-			( aioseo()->options->sitemap->general->additionalPages->enable && count( $pages ) )
+			count( $additionalPages ) ||
+			! in_array( 'page', $postTypes, true )
 		) {
-			$entries            = aioseo()->sitemap->content->addl();
+			$entries            = aioseo()->sitemap->content->addl( false );
 			$filename           = "addl-$sitemapName.xml";
 			$files[ $filename ] = [
 				'total'   => count( $entries ),
@@ -240,15 +243,11 @@ class File {
 			aioseo()->sitemap->indexName = 'root';
 		}
 
-		aioseo()->sitemap->saveXslData( $filename, $entries, $total );
+		aioseo()->sitemap->xsl->saveXslData( $filename, $entries, $total );
 
 		ob_start();
-		aioseo()->sitemap->output->output( $entries, $total );
-		foreach ( aioseo()->sitemap->addons as $classes ) {
-			if ( ! empty( $classes['output'] ) ) {
-				$classes['output']->output( $entries, $total );
-			}
-		}
+		aioseo()->sitemap->output->output( $entries );
+		aioseo()->addons->doAddonFunction( 'output', 'output', [ $entries, $total ] );
 		$content = ob_get_clean();
 
 		$fs         = aioseo()->core->fs;
@@ -267,7 +266,7 @@ class File {
 	 * @return array An array of files.
 	 */
 	public function files() {
-		require_once( ABSPATH . 'wp-admin/includes/file.php' );
+		require_once ABSPATH . 'wp-admin/includes/file.php';
 		$files = list_files( get_home_path(), 1 );
 		if ( ! count( $files ) ) {
 			return [];

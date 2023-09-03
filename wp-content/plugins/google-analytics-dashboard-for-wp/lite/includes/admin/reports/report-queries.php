@@ -7,10 +7,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class ExactMetrics_Lite_Report_Queries extends ExactMetrics_Report {
 
 	public $title;
-	public $class   = 'ExactMetrics_Lite_Report_Queries';
-	public $name    = 'queries';
+	public $class = 'ExactMetrics_Lite_Report_Queries';
+	public $name = 'queries';
 	public $version = '1.0.0';
-	public $level   = 'plus';
+	public $level = 'plus';
 
 	/**
 	 * Primary class constructor.
@@ -23,7 +23,7 @@ final class ExactMetrics_Lite_Report_Queries extends ExactMetrics_Report {
 		parent::__construct();
 	}
 
-	protected function get_report_html( $data = array() ){
+	protected function get_report_html( $data = array() ) {
 		return $this->get_upsell_notice();
 	}
 }

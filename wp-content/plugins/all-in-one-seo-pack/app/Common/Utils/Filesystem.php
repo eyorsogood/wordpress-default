@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Load our manifest to use throughout the app. TODO: Fill out other methods and docblocks.
+ * Load our manifest to use throughout the app.
  *
  * @since 4.1.9
  */
@@ -19,17 +19,26 @@ class Filesystem {
 	 *
 	 * @since 4.1.9
 	 *
-	 * @var WP_Filesystem
+	 * @var \WP_Filesystem_Base
 	 */
 	public $fs = null;
+
+	/**
+	 * Core class instance.
+	 *
+	 * @since 4.2.7
+	 *
+	 * @var \AIOSEO\Plugin\Common\Core\Core
+	 */
+	private $core = null;
 
 	/**
 	 * Class constructor.
 	 *
 	 * @since 4.1.9
 	 *
-	 * @param Core  $core The AIOSEO Core class.
-	 * @param array $args Any arguments needed to construct the class with.
+	 * @param \AIOSEO\Plugin\Common\Core\Core $core The AIOSEO Core class.
+	 * @param array                           $args Any arguments needed to construct the class with.
 	 */
 	public function __construct( $core, $args = [] ) {
 		$this->core = $core;
@@ -45,7 +54,7 @@ class Filesystem {
 	 * @return void
 	 */
 	public function init( $args = [] ) {
-		require_once( ABSPATH . 'wp-admin/includes/file.php' );
+		require_once ABSPATH . 'wp-admin/includes/file.php';
 		WP_Filesystem( $args );
 
 		global $wp_filesystem;

@@ -25,11 +25,21 @@ class Theme {
          */
         /*
         array(
-            'post_type'		=> 'destination',
-            'singular_name' => 'Destination',
-            'plural_name'	=> 'Destinations',
-            'menu_icon' 	=> 'dashicons-universal-access',
-            'supports'		=> array( 'title', 'thumbnail')
+            'post_type'		=> 'supplies',
+            'singular_name' => 'Supply',
+            'plural_name'	=> 'Supplies',
+            'menu_icon' 	=> 'dashicons-portfolio',
+            'supports'		=> array( 'title', 'thumbnail'),
+            'title_acf'     => 'field_63e5c719d10ce',
+            'header'        => array(
+                'supply_name' => 'Equipment / Supply Name',
+                'department' => 'Department',
+                'section' => 'Section',
+                'type' => 'Type',
+                'purchased_date' => 'Purchased Date',
+                'date_added' => 'Date Added',
+                'price_per_unit' => 'Price Per Unit'
+            )
         )
         */
     );
@@ -148,13 +158,14 @@ class Theme {
             'post_title'	=> false,
             'post_content'	=> false,
             'field_groups'	=> array($fieldGroupId),
-            'submit_value'	=> $button,
+            //'submit_value'	=> $button,
+            'html_submit_button' => '<a href="#" class="acf-button button button-primary button-large">'.$button.'</a>',
             'new_post'		=> array(
                 'post_type'		=> $postType,
                 'post_status'	=> 'publish'
             ),
             'form' => true,
-            'return' => (is_null($redirect))?home_url():home_url('/'.$redirect),
+            'return' => (is_null($redirect))?get_permalink(get_the_ID()):home_url('/'.$redirect),
             'updated_message' => __("Account Created", 'acf'),
         ));
     }
@@ -166,8 +177,9 @@ class Theme {
             'post_content'	=> false,
             'field_groups'	=> array($fieldGroupId),
             'submit_value'	=> $button,
+            //'html_submit_button' => '<a href="#" class="acf-button button button-primary button-large">'.$button.'</a>',
             'form' => true,
-            'return' => (is_null($redirect))?home_url():home_url('/'.$redirect)
+            'return' => (is_null($redirect))?get_permalink(get_the_ID()):home_url('/'.$redirect)
         ));
     }
 
@@ -223,6 +235,103 @@ class Theme {
     
                     register_post_type( $a_post_type['post_type'], $a_args );
                 }
+            }
+        }
+    }
+
+    public function my_save_post( $post_id ) {	
+
+        if(isset($_POST['_acf_post_id'])) {
+            /**
+             * get post details
+             */
+            $post_values = get_post($post_id);
+
+
+            /**
+             * bail out if not a custom type and admin
+             */
+            $types = array();
+
+            foreach($this->post_types as $pt):
+                $types[] = $pt['post_type']; 
+            endforeach;
+            
+            if(!(in_array($post_values->post_type, $types))){
+                return;
+            }
+
+            if($_POST['_acf_post_id'] == "new_post"){
+                /**
+                 * applicant set values
+                 */
+
+                foreach($this->post_types as $pt):
+                    if($post_values->post_type == $pt['post_type']){
+                        /**
+                         * update post
+                         */
+
+                        if(is_array($pt['title_acf']) && is_object(get_field($pt['title_acf'][0], $_POST['acf'][$pt['title_acf'][1]]))):
+                            $fobj = get_field($pt['title_acf'][0], $_POST['acf'][$pt['title_acf'][1]]);
+                            $title = (is_array($pt['title_acf']))?$fobj->post_title:$_POST['acf'][$pt['title_acf']];
+                        else:
+                            $title = (is_array($pt['title_acf']))?get_field($pt['title_acf'][0], $_POST['acf'][$pt['title_acf'][1]]):$_POST['acf'][$pt['title_acf']];
+                        endif;
+    
+                        $my_post = array(
+                            'ID'           => $post_id,
+                            'post_title'   => $title
+                        );
+    
+                        wp_update_post( $my_post );
+                    }
+                endforeach;
+
+                /**
+                 *  Clear POST data
+                 */
+                unset($_POST);
+
+                /**
+                 * notifications
+                 */
+         
+            }
+            else if($_POST['_acf_post_id'] == $post_id) {
+
+                foreach($this->post_types as $pt):
+                    if($post_values->post_type == $pt['post_type']){
+                        /**
+                         * update post
+                         */
+                        if(is_array($pt['title_acf']) && is_object(get_field($pt['title_acf'][0], $_POST['acf'][$pt['title_acf'][1]]))):
+                            $fobj = get_field($pt['title_acf'][0], $_POST['acf'][$pt['title_acf'][1]]);
+                            $title = (is_array($pt['title_acf']))?$fobj->post_title:$_POST['acf'][$pt['title_acf']];
+                        else:
+                            $title = (is_array($pt['title_acf']))?get_field($pt['title_acf'][0], $_POST['acf'][$pt['title_acf'][1]]):$_POST['acf'][$pt['title_acf']];
+                        endif;
+
+                        
+    
+                        $my_post = array(
+                            'ID'           => $post_id,
+                            'post_title'   => $title
+                        );
+    
+                        wp_update_post( $my_post );
+                    }
+                endforeach;
+
+                /**
+                 *  Clear POST data
+                 */
+                unset($_POST);
+
+                /**
+                 * notifications
+                 */
+
             }
         }
     }

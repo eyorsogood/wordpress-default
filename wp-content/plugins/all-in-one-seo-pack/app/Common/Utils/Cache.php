@@ -170,8 +170,7 @@ class Cache {
 		$key = $this->prefix && 0 !== strpos( $key, $this->prefix ) ? $this->prefix . $key : $key;
 
 		if ( aioseo()->helpers->isDev() && 80 < mb_strlen( $key, 'UTF-8' ) ) {
-			throw new \Exception( 'You are using a cache key that is too large, shorten your key and try again: [' . $key . ']' );
-			die;
+			throw new \Exception( 'You are using a cache key that is too large, shorten your key and try again: [' . esc_html( $key ) . ']' );
 		}
 
 		return $key;
@@ -201,6 +200,9 @@ class Cache {
 		if ( $activationRedirect ) {
 			$this->update( 'activation_redirect', $activationRedirect, 30 );
 		}
+
+		// Bust the tableExists and columnExists cache.
+		aioseo()->internalOptions->database->installedTables = '';
 	}
 
 	/**

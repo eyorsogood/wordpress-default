@@ -1,9 +1,9 @@
 === Plugin Name ===
 Contributors: boldgrid, fredericktownes, maxicusc, gidomanders, bwmarkle, harryjackson1221, joemoto, vmarko, jacobd91
 Tags: seo, cache, CDN, pagespeed, caching, performance, compression, optimize, cloudflare, nginx, apache, varnish, redis, aws, amazon web services, s3, cloudfront, azure
-Requires at least: 3.8
-Tested up to: 5.9
-Stable tag: 2.2.1
+Requires at least: 5.3
+Tested up to: 6.3
+Stable tag: 2.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,7 +22,7 @@ https://youtu.be/7AsNSSrZq4Y
 *BENEFITS*
 
 * Improvements in search engine result page rankings, especially for mobile-friendly websites and sites that use SSL
-* At least 10x improvement in overall site performance (Grade A in [WebPagetest](https://www.webpagetest.org/) or significant [Google Page Speed](http://code.google.com/speed/page-speed/) improvements) **when fully configured**
+* At least 10x improvement in overall site performance (Grade A in [WebPagetest](https://www.webpagetest.org/) or significant [Google PageSpeed](http://code.google.com/speed/page-speed/) improvements) **when fully configured**
 * Improved conversion rates and "[site performance](http://googlewebmastercentral.blogspot.com/2009/12/your-sites-performance-in-webmaster.html)" which [affect your site's rank](http://googlewebmastercentral.blogspot.com/2010/04/using-site-speed-in-web-search-ranking.html) on Google.com
 * "Instant" repeat page views: browser caching
 * Optimized progressive render: pages start rendering quickly and can be interacted with more quickly
@@ -234,7 +234,7 @@ Image data received by our API is destroyed after a converted image is generated
 
 You will be able to see the results instantly on each page load, but for tangible metrics, you should consider using the following tools:
 
-* [Google Page Speed](https://developers.google.com/speed/pagespeed/)
+* [Google PageSpeed](https://developers.google.com/speed/pagespeed/)
 * [Google Search Console Core Web Vitals Report](https://search.google.com/search-console/core-web-vitals/)
 * [WebPagetest](https://www.webpagetest.org/test)
 * [Pingdom](https://tools.pingdom.com/)
@@ -285,7 +285,152 @@ Please reach out to all of these people and support their projects if you're so 
 
 == Changelog ==
 
-= 2.2.1=
+= 2.4.1 =
+* Fix: Add a fallback for the older version of wp-content/db.php
+
+= 2.4.0 =
+* Feature: Added filter "w3tc_config_item_objectcache.enabled" to allow for disabling W3TC object cache
+* Fix: Auto-apply W3TC Pro license after purchase via in-plugin purchase/upgrade buttons
+* Fix: PHP 8 warnings for Page and Fragment caches
+* Fix: Replaced delete_blog deprecated hook with wp_uninitialize_site and wp_update_site
+* Fix: Database Cluster configuration file save issue
+* Fix: Fragment cache will now be disabled for non-pro users instead of being only disabled on the front-end
+* Fix: Premium services widget list is now synced with the support page
+* Update: User interface updated for cleaner appearance and easier navigation and control
+* Update: Added support for get/set/add/delete wp_xxx_multiple methods to Object cache
+
+= 2.3.3 =
+* Fix: Fragment Cache: Fatal error when displaying registered groups
+* Fix: PHP 8 deprecation warnings in the SNS Message Bus and NuSOAP libraries
+* Fix: Broken nonce for renewal form
+* Fix: Page Cache: Moved hardcoded query string exemptions to the settings page
+* Update: Redis and Memcached host/IP/domain configuration examples
+
+= 2.3.2 =
+* Fix: Correct interpolation of a symlinked cache directory
+* Fix: Memcached test using SASL authentication
+* Fix: Multi-site authorization request returning to incorrect URL
+
+= 2.3.1 =
+* Fix: PHP 8 compatibility: Invalid return type if Browser Cache is disabled
+* Fix: Added AWS SNS message classes (aws/aws-php-sns-message-validator)
+* Fix: PageSpeed service: messages and escaping
+* Fix: Image Service meta query handling
+* Update: Dependency version updates
+* Update: Content-Security-Policy (CSP) and Content-Security-Policy-Report-Only (CSPRO) header field configuration
+
+= 2.3.0 =
+* Feature: PageSpeed Insights reports and performance page widget
+* Feature: Added basic OpenLiteSpeed support
+* Feature: Add Permissions-Policy to mirror Feature-Policy directives
+* Fix: PHP 8.2 compatibility
+* Fix: GuzzleHttp 7 conflict with Azure
+* Fix: Allow object cache updates when using WP-CLI
+* Fix: Added missing Page Cache configuration "host" value
+* Fix: Missing on_comment_status action callback
+* Fix: Flush cache on attachment update
+* Fix: Varnish flush for posts
+* Update: Improved comment status logic for flushing database and object caches
+* Update: Adjusted FTP form style
+* Update: Removed deprecated MaxCDN and NetDNA components and added a notice if one was used
+* Update: Removed deprecated FeedBurner
+
+= 2.2.12 =
+* Fix: Comment status change error
+* Fix: Varnish flush post arguments
+
+= 2.2.11 =
+* Fix: Error when flushing page cache after an attachment update
+
+= 2.2.10 =
+* Fix: Optimized and fixed object cache flushing
+* Fix: Scheduled post page cache flushing
+* Fix: Admin bar flush cache for current page with disabled purge policy
+* Fix: Loop when disabling Minify HTTP/2 push setting
+* Fix: Extension admin notice missing links
+* Update: Removed custom translation files
+
+= 2.2.9 =
+* Fix: Reset our textdomain for translations
+
+= 2.2.8 =
+* Fix: Escape output in compatibility checker, minify, and New Relic pages
+* Fix: Admin notice buttons on non-plugin pages
+* Fix: Namespace on exception type in a minify class
+* Fix: Translation issues due to hooks and typos
+* Fix: Broken JavaScript in admin_print_scripts calls when language is not English
+* Fix: Deprecated warnings in JS and CSS minify
+* Update: Translation files
+
+= 2.2.7 =
+* Fix: Updated database cache connection class to avoid deprecated warnings in WordPress 6.1
+* Fix: Redis: Fixed handling of retry interval and timeout options for usage statistics
+* Enhancement: Redis: Added TLS/SSL certificate verification option
+* Enhancement: Page cache: Added query string exemptions
+
+= 2.2.6 =
+* Fix: Error clearing all cache when using Cloudfront full CDN in Pro
+
+= 2.2.5 =
+* Fix: Revert WooCommerce Variation Image Gallery plugin CDN filter
+* Fix: DB cache syntax error in PHP 5.6
+* Fix: Added missing space to S3 CDN bucket label
+* Fix: JS error for CloudFront CDN related check on non-W3TC pages
+* Fix: Page cache unpack warning for empty/malformed files
+* Enhancement: Image Service pre_get_posts anonymous action now hooked (w3tc_modify_query_obj)
+* Enhancement: Image Service ajax_query_attachments_args anonymous action now hooked (w3tc_filter_ajax_args)
+
+= 2.2.4 =
+* Fix: Extensions URL in settings
+* Fix: Redis undefined array key warnings
+* Fix: Redis connect issue based on phpredis version
+* Fix: Sanitization of licensing messages
+* Fix: DB cache error in Ajax
+* Fix: Call to undefined function in DB cache query class
+* Fix: PHP 8 compatibility: join
+* Fix: WooCommerce Variation Image Gallery plugin CDN filter
+* Enhancement: Add setting for AWS S3 public objects in ACL
+* Enhancement: Check if post is empty before cache flush
+* Enhancement: Add max lifetime setting for non-disk page cache
+* Enhancement: Add notice when selecting CDN using CloudFront
+* Update: CSS Tidy 1.7.3 => 2.0.1
+* Update: Add sns-message-validator
+* Security: Ensure cache writes in cache folders
+
+= 2.2.3 =
+* Fix: Redis Cache: Removed exception on warnings
+* Fix: Compatibility check for WP_CACHE
+* Fix: Flush all cache cache except Cloudflare button
+* Fix: License terms update notice escaping
+* Fix: Feature Showcase: Image Service activate button
+* Security: Updated guzzlehttp/guzzle to 6.5.8
+
+= 2.2.2 =
+* Security: PHPCS and WPCS updates
+* Security: Updated guzzlehttp/guzzle to 6.5.6
+* Security: Updated guzzlehttp/psr7 to 1.8.5
+* Fix: Cloudflare flush all cache
+* Fix: Access log test
+* Fix: Better handling for PHP 5.6
+* Fix: Convert Redis warnings to exceptions
+* Fix: WordPress 5.5 image lazy loading
+* Fix: Infinite loop when using database cluster configuration
+* Fix: Database cluster logic
+* Fix: FTP credentials form
+* Fix: Preview deploy button
+* Fix: Image Service links in multisite network admin
+* Fix: Enable Image Service settings changes in multisite blog/sub sites
+* Enhancement: Updated Cloudflare settings to allow a global API key or token
+* Enhancement: Added Cloudflare CDN public objects option to settings
+* Enhancement: Added timeout settings for Redis
+* Enhancement: Added TLS/SSL certificate verification option for Redis
+* Enhancement: Added Image Service visibility option
+* Enhancement: Updated Image Service limit notification
+* Enhancement: Better handling of trailing slash URLs
+* Update: Adjusted lightbox for accessibility
+* Update: Removed deprecated opcache flush
+
+= 2.2.1 =
 * Fix: Cloudflare: Removed use of the retired ip_lkup V1 endpoint
 * Fix: Prevent error in some environments using non-direct filesystems
 * Fix: Added better checking for some filesystem actions

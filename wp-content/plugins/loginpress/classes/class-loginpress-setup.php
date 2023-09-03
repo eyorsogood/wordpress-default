@@ -140,6 +140,9 @@ class LoginPress_Settings {
   /**
    * Returns all the settings fields
    *
+   * @since 1.0.0
+   * @version 1.7.2
+   *
    * @return array settings fields
    */
   function get_settings_fields() {
@@ -198,6 +201,12 @@ class LoginPress_Settings {
             'email'    => __( 'Only Email Address', 'loginpress' )
         )
       ),
+	array(
+		'name'  => 'enable_pci_compliance',
+		'label' => __( 'Enable PCI Compliance', 'loginpress' ),
+		'desc'  => sprintf( __( 'Add %1$sPCI Compliance%2$s on WP login forms.', 'loginpress' ), '<a href="' . esc_url( 'https://loginpress.pro/doc/wordpress-login-page-pci-compliance/' ) . '" target="_blank">', '</a>' ),
+		'type'  => 'checkbox'
+	),
       // array(
       //   'name'  => 'login_with_email',
       //   'label' => __( 'Login with Email', 'loginpress' ),

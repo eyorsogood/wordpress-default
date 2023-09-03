@@ -14,6 +14,14 @@ function exactmetrics_gutenberg_editor_assets() {
 		return;
 	}
 
+	if ( function_exists( 'get_current_screen' ) ) {
+		$current_screen = get_current_screen();
+
+		if ( is_object( $current_screen ) && 'widgets' === $current_screen->id ) {
+			return;
+		}
+	}
+
 	$plugins_js_path    = '/assets/gutenberg/js/editor.min.js';
 	$plugins_style_path = '/assets/gutenberg/css/editor.css';
 	$version_path       = exactmetrics_is_pro_version() ? 'pro' : 'lite';
@@ -74,7 +82,7 @@ function exactmetrics_gutenberg_editor_assets() {
 	wp_localize_script(
 		'exactmetrics-gutenberg-editor-js',
 		'exactmetrics_gutenberg_tool_vars',
-		array(
+		apply_filters( 'exactmetrics_gutenberg_tool_vars', array(
 			'ajaxurl'                      => admin_url( 'admin-ajax.php' ),
 			'nonce'                        => wp_create_nonce( 'exactmetrics_gutenberg_headline_nonce' ),
 			'allowed_post_types'           => apply_filters( 'exactmetrics_headline_analyzer_post_types', array( 'post' ) ),
@@ -85,10 +93,15 @@ function exactmetrics_gutenberg_editor_assets() {
 			'vue_assets_path'              => plugins_url( $version_path . '/assets/vue/', EXACTMETRICS_PLUGIN_FILE ),
 			'is_woocommerce_installed'     => class_exists( 'WooCommerce' ),
 			'license_type'                 => ExactMetrics()->license->get_license_type(),
-			'upgrade_url'                  => exactmetrics_get_upgrade_link( 'gutenberg', 'products' ),
+			'upgrade_url'                  => exactmetrics_get_upgrade_link( 'pageinsights-meta', 'products' ),
 			'install_woocommerce_url'      => $install_woocommerce_url,
 			'supports_custom_fields'       => post_type_supports( $posttype, 'custom-fields' ),
-		)
+			'public_post_type'             => $posttype ? is_post_type_viewable( $posttype ) : 0,
+			'page_insights_addon_active'   => class_exists( 'ExactMetrics_Page_Insights' ),
+			'page_insights_nonce'          => wp_create_nonce( 'mi-admin-nonce' ),
+			'isnetwork'                    => is_network_admin(),
+			'is_v4'                        => true
+		) )
 	);
 }
 

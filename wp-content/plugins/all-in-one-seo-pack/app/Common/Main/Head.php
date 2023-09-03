@@ -24,6 +24,60 @@ class Head {
 	private static $pageTitle = null;
 
 	/**
+	 * Title class instance.
+	 *
+	 * @since 4.3.9
+	 *
+	 * @var Title
+	 */
+	private $title;
+
+	/**
+	 * GoogleAnalytics class instance.
+	 *
+	 * @since 4.2.7
+	 *
+	 * @var GoogleAnalytics
+	 */
+	protected $analytics = null;
+
+	/**
+	 * Links class instance.
+	 *
+	 * @since 4.2.7
+	 *
+	 * @var Meta\Links
+	 */
+	protected $links = null;
+
+	/**
+	 * Keywords class instance.
+	 *
+	 * @since 4.2.7
+	 *
+	 * @var Meta\Keywords
+	 */
+	protected $keywords = null;
+
+	/**
+	 * Verification class instance.
+	 *
+	 * @since 4.2.7
+	 *
+	 * @var Meta\SiteVerification
+	 */
+	protected $verification = null;
+
+	/**
+	 * The views to output.
+	 *
+	 * @since 4.2.7
+	 *
+	 * @var array
+	 */
+	protected $views = [];
+
+	/**
 	 * Class constructor.
 	 *
 	 * @since 4.0.0
@@ -33,6 +87,7 @@ class Head {
 		add_action( 'wp', [ $this, 'registerTitleHooks' ], 1000 );
 		add_action( 'wp_head', [ $this, 'init' ], 1 );
 
+		$this->title        = new Title();
 		$this->analytics    = new GoogleAnalytics();
 		$this->links        = new Meta\Links();
 		$this->keywords     = new Meta\Keywords();
@@ -73,8 +128,8 @@ class Head {
 		add_filter( 'pre_get_document_title', [ $this, 'getTitle' ], 99999 );
 		add_filter( 'wp_title', [ $this, 'getTitle' ], 99999 );
 		if ( ! current_theme_supports( 'title-tag' ) ) {
-			add_action( 'template_redirect', [ $this, 'startOutputBuffering' ] );
-			add_action( 'wp_footer', [ $this, 'rewriteTitle' ], -2 );
+			add_action( 'template_redirect', [ $this->title, 'startOutputBuffering' ], 99999 );
+			add_action( 'wp_head', [ $this->title, 'endOutputBuffering' ], 99999 );
 		}
 	}
 
@@ -112,43 +167,6 @@ class Head {
 	}
 
 	/**
-	 * Starts our output buffering.
-	 *
-	 * @since 4.0.5
-	 *
-	 * @return void
-	 */
-	public function startOutputBuffering() {
-		ob_start();
-	}
-
-	/**
-	 * Rewrites the page title using output buffering.
-	 *
-	 * @since 4.0.5
-	 *
-	 * @return void
-	 */
-	public function rewriteTitle() {
-		$content   = apply_filters( 'aioseo_flush_output_buffer', true ) ? ob_get_clean() : ob_get_contents();
-		$split     = explode( '</head>', $content );
-		$head      = $split[0] . '</head>';
-
-		unset( $split[0] );
-		$body = implode( '</head>', $split );
-
-		// Remove all existing title tags.
-		$head = preg_replace( '#<title.*?\/title>#s', '', $head );
-
-		// Add the new title tag to our own comment block.
-		$pageTitle = aioseo()->helpers->escapeRegexReplacement( $this->getTitle() );
-		$head      = preg_replace( '#(<!--\sAll\sin\sOne\sSEO[a-zA-Z\s0-9.]+\s-->)#', "$1\r\n\t\t<title>$pageTitle</title>", $head, 1 );
-
-		$content = $head . $body;
-		echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	}
-
-	/**
 	 * The output function itself.
 	 *
 	 * @since 4.0.0
@@ -166,11 +184,11 @@ class Head {
 		echo "\n\t\t<!-- " . sprintf(
 			'%1$s %2$s',
 			esc_html( AIOSEO_PLUGIN_NAME ),
-			aioseo()->version // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		) . " -->\n";
+			aioseo()->helpers->getAioseoVersion() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		) . " - aioseo.com -->\n";
 
 		foreach ( $views as $view ) {
-			require( $view );
+			require $view;
 		}
 
 		echo "\t\t<!-- " . esc_html( AIOSEO_PLUGIN_NAME ) . " -->\n\n";

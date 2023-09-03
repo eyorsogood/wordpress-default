@@ -12,11 +12,22 @@ class LoginPress_Entities {
   public $loginpress_key;
 
   /**
+   * LoginPress template name.
+   *
+   * @since 1.6.4
+   * @var string LoginPress template name.
+   */
+  public $loginpress_preset;
+
+
+  /**
   * Class constructor
   */
   public function __construct() {
 
-    $this->loginpress_key = get_option( 'loginpress_customization' );
+    $this->loginpress_key    = get_option( 'loginpress_customization' );
+	$this->loginpress_preset = get_option( 'customize_presets_settings', 'default1' );
+
     $this->_hooks();
   }
 
@@ -70,7 +81,7 @@ class LoginPress_Entities {
   * Enqueue jQuery and use wp_localize_script.
   *
   * @since 1.0.9
-  * @version 1.2.1
+  * @version 1.6.4
   */
   function loginpress_customizer_js() {
 
@@ -103,7 +114,7 @@ class LoginPress_Entities {
       'admin_url'         => admin_url(),
       'ajaxurl'           => admin_url( 'admin-ajax.php' ),
       'plugin_url'        => plugins_url(),
-      'login_theme'       => get_option( 'customize_presets_settings', true ),
+      'login_theme'       => $this->loginpress_preset,
       'loginpress_bg_url' => $loginpress_bg_url,
       'preset_nonce'      => wp_create_nonce( 'loginpress-preset-nonce' ),
       'attachment_nonce'  => wp_create_nonce( 'loginpress-attachment-nonce' ),
@@ -1598,24 +1609,35 @@ class LoginPress_Entities {
   }
 
   /**
-  * Manage the Login Footer Links
+  * Login Footer Links
   *
   * @since	1.0.0
-  * @version 1.5.4
-  * * * * * * * * * * * * * * * */
+  * @version 1.6.4
+  */
   public function login_page_custom_footer() {
 
     /**
-     * Add brand postion class.
+     * Add brand position class.
      * @since 1.1.3
-     * @version 1.5.4
+     * @version 1.6.4
      */
     $position = ''; // Empty variable for storing position class.
     if ( $this->loginpress_key ) {
       if ( isset( $this->loginpress_key['show_love_position'] ) && $this->loginpress_key['show_love_position'] == 'left' ) {
-        $position = ' love-postion';
+        $position = ' love-position';
       }
     }
+
+	/**
+	 * Add functionality of disabling the templates of LoginPress.
+	 *
+	 * @since 1.6.4
+	 */
+	$disable_default_style = (bool) apply_filters( 'loginpress_disable_default_style', false );
+
+	if ( $this->loginpress_preset === 'default1' && $disable_default_style ) {
+		include( LOGINPRESS_DIR_PATH . 'include/login-footer.php' );
+	}
 
     if ( empty( $this->loginpress_key ) || ( isset( $this->loginpress_key['loginpress_show_love'] ) &&  $this->loginpress_key['loginpress_show_love'] != '' ) ) {
       echo '<div class="loginpress-show-love' . $position . '">' . __( 'Powered by:', 'loginpress' ) . ' <a href="https://wpbrigade.com" target="_blank">LoginPress</a></div>';
@@ -1663,7 +1685,7 @@ class LoginPress_Entities {
   * Manage the Login Head
   *
   * @since	1.0.0
-  * @version 1.5.3
+  * @version 1.6.4
   * * * * * * * * * * * */
   public function login_page_custom_head() {
 
@@ -1677,9 +1699,18 @@ class LoginPress_Entities {
     if ( isset( $this->loginpress_key['loginpress_custom_js'] ) && ! empty( $this->loginpress_key['loginpress_custom_js'] ) ) { // 1.2.2
       wp_enqueue_script( 'jquery' );
     }
-    include( LOGINPRESS_DIR_PATH . 'css/style-presets.php' );
-    include( LOGINPRESS_DIR_PATH . 'css/style-login.php' );
 
+	/**
+	 * Add functionality of disabling the templates of LoginPress.
+	 *
+	 * @since 1.6.4
+	 */
+	$disable_default_style = (bool) apply_filters( 'loginpress_disable_default_style', false  );
+
+	if ( ! $disable_default_style || 'default1' !== $this->loginpress_preset ) {
+		include( LOGINPRESS_DIR_PATH . 'css/style-presets.php' );
+		include( LOGINPRESS_DIR_PATH . 'css/style-login.php' );
+	}
     do_action( 'loginpress_header_menu' );
     // do_action( 'loginpress_header_wrapper' );
 

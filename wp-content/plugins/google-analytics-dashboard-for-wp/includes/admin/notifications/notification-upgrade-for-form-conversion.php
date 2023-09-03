@@ -11,8 +11,8 @@ final class ExactMetrics_Notification_Upgrade_For_Form_Conversion extends ExactM
 	public $notification_id = 'exactmetrics_notification_upgrade_for_form_conversion';
 	public $notification_interval = 20; // in days
 	public $notification_type = array( 'basic', 'lite', 'plus' );
-    public $notification_category = 'insight';
-    public $notification_priority = 3;
+	public $notification_category = 'insight';
+	public $notification_priority = 3;
 
 	/**
 	 * Build Notification
@@ -27,9 +27,9 @@ final class ExactMetrics_Notification_Upgrade_For_Form_Conversion extends ExactM
 		$notification['content'] = sprintf( __( 'Track your website\'s form conversion rates by upgrading to %sExactMetrics Pro%s.', 'google-analytics-dashboard-for-wp' ), '<a href="' . $this->get_upgrade_url() . '" target="_blank">', '</a>' );
 		$notification['btns']    = array(
 			"get_exactmetrics_pro" => array(
-				'url'           => $this->get_upgrade_url(),
-				'text'          => __( 'Upgrade Now', 'google-analytics-dashboard-for-wp' ),
-				'is_external'   => true,
+				'url'         => $this->get_upgrade_url(),
+				'text'        => __( 'Upgrade Now', 'google-analytics-dashboard-for-wp' ),
+				'is_external' => true,
 			),
 		);
 

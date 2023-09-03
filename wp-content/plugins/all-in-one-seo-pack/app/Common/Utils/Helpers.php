@@ -14,19 +14,23 @@ use AIOSEO\Plugin\Common\Traits\Helpers as TraitHelpers;
  * @since 4.0.0
  */
 class Helpers {
-	use TraitHelpers\ActionScheduler;
+	use TraitHelpers\Api;
 	use TraitHelpers\Arrays;
 	use TraitHelpers\Constants;
 	use TraitHelpers\Deprecated;
 	use TraitHelpers\DateTime;
 	use TraitHelpers\Language;
+	use TraitHelpers\PostType;
+	use TraitHelpers\Request;
 	use TraitHelpers\Shortcodes;
 	use TraitHelpers\Strings;
 	use TraitHelpers\Svg;
 	use TraitHelpers\ThirdParty;
+	use TraitHelpers\Url;
 	use TraitHelpers\Vue;
 	use TraitHelpers\Wp;
 	use TraitHelpers\WpContext;
+	use TraitHelpers\WpMultisite;
 	use TraitHelpers\WpUri;
 
 	/**
@@ -79,48 +83,6 @@ class Helpers {
 	}
 
 	/**
-	 * Request the remote URL via wp_remote_post and return a json decoded response.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @param array  $body    The content to retrieve from the remote URL.
-	 * @param array  $headers The headers to send to the remote URL.
-	 *
-	 * @return string|bool Json decoded response on success, false on failure.
-	 */
-	public function sendRequest( $url, $body = [], $headers = [] ) {
-		$body = wp_json_encode( $body );
-
-		// Build the headers of the request.
-		$headers = wp_parse_args(
-			$headers,
-			[
-				'Content-Type' => 'application/json'
-			]
-		);
-
-		// Setup variable for wp_remote_post.
-		$post = [
-			'headers'   => $headers,
-			'body'      => $body,
-			'sslverify' => $this->isDev() ? false : true,
-			'timeout'   => 20
-		];
-
-		// Perform the query and retrieve the response.
-		$response     = wp_remote_post( $url, $post );
-		$responseBody = wp_remote_retrieve_body( $response );
-
-		// Bail out early if there are any errors.
-		if ( is_wp_error( $responseBody ) ) {
-			return false;
-		}
-
-		// Return the json decoded content.
-		return json_decode( $responseBody );
-	}
-
-	/**
 	 * Checks if the server is running on Apache.
 	 *
 	 * @since 4.0.0
@@ -150,8 +112,8 @@ class Helpers {
 		$server = sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) );
 
 		if (
-			stripos( $server, 'Flywheel' ) !== false ||
-			stripos( $server, 'nginx' ) !== false
+			false !== stripos( $server, 'Flywheel' ) ||
+			false !== stripos( $server, 'nginx' )
 		) {
 			return true;
 		}
@@ -261,5 +223,22 @@ class Helpers {
 		}
 
 		return $string;
+	}
+
+	/**
+	 * Return the version number with a filter to enable users to hide the version.
+	 *
+	 * @since 4.3.7
+	 *
+	 * @return string The current version or empty if the filter is active. Using ?aioseo-dev will override the filter.
+	 */
+	public function getAioseoVersion() {
+		$version = aioseo()->version;
+
+		if ( ! $this->isDev() && apply_filters( 'aioseo_hide_version_number', false ) ) {
+			$version = '';
+		}
+
+		return $version;
 	}
 }

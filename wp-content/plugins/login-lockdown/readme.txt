@@ -1,31 +1,85 @@
-=== Login LockDown ===
-Developer: Michael VanDeMar (michael@endlesspoetry.com)
-Tags: security, login, login form
-Requires at least: 3.6
-Tested up to: 5.2.3
-Stable Tag: 1.8.1
+=== Login Lockdown - Protect Login Form ===
+Contributors: WebFactory
+Tags: security, login, login form, protect login, captcha, login control, login blocking, lockdown, ban ip, bruteforce
+Requires at least: 4.0
+Tested up to: 6.3
+Stable Tag: 2.06
+Requires PHP: 5.2
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Limits the number of login attempts from a given IP range within a certain time period.
+Protect login form by limiting the number of login attempts from the same IP & banning IPs.
 
 == Description ==
 
-Login LockDown records the IP address and timestamp of every failed login attempt. If more than a 
-certain number of attempts are detected within a short period of time from the same
-IP range, then the login function is disabled for all requests from that range.
-This helps to prevent brute force password discovery. Currently the plugin defaults
-to a 1 hour lock out of an IP block after 3 failed login attempts within 5 minutes. This can be modified
-via the Options panel. Administrators can release locked out IP ranges manually from the panel.
+<a href="https://wploginlockdown.com/">Login Lockdown</a> records the IP address and timestamp of failed login attempts. If more than a selected number of attempts are detected within a set period of time from the same IP, then the **login is disabled for all requests from that IP address** (or the IP is completely blocked from accessing the site). This helps prevent brute force password attacks & discovery.
+
+The plugin defaults to a 1 hour lock out of an IP block after 3 failed login attempts within 5 minutes. This can be modified in options. Administrators can release locked out IP ranges manually from the panel. A detailed log is available for all failed login attempts and all IP locks.
+
+Configure the plugin from Settings - Login Lockdown.
+
+#### Country blocking (PRO feature)
+Block unwanted countries from accessing the site, or just block them from being able to log in. Display a custom message to blocked visitors so they know why they can't access the site.
+
+#### Captcha
+The simplest way to get rid of bots and brute-force password attacks. Choose from 4 different versions - built-in one, two from Google (PRO feature), and hCaptcha (PRO feature). Built-in captcha is GDPR compatible.
+
+#### 2FA - Two Factor Authentication (PRO feature)
+Provide an extra layer of security without messing with annoying 2FA code generating apps such as Google Authenticator. Even if somebody knows your username &amp; password they won't be able to log in because it needs to be confirmed by clicking a unique link sent to your email. And since you're the only one that has access to your inbox, you'll never get hacked.
+
+#### Cloud Protection (PRO feature)
+Manage IP Whitelists and Blacklists in your Login Lockdown Dashboard (a SaaS service for managing all your sites) and apply them to protect all the sites you manage from a single location.
+
+#### Temporary Access (PRO feature)
+Give temporary access to other people without giving them a username &amp; password. Set the lifetime of the link and the maximum number of times it can be used to prevent abuse. Access level rights can be any you pick - admin, editor, author...
 
 == Installation ==
 
 1. Extract the zip file into your plugins directory into its own folder.
 2. Activate the plugin in the Plugin options.
-3. Customize the settings from the Options panel, if desired.
+3. Customize the settings from Settings - Login Lockdown panel.
 
-Enjoy.
+== Screenshots ==
+
+1. Protect the login form by banning IPs with multiple failed login attempts
+2. Activity shows all failed login attempts and currently banned IPs
+3. Country blocking (PRO feature) allows you to block selected countries from accessing the site
 
 == Change Log ==
 
+= v2.06 =
+* 2023/05/11
+* minor bug fixes
+
+= v2.05 =
+* 2023/05/09
+* bug fix - IP wasn't showing in lockdowns and log tables
+
+= v2.02 =
+* 2023/04/24
+* fixed a few captcha bugs
+* added captcha verification when activating it in admin
+
+= v2.0 =
+* 2023/04/18
+* new codebase
+* new GUI
+* new features
+* added captcha
+* introduced PRO version
+
+= v1.83 =
+* 2022/10/04
+* fixed timezone bug
+
+= v1.82 =
+* 2022/09/23
+* WebFactory took over development
+* a full rewrite will follow soon, for now we patched some urgent things
+* prefixed function names that are in global namespace
+* properly escaped all inputs
+
+= Old changelog =
  ver. 1.8.1 30-Sep-2019
 
  - adding missing ./languages folder
@@ -52,7 +106,7 @@ Enjoy.
  - fixed bug with invalid property on a non-object when locking out invalid usernames
  - fixed utilization of $wpdb->prepare
  - added more descriptive help text to each of the options
- - added the ability to remove the "Login form protected by Login LockDown." message from within the dashboard
+ - added the ability to remove the "Login form protected by Login Lockdown." message from within the dashboard
 
  ver. 1.5 17-Sep-2009
 
@@ -78,9 +132,8 @@ Enjoy.
 
  ver. 1.1 01-Sep-2007
 
- - revised time query to MySQL 4.0 compatability
+ - revised time query to MySQL 4.0 compatibility
 
  ver. 1.0 29-Aug-2007
 
  - released
-

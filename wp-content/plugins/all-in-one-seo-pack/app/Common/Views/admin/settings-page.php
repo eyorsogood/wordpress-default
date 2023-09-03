@@ -20,7 +20,7 @@ $medium    = false !== strpos( AIOSEO_PHP_VERSION_DIR, 'pro' ) ? 'proplugin' : '
 		margin: auto;
 		width: 750px;
 		max-width: 100%;
-		animation: loadAioseoSettingsNoJSView 0s 2s forwards;
+		animation: loadAioseoSettingsNoJSView 0s 5s forwards;
 	}
 
 	#aioseo-settings-error-loading-area {
@@ -149,8 +149,8 @@ $medium    = false !== strpos( AIOSEO_PHP_VERSION_DIR, 'pro' ) ? 'proplugin' : '
 
 				<p style="margin-top: 5px; font-size: 14px; color: #141B38;">
 					<?php
-					// Translators: 1 - "AIOSEO".
 					printf(
+						// Translators: 1 - "AIOSEO".
 						esc_html__( 'Copy the error message above and paste it in a message to the %1$s support team.', 'all-in-one-seo-pack' ),
 						esc_attr( AIOSEO_PLUGIN_SHORT_NAME )
 					);

@@ -4,8 +4,9 @@
  * Log file to know more about users website environment.
  * helps in debugging and providing support.
  *
- * @package    LoginPress
- * @since      1.0.19
+ * @package LoginPress
+ * @since 1.0.19
+ * @version 1.6.4
  */
 
 class LoginPress_Log_Info {
@@ -18,17 +19,20 @@ class LoginPress_Log_Info {
 	public static function get_sysinfo() {
 
 		global $wpdb;
-		$loginpress_setting  = get_option( 'loginpress_setting' );
-		$loginpress_config 	 = get_option( 'loginpress_customization' );
-		$session_expiration  = ( isset( $loginpress_setting['session_expiration'] ) && '0' != $loginpress_setting['session_expiration'] ) ? $loginpress_setting['session_expiration'] . ' Minute' : 'Not Set';
+		$loginpress_setting    = get_option( 'loginpress_setting' );
+		$loginpress_config 	   = get_option( 'loginpress_customization' );
+		$session_expiration    = ( isset( $loginpress_setting['session_expiration'] ) && '0' != $loginpress_setting['session_expiration'] ) ? $loginpress_setting['session_expiration'] . ' Minute' : 'Not Set';
 		$login_order 	       = isset( $loginpress_setting['login_order'] ) ? $loginpress_setting['login_order'] : 'Default';
-		$customization 			 = isset( $loginpress_config ) ? print_r( $loginpress_config, true ) : 'No customization yet';
-		$lostpassword_url 	 = isset( $loginpress_setting['lostpassword_url'] ) ? $loginpress_setting['lostpassword_url'] : 'off';
+		$customization 	       = isset( $loginpress_config ) ? print_r( $loginpress_config, true ) : 'No customization yet';
+		$lostpassword_url 	   = isset( $loginpress_setting['lostpassword_url'] ) ? $loginpress_setting['lostpassword_url'] : 'off';
+
 		if ( version_compare( $GLOBALS['wp_version'], '5.9', '>=' ) && ! empty( get_available_languages() ) ) {
-			$lang_switcher = isset( $loginpress_setting['enable_language_switcher'] ) ? $loginpress_setting['enable_language_switcher'] : 'Off';
+			$lang_switcher     = isset( $loginpress_setting['enable_language_switcher'] ) ? $loginpress_setting['enable_language_switcher'] : 'Off';
 		}
-		$_loginpassword_url  = ( $lostpassword_url == 'on' ) ? 'WordPress Default' : "WooCommerce Custom URL";
-		$loginpress_uninstall= isset( $loginpress_setting['loginpress_uninstall'] ) ? $loginpress_setting['loginpress_uninstall'] : 'off';
+		$pci_compliance        = isset( $loginpress_setting['enable_pci_compliance'] ) ? $loginpress_setting['enable_pci_compliance'] : 'Off';
+		$_loginpassword_url    = ( $lostpassword_url == 'on' ) ? 'WordPress Default' : "WooCommerce Custom URL";
+		$loginpress_uninstall  = isset( $loginpress_setting['loginpress_uninstall'] ) ? $loginpress_setting['loginpress_uninstall'] : 'off';
+		$disable_default_style = (bool) apply_filters( 'loginpress_disable_default_style', false );
 
 		$html = '### Begin System Info ###' . "\n\n";
 
@@ -43,11 +47,21 @@ class LoginPress_Log_Info {
 		$html .= 'WP_DEBUG:                 ' . ( defined( 'WP_DEBUG' ) ? WP_DEBUG ? 'Enabled' : 'Disabled' : 'Not set' ) . "\n";
 		$html .= 'Memory Limit:             ' . WP_MEMORY_LIMIT . "\n";
 
+		/**
+		 * Add a filter to disable the LoginPress default template style.
+		 *
+		 * @since 1.6.4
+		 */
+		if ( $disable_default_style ) {
+			$html .= "\n" . '-- *LoginPress Default Style is disabled by using Hook* --' . "\n";
+		}
+
 		// Plugin Configuration
 		$html .= "\n" . '-- LoginPress Configuration --' . "\n\n";
 		$html .= 'Plugin Version:           ' . LOGINPRESS_VERSION . "\n";
 		$html .= 'Expiration:           	  ' . $session_expiration . "\n";
 		$html .= 'Login Order:              ' . ucfirst( $login_order ) . "\n";
+		$html .= 'PCI Compliance:           ' . ucfirst( $pci_compliance ) . "\n";
 		if ( class_exists( 'WooCommerce' ) ) {
 			$html .= 'Lost Password URL:        ' . $_loginpassword_url . "\n";
 		}
@@ -71,7 +85,6 @@ class LoginPress_Log_Info {
 			$enable_force 			 = ( isset( $loginpress_setting['force_login'] ) ) ? $loginpress_setting['force_login'] : 'Off';
 			$loginpress_preset	 = get_option( 'customize_presets_settings', 'default1' );
 			$license_key         = LoginPress_Pro::get_registered_license_status();
-
 			$html .= "\n" . '-- LoginPress Pro Configuration --' . "\n\n";
 			$html .= 'Plugin Version:           ' . LOGINPRESS_PRO_VERSION . "\n";
 			$html .= 'LoginPress Template:      ' . $loginpress_preset . "\n";

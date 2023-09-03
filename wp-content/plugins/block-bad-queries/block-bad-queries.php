@@ -9,9 +9,9 @@
 	Contributors: specialk, aldolat, WpBlogHost, jameswilkes, juliobox, lernerconsult
 	Donate link: https://monzillamedia.com/donate.html
 	Requires at least: 4.6
-	Tested up to: 5.9
-	Stable tag: 20220122
-	Version:    20220122
+	Tested up to: 6.3
+	Stable tag: 20230718
+	Version:    20230718
 	Requires PHP: 5.6.20
 	Text Domain: block-bad-queries
 	Domain Path: /languages
@@ -32,19 +32,20 @@
 	You should have received a copy of the GNU General Public License
 	with this program. If not, visit: https://www.gnu.org/licenses/
 	
-	Copyright 2022 Monzilla Media. All rights reserved.
+	Copyright 2023 Monzilla Media. All rights reserved.
 */
 
 if (!defined('ABSPATH')) die();
 
-if (!defined('BBQ_VERSION')) define('BBQ_VERSION', '20220122');
-if (!defined('BBQ_FILE'))    define('BBQ_FILE', plugin_basename(__FILE__));
-if (!defined('BBQ_DIR'))     define('BBQ_DIR',  plugin_dir_path(__FILE__));
-if (!defined('BBQ_URL'))     define('BBQ_URL',  plugins_url('/block-bad-queries/'));
+if (!defined('BBQ_VERSION'))   define('BBQ_VERSION', '20230718');
+if (!defined('BBQ_FILE'))      define('BBQ_FILE', __FILE__);
+if (!defined('BBQ_BASE_FILE')) define('BBQ_BASE_FILE', plugin_basename(__FILE__));
+if (!defined('BBQ_DIR'))       define('BBQ_DIR', plugin_dir_path(__FILE__));
+if (!defined('BBQ_URL'))       define('BBQ_URL', plugins_url('/block-bad-queries/'));
 
 function bbq_core() {
 	
-	$request_uri_array  = apply_filters('request_uri_items', array('\/\.env', '\s', '<', '>', '\^', '`', '@@', '\?\?', '\/&&', '\\', '\/=', '\/:\/', '\/\/\/', '\.\.\.', '\/\*(.*)\*\/', '\+\+\+', '\{0\}', '0x00', '%00', '\(\/\(', '(\/|;|=|,)nt\.', '@eval', 'eval\(', 'union(.*)select', '\(null\)', 'base64_', '(\/|%2f)localhost', '(\/|%2f)pingserver', 'wp-config\.php', '(\/|\.)(s?ftp-?)?conf(ig)?(uration)?\.', '\/wwwroot', '\/makefile', 'crossdomain\.', 'self\/environ', 'usr\/bin\/perl', 'var\/lib\/php', 'etc\/passwd', '\/https:', '\/http:', '\/ftp:', '\/file:', '\/php:', '\/cgi\/', '\.asp', '\.bak', '\.bash', '\.bat', '\.cfg', '\.cgi', '\.cmd', '\.conf', '\.db', '\.dll', '\.ds_store', '\.exe', '\/\.git', '\.hta', '\.htp', '\.inc', '\.init?', '\.jsp', '\.mysql', '\.pass', '\.pwd', '\.sql', '\/\.svn', '\.exec\(', '\)\.html\(', '\{x\.html\(', '\.php\([0-9]+\)', '(benchmark|sleep)(\s|%20)*\(', '\/(db|mysql)-?admin', '\/document_root', '\/error_log', 'indoxploi', '\/sqlpatch', 'xrumer', 'www\.(.*)\.cn', '%3Cscript', '\/vbforum(\/)?', '\/vbulletin(\/)?', '\{\$itemURL\}', '(\/bin\/)(cc|chmod|chsh|cpp|echo|id|kill|mail|nasm|perl|ping|ps|python|tclsh)(\/)?$', '((curl_|shell_)?exec|(f|p)open|function|fwrite|leak|p?fsockopen|passthru|phpinfo|posix_(kill|mkfifo|setpgid|setsid|setuid)|proc_(close|get_status|nice|open|terminate)|system)(.*)(\()(.*)(\))', '(\/)(^$|0day|c99|configbak|curltest|db|index\.php\/index|(my)?sql|(php|web)?shell|php-?info|temp00|vuln|webconfig)(\.php)'));
+	$request_uri_array  = apply_filters('request_uri_items', array('\/\.env', '\s', '<', '>', '\^', '`', '@@', '\?\?', '\/&&', '\\', '\/=', '\/:\/', '\/\/\/', '\.\.\.', '\/\*(.*)\*\/', '\+\+\+', '\{0\}', '0x00', '%00', '\(\/\(', '(\/|;|=|,)nt\.', '@eval', 'eval\(', 'union(.*)select', '\(null\)', 'base64_', '(\/|%2f)localhost', '(\/|%2f)pingserver', 'wp-config\.php', '(\/|\.)(s?ftp-?)?conf(ig)?(uration)?\.', '\/wwwroot', '\/makefile', 'crossdomain\.', 'self\/environ', 'usr\/bin\/perl', 'var\/lib\/php', 'etc\/passwd', '\/https:', '\/http:', '\/ftp:', '\/file:', '\/php:', '\/cgi\/', '\.asp', '\.bak', '\.bash', '\.bat', '\.cfg', '\.cgi', '\.cmd', '\.conf', '\.db', '\.dll', '\.ds_store', '\.exe', '\/\.git', '\.hta', '\.htp', '\.init?', '\.jsp', '\.mysql', '\.pass', '\.pwd', '\.sql', '\/\.svn', '\.exec\(', '\)\.html\(', '\{x\.html\(', '\.php\([0-9]+\)', '(benchmark|sleep)(\s|%20)*\(', '\/(db|mysql)-?admin', '\/document_root', '\/error_log', 'indoxploi', '\/sqlpatch', 'xrumer', 'www\.(.*)\.cn', '%3Cscript', '\/vbforum(\/)?', '\/vbulletin(\/)?', '\{\$itemURL\}', '(\/bin\/)(cc|chmod|chsh|cpp|echo|id|kill|mail|nasm|perl|ping|ps|python|tclsh)(\/)?$', '((curl_|shell_)?exec|(f|p)open|function|fwrite|leak|p?fsockopen|passthru|phpinfo|posix_(kill|mkfifo|setpgid|setsid|setuid)|proc_(close|get_status|nice|open|terminate)|system)(.*)(\()(.*)(\))', '(\/)(^$|0day|c99|configbak|curltest|db|index\.php\/index|(my)?sql|(php|web)?shell|php-?info|temp00|vuln|webconfig)(\.php)'));
 	
 	$query_string_array = apply_filters('query_string_items', array('\(0x', '0x3c62723e', ';!--=', '\(\)\}', ':;\};', '\.\.\/', '\/\*\*\/', '127\.0\.0\.1', 'localhost', 'loopback', '%0a', '%0d', '%00', '%2e%2e', '%0d%0a', '@copy', 'concat(.*)(\(|%28)', 'allow_url_(fopen|include)', '(c99|php|web)shell', 'auto_prepend_file', 'disable_functions?', 'gethostbyname', 'input_file', 'execute', 'safe_mode', 'file_(get|put)_contents', 'mosconfig', 'open_basedir', 'outfile', 'proc_open', 'root_path', 'user_func_array', 'path=\.', 'mod=\.', '(globals|request)(=|\[)', 'f(fclose|fgets|fputs|fsbuff)', '\$_(env|files|get|post|request|server|session)', '(\+|%2b)(concat|delete|get|select|union)(\+|%2b)', '(cmd|command)(=|%3d)(chdir|mkdir)', '(absolute_|base|root_)(dir|path)(=|%3d)(ftp|https?)', '(s)?(ftp|inurl|php)(s)?(:(\/|%2f|%u2215)(\/|%2f|%u2215))', '(\/|%2f)(=|%3d|\$&|_mm|cgi(\.|-)|inurl(:|%3a)(\/|%2f)|(mod|path)(=|%3d)(\.|%2e))', '(<|>|\'|")(.*)(\/\*|alter|base64|benchmark|cast|char|concat|convert|create|declare|delete|drop|encode|exec|fopen|function|html|insert|md5|request|script|select|set|union|update)'));
 	
@@ -61,9 +62,9 @@ function bbq_core() {
 	$user_agent_string   = '';
 	$referrer_string     = '';
 	
-	$long_requests = apply_filters('bbq_long_requests', true);
-	$match_logging = apply_filters('bbq_match_logging', false);
-	$post_scanning = apply_filters('bbq_post_scanning', false);
+	$long_requests   = apply_filters('bbq_long_requests', true);
+	$long_req_length = apply_filters('bbq_long_req_length', 2000);
+	$post_scanning   = apply_filters('bbq_post_scanning', false);
 	
 	if (isset($_SERVER['REQUEST_URI'])     && !empty($_SERVER['REQUEST_URI']))     $request_uri_string  = $_SERVER['REQUEST_URI'];
 	if (isset($_SERVER['QUERY_STRING'])    && !empty($_SERVER['QUERY_STRING']))    $query_string_string = $_SERVER['QUERY_STRING'];
@@ -74,33 +75,33 @@ function bbq_core() {
 	
 	//
 	
-	if ($long_requests && (strlen($request_uri_string) > 2000 || strlen($referrer_string) > 2000)) {
+	if ($long_requests && (strlen($request_uri_string) > $long_req_length || strlen($referrer_string) > $long_req_length)) {
 		
-		bbq_response($match_logging, $matches);
+		bbq_response(array($long_req_length));
 		
 	}
 	
 	if ($request_uri_string && preg_match('/'. implode('|', $request_uri_array) .'/i', $request_uri_string, $matches)) {
 		
-		bbq_response($match_logging, $matches);
+		bbq_response($matches);
 		
 	}
 	
 	if ($query_string_string && preg_match('/'. implode('|', $query_string_array) .'/i', $query_string_string, $matches)) {
 		
-		bbq_response($match_logging, $matches);
+		bbq_response($matches);
 		
 	}
 	
 	if ($user_agent_string && preg_match('/'. implode('|', $user_agent_array) .'/i', $user_agent_string, $matches)) {
 		
-		bbq_response($match_logging, $matches);
+		bbq_response($matches);
 		
 	}
 	
 	if ($referrer_string && preg_match('/'. implode('|', $referrer_array) .'/i', $referrer_string, $matches)) {
 		
-		bbq_response($match_logging, $matches);
+		bbq_response($matches);
 		
 	}
 	
@@ -114,7 +115,7 @@ function bbq_core() {
 			
 			if (preg_match('/'. implode('|', $post_array) .'/i', $value, $matches)) {
 				
-				bbq_response($match_logging, $matches);
+				bbq_response($matches);
 				
 				break;
 				
@@ -127,9 +128,13 @@ function bbq_core() {
 }
 add_action('plugins_loaded', 'bbq_core');
 
-function bbq_response($match_logging, $matches) {
+function bbq_response($matches) {
 	
-	if ($match_logging && isset($matches[0])) error_log('BBQ: '. $matches[0]);
+	do_action('bbq_response', $matches);
+	
+	$matches = isset($matches[0]) ? $matches[0] : null;
+	
+	if ($matches && apply_filters('bbq_match_logging', false)) error_log('BBQ: '. $matches);
 	
 	$header_1 = apply_filters('bbq_header_1', 'HTTP/1.1 403 Forbidden');
 	$header_2 = apply_filters('bbq_header_2', 'Status: 403 Forbidden');

@@ -3,7 +3,7 @@
 * Plugin Name: LoginPress - Customizing the WordPress Login Screen.
 * Plugin URI: https://loginpress.pro/?utm_source=loginpress-lite&utm_medium=plugin-inside&utm_campaign=pro-upgrade&utm_content=plugin_uri
 * Description: LoginPress is the best <code>wp-login</code> Login Page Customizer plugin by <a href="https://wpbrigade.com/?utm_source=loginpress-lite">WPBrigade</a> which allows you to completely change the layout of login, register and forgot password forms.
-* Version: 1.6.0
+* Version: 1.8.0
 * Author: WPBrigade
 * Author URI: https://WPBrigade.com/?utm_source=loginpress-lite
 * Text Domain: loginpress
@@ -22,7 +22,7 @@ if ( ! class_exists( 'LoginPress' ) ) :
     /**
     * @var string
     */
-    public $version = '1.6.0';
+    public $version = '1.8.0';
 
     /**
     * @var The single instance of the class
@@ -152,6 +152,7 @@ if ( ! class_exists( 'LoginPress' ) ) :
 	 *
 	 * @return bool Exclude page/s or post/s.
 	 * @since 1.5.14
+   * @version 1.6.3
 	 */
 	public function loginpress_exclude_from_sitemap() {
 
@@ -162,44 +163,54 @@ if ( ! class_exists( 'LoginPress' ) ) :
 	}
 
     /**
-    * Redirect to Optin page.
+    * Redirect to Opt-in page.
     *
     * @since 1.0.15
     */
     function redirect_optin() {
-
-      // delete_option( '_loginpress_optin' );
-
-      if ( isset( $_POST['loginpress-submit-optout'] ) ) {
-
-        update_option( '_loginpress_optin', 'no' );
-        $this->_send_data( array(
-          'action'	=>	'Skip',
-        ) );
-
-      } elseif ( isset( $_POST['loginpress-submit-optin'] ) ) {
-
-        update_option( '_loginpress_optin', 'yes' );
-        $fields = array(
-          'action'	        =>	'Activate',
-          'track_mailchimp' =>	'yes'
-        );
-        $this->_send_data( $fields );
-
-      } elseif ( ! get_option( '_loginpress_optin' ) && isset( $_GET['page'] ) && ( $_GET['page'] === 'loginpress-settings' || $_GET['page'] === 'loginpress' || $_GET['page'] === 'abw' ) ) {
-
+		// delete_option( '_loginpress_optin' );
 		/**
-		 * XSS Attack vector found and fixed.
+		 * Fix the Broken Access Control (BAC) security fix.
 		 *
-		 * @since 1.5.11
+		 * @since 1.6.3
 		 */
-		$page_redirect = $_GET['page'] === 'loginpress'  ? 'loginpress' : 'loginpress-settings';
-        wp_redirect( admin_url('admin.php?page=loginpress-optin&redirect-page=' . $page_redirect) );
-        exit;
-      } elseif ( get_option( '_loginpress_optin' ) && ( get_option( '_loginpress_optin' ) == 'yes' || get_option( '_loginpress_optin' ) == 'no' ) && isset( $_GET['page'] ) && $_GET['page'] === 'loginpress-optin' ) {
-         wp_redirect( admin_url( 'admin.php?page=loginpress-settings' ) );
-        exit;
-      }
+		if ( current_user_can( 'manage_options' ) ) {
+			if ( isset( $_POST['loginpress-submit-optout'] ) ) {
+				if ( ! wp_verify_nonce( sanitize_text_field( $_POST['loginpress_submit_optin_nonce'] ), 'loginpress_submit_optin_nonce' ) ) {
+					return;
+				}
+				update_option( '_loginpress_optin', 'no' );
+				$this->_send_data( array(
+				'action'	=>	'Skip',
+				) );
+
+			} elseif ( isset( $_POST['loginpress-submit-optin'] ) ) {
+				if ( ! wp_verify_nonce( sanitize_text_field( $_POST['loginpress_submit_optin_nonce'] ), 'loginpress_submit_optin_nonce' ) ) {
+					return;
+				}
+				update_option( '_loginpress_optin', 'yes' );
+				$fields = array(
+					'action'          => 'Activate',
+					'track_mailchimp' => 'yes'
+				);
+				$this->_send_data( $fields );
+
+			} elseif ( ! get_option( '_loginpress_optin' ) && isset( $_GET['page'] ) && ( $_GET['page'] === 'loginpress-settings' || $_GET['page'] === 'loginpress' || $_GET['page'] === 'abw' ) ) {
+
+			/**
+			 * XSS Attack vector found and fixed.
+			 *
+			 * @since 1.5.11
+			 */
+			$page_redirect = $_GET['page'] === 'loginpress'  ? 'loginpress' : 'loginpress-settings';
+			wp_redirect( admin_url('admin.php?page=loginpress-optin&redirect-page=' . $page_redirect) );
+			exit;
+
+			} elseif ( get_option( '_loginpress_optin' ) && ( get_option( '_loginpress_optin' ) == 'yes' ) && isset( $_GET['page'] ) && $_GET['page'] === 'loginpress-optin' ) {
+				wp_redirect( admin_url( 'admin.php?page=loginpress-settings' ) );
+				exit;
+			}
+		}
     }
 
 
@@ -310,7 +321,7 @@ if ( ! class_exists( 'LoginPress' ) ) :
     */
     public function register_options_page() {
 
-      add_submenu_page( null, __( 'Activate', 'loginpress' ), __( 'Activate', 'loginpress' ), 'manage_options', 'loginpress-optin', array( $this, 'render_optin' )  );
+      add_submenu_page( 'LoginPress', __( 'Activate', 'loginpress' ), __( 'Activate', 'loginpress' ), 'manage_options', 'loginpress-optin', array( $this, 'render_optin' )  );
 
       add_theme_page( __( 'LoginPress', 'loginpress' ), __( 'LoginPress', 'loginpress' ), 'manage_options', "abw", '__return_null' );
     }

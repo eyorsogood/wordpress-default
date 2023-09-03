@@ -1489,9 +1489,9 @@ jQuery(document).ready(function($) {
   wp.customize( 'loginpress_customization[show_love_position]', function( value ) {
     value.bind( function( loginPressVal ) {
       if ( loginPressVal == 'left' ) {
-        loginpress_find('.loginpress-show-love').addClass('love-postion');
+        loginpress_find('.loginpress-show-love').addClass('love-position');
       } else {
-        loginpress_find('.loginpress-show-love').removeClass('love-postion');
+        loginpress_find('.loginpress-show-love').removeClass('love-position');
       }
     } );
 	} );

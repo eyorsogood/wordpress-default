@@ -69,12 +69,12 @@ final class ExactMetrics_Report_Overview extends ExactMetrics_Report {
 		// Add GA links.
 		if ( ! empty( $data['data'] ) ) {
 			$data['data']['galinks'] = array(
-				'countries' => $this->get_ga_report_url( 'visitors-geo', 'user-demographics-detail', $data['data'] ),
-				'referrals' => $this->get_ga_report_url( 'trafficsources-referrals', 'lifecycle-user-acquisition', $data['data'], '', '_r.explorerCard..seldim=["userAcquiredCampaignSource"]' ),
-				'topposts'  => $this->get_ga_report_url( 'content-pages', 'all-pages-and-screens', $data['data'] ),
+				'countries' => $this->get_ga_report_url( 'user-demographics-detail', $data['data'] ),
+				'referrals' => $this->get_ga_report_url( 'lifecycle-user-acquisition', $data['data'], '_r.explorerCard..seldim=["userAcquiredCampaignSource"]' ),
+				'topposts'  => $this->get_ga_report_url( 'all-pages-and-screens', $data['data'] ),
 			);
 		}
 
-		return $data;
+		return apply_filters( 'exactmetrics_report_overview_data', $data );
 	}
 }

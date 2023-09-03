@@ -11,8 +11,8 @@ final class ExactMetrics_Notification_Mobile_Device_Low_Traffic extends ExactMet
 	public $notification_id = 'exactmetrics_notification_mobile_device';
 	public $notification_interval = 15; // in days
 	public $notification_type = array( 'basic', 'lite', 'master', 'plus', 'pro' );
-    public $notification_category = 'insight';
-    public $notification_priority = 2;
+	public $notification_category = 'insight';
+	public $notification_priority = 2;
 
 	/**
 	 * Prepare Notification
@@ -37,9 +37,9 @@ final class ExactMetrics_Notification_Mobile_Device_Low_Traffic extends ExactMet
 					'text' => __( 'View Report', 'google-analytics-dashboard-for-wp' )
 				),
 				"learn_more"  => array(
-					'url'           => $this->build_external_link( 'https://www.wpbeginner.com/beginners-guide/how-to-preview-the-mobile-layout-of-your-site/' ),
-					'text'          => __( 'Learn More', 'google-analytics-dashboard-for-wp' ),
-					'is_external'   => true,
+					'url'         => $this->build_external_link( 'https://www.wpbeginner.com/beginners-guide/how-to-preview-the-mobile-layout-of-your-site/' ),
+					'text'        => __( 'Learn More', 'google-analytics-dashboard-for-wp' ),
+					'is_external' => true,
 				),
 			);
 

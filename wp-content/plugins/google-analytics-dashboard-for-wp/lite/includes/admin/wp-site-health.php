@@ -36,7 +36,10 @@ class ExactMetrics_WP_Site_Health_Lite {
 
 		add_action( 'wp_ajax_health-check-exactmetrics-test_connection', array( $this, 'test_check_connection' ) );
 
-		add_action( 'wp_ajax_health-check-exactmetrics-test_tracking_code', array( $this, 'test_check_tracking_code' ) );
+		add_action( 'wp_ajax_health-check-exactmetrics-test_tracking_code', array(
+			$this,
+			'test_check_tracking_code'
+		) );
 
 	}
 
@@ -73,13 +76,6 @@ class ExactMetrics_WP_Site_Health_Lite {
 			);
 		}
 
-		if ( $this->uses_fbia() ) {
-			$tests['direct']['exactmetrics_fbia'] = array(
-				'label' => __( 'ExactMetrics FBIA', 'google-analytics-dashboard-for-wp' ),
-				'test'  => array( $this, 'test_check_fbia' ),
-			);
-		}
-
 		$tests['async']['exactmetrics_connection'] = array(
 			'label' => __( 'ExactMetrics Connection', 'google-analytics-dashboard-for-wp' ),
 			'test'  => 'exactmetrics_test_connection',
@@ -103,8 +99,8 @@ class ExactMetrics_WP_Site_Health_Lite {
 	public function is_tracking() {
 
 		if ( ! isset( $this->is_tracking ) ) {
-			$ua                = exactmetrics_get_ua();
-			$this->is_tracking = ! empty( $ua );
+			$tracking_id                = exactmetrics_get_v4_id();
+			$this->is_tracking = ! empty( $tracking_id );
 		}
 
 		return $this->is_tracking;
@@ -145,17 +141,6 @@ class ExactMetrics_WP_Site_Health_Lite {
 	public function uses_amp() {
 
 		return class_exists( 'ExactMetrics_AMP' ) || defined( 'AMP__FILE__' );
-
-	}
-
-	/**
-	 * Is the site using FB Instant Articles or has the FBIA addon installed?
-	 *
-	 * @return bool
-	 */
-	public function uses_fbia() {
-
-		return class_exists( 'ExactMetrics_FB_Instant_Articles' ) || defined( 'IA_PLUGIN_VERSION' ) && version_compare( IA_PLUGIN_VERSION, '3.3.4', '>' );
 
 	}
 
@@ -258,10 +243,10 @@ class ExactMetrics_WP_Site_Health_Lite {
 		$this->is_authed = ExactMetrics()->auth->is_authed() || ExactMetrics()->auth->is_network_authed();
 
 		if ( ! $this->is_authed ) {
-			if ( '' !== exactmetrics_get_ua() ) {
-				// Using Manual UA.
+			if ( '' !== exactmetrics_get_v4_id() ) {
+				// Using Manual V4.
 				$result['status']      = 'recommended';
-				$result['label']       = __( 'You are using Manual UA code output', 'google-analytics-dashboard-for-wp' );
+				$result['label']       = __( 'You are using Manual GA4 Measurement ID output', 'google-analytics-dashboard-for-wp' );
 				$result['description'] = __( 'We highly recommend authenticating with ExactMetrics so that you can access our new reporting area and take advantage of new ExactMetrics features.', 'google-analytics-dashboard-for-wp' );
 				$result['actions']     = sprintf(
 					'<p><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></p>',
@@ -364,7 +349,7 @@ class ExactMetrics_WP_Site_Health_Lite {
 				'color' => 'blue',
 			),
 			// Translators: The eCommerce store currently active.
-			'description' => sprintf( __( 'You are using %s but the ExactMetrics eCommerce addon is not active, please Install & Activate it to start tracking eCommerce data.', 'google-analytics-dashboard-for-wp' ), $this->ecommerce ),
+			'description' => sprintf( __( 'We detected you are using %s but the ExactMetrics eCommerce addon is not active. Please install and activate to start tracking eCommerce data.', 'google-analytics-dashboard-for-wp' ), $this->ecommerce ),
 			'test'        => 'exactmetrics_ecommerce',
 			'actions'     => sprintf(
 				'<p><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></p>',
@@ -390,35 +375,8 @@ class ExactMetrics_WP_Site_Health_Lite {
 				'label' => __( 'ExactMetrics', 'google-analytics-dashboard-for-wp' ),
 				'color' => 'blue',
 			),
-			'description' => __( 'Your website has Google AMP-enabled pages set up but they are not tracked by Google Analytics at the moment. You need to Install & Activate the ExactMetrics AMP Addon.', 'google-analytics-dashboard-for-wp' ),
+			'description' => __( 'Your website has Google AMP-enabled pages enabled but they are not tracked by Google Analytics at the moment. You need to install and activate the ExactMetrics AMP Addon to track AMP pages.', 'google-analytics-dashboard-for-wp' ),
 			'test'        => 'exactmetrics_amp',
-			'actions'     => sprintf(
-				'<p><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></p>',
-				add_query_arg( 'page', 'exactmetrics_settings#/addons', admin_url( 'admin.php' ) ),
-				__( 'View Addons', 'google-analytics-dashboard-for-wp' )
-			),
-		);
-
-		return $result;
-
-	}
-
-	/**
-	 * Tests for the FBIA cases.
-	 *
-	 * @return array
-	 */
-	public function test_check_fbia() {
-
-		$result = array(
-			'label'       => __( 'Facebook Instant Articles pages are not being tracked', 'google-analytics-dashboard-for-wp' ),
-			'status'      => 'recommended',
-			'badge'       => array(
-				'label' => __( 'ExactMetrics', 'google-analytics-dashboard-for-wp' ),
-				'color' => 'blue',
-			),
-			'description' => __( 'Your website has Facebook Instant Articles pages set up but they are not tracked by Google Analytics at the moment. You need to Install & Activate the ExactMetrics Facebook Instant Articles Addon.', 'google-analytics-dashboard-for-wp' ),
-			'test'        => 'exactmetrics_fbia',
 			'actions'     => sprintf(
 				'<p><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></p>',
 				add_query_arg( 'page', 'exactmetrics_settings#/addons', admin_url( 'admin.php' ) ),

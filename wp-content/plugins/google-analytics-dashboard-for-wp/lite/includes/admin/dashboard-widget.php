@@ -65,7 +65,7 @@ class ExactMetrics_Dashboard_Widget {
 	 */
 	public function __construct() {
 		// Allow dashboard widget to be hidden on multisite installs
-		$show_widget         = is_multisite() ? apply_filters( 'exactmetrics_show_dashboard_widget', true ) : true;
+		$show_widget = is_multisite() ? apply_filters( 'exactmetrics_show_dashboard_widget', true ) : true;
 		if ( ! $show_widget ) {
 			return false;
 		}
@@ -83,7 +83,7 @@ class ExactMetrics_Dashboard_Widget {
 		add_action( 'wp_ajax_exactmetrics_save_widget_state', array( $this, 'save_widget_state' ) );
 
 		// Reminder notice.
-		add_action( 'admin_footer', array( $this, 'load_notice' ) );
+//		add_action( 'admin_footer', array( $this, 'load_notice' ) );
 
 		add_action( 'wp_ajax_exactmetrics_mark_notice_closed', array( $this, 'mark_notice_closed' ) );
 	}
@@ -135,12 +135,21 @@ class ExactMetrics_Dashboard_Widget {
 		}
 		?>
 		<div class="mi-dw-not-authed">
-			<h2><?php esc_html_e( 'Website Analytics is not Setup', 'google-analytics-dashboard-for-wp' ); ?></h2>
+			<?php
+			// Translators: Wizrd Link tag starts with url and Wizard link tag ends.
+			$message = sprintf(
+				esc_html__( 'Your website analytics dashboard is not currently configured. Please use our %1$ssetup wizard%2$s to get started.', 'google-analytics-dashboard-for-wp' ),
+				'<a href="' . esc_url( $url ) . '">',
+				'</a>'
+			);
+			?>
+			<h2><?php echo $message; // phpcs:ignore ?></h2>
 			<?php if ( current_user_can( 'exactmetrics_save_settings' ) ) { ?>
 				<p><?php esc_html_e( 'To see your website stats, please connect ExactMetrics to Google Analytics.', 'google-analytics-dashboard-for-wp' ); ?></p>
-				<a href="<?php echo esc_url( $url ); ?>" class="mi-dw-btn-large"><?php esc_html_e( 'Setup Website Analytics', 'google-analytics-dashboard-for-wp' ); ?></a>
+				<a href="<?php echo esc_url( $url ); ?>"
+				   class="mi-dw-btn-large"><?php esc_html_e( 'Setup Website Analytics', 'google-analytics-dashboard-for-wp' ); ?></a>
 			<?php } else { ?>
-				<p><?php esc_html_e( 'To see your website stats, please ask your webmaster to connect ExactMetrics to Google Analytics.', 'google-analytics-dashboard-for-wp' ); ?></p>
+				<p><?php esc_html_e( 'To see your website stats, please ask your site administrator to connect ExactMetrics to Google Analytics.', 'google-analytics-dashboard-for-wp' ); ?></p>
 			<?php } ?>
 		</div>
 		<?php
@@ -184,7 +193,7 @@ class ExactMetrics_Dashboard_Widget {
 			}
 
 			// We do not have a current auth.
-			$auth = ExactMetrics()->auth;
+			$auth      = ExactMetrics()->auth;
 			$is_authed = ( $auth->is_authed() || $auth->is_network_authed() );
 			wp_localize_script(
 				'exactmetrics-vue-widget',
@@ -203,7 +212,6 @@ class ExactMetrics_Dashboard_Widget {
 					'wpforms_installed'   => $wpforms_installed,
 					'wpforms_url'         => $wp_forms_url,
 					'authed'              => $is_authed,
-					'auth_connected_type' => $auth->get_connected_type(),
 					// Used to add notices for future deprecations.
 					'versions'            => exactmetrics_get_php_wp_version_warning_data(),
 					'plugin_version'      => EXACTMETRICS_VERSION,
@@ -250,10 +258,10 @@ class ExactMetrics_Dashboard_Widget {
 		}
 
 		$options = array(
-			'width'    => ! empty( $_POST['width'] ) ? sanitize_text_field( wp_unslash( $_POST['width'] ) ) : $default['width'],
-			'interval' => ! empty( $_POST['interval'] ) ? absint( wp_unslash( $_POST['interval'] ) ) : $default['interval'],
+			'width'       => ! empty( $_POST['width'] ) ? sanitize_text_field( wp_unslash( $_POST['width'] ) ) : $default['width'],
+			'interval'    => ! empty( $_POST['interval'] ) ? absint( wp_unslash( $_POST['interval'] ) ) : $default['interval'],
 			'compact'     => ! empty( $_POST['compact'] ) ? 'true' === sanitize_text_field( wp_unslash( $_POST['compact'] ) ) : $default['compact'],
-			'reports'  => $reports,
+			'reports'     => $reports,
 			'notice30day' => $current_options['notice30day'],
 		);
 
@@ -274,6 +282,9 @@ class ExactMetrics_Dashboard_Widget {
 			$this->options = self::wp_parse_args_recursive( get_user_meta( get_current_user_id(), 'exactmetrics_user_preferences', true ), self::$default_options );
 		}
 
+        // Set interval fixed to last30days on lite plugin.
+		$this->options['interval'] = 'last30days';
+
 		return apply_filters( 'exactmetrics_dashboard_widget_options', $this->options );
 
 	}
@@ -282,7 +293,7 @@ class ExactMetrics_Dashboard_Widget {
 	 * Recursive wp_parse_args.
 	 *
 	 * @param string|array|object $a Value to merge with $b.
-	 * @param array               $b The array with the default values.
+	 * @param array $b The array with the default values.
 	 *
 	 * @return array
 	 */
@@ -307,8 +318,8 @@ class ExactMetrics_Dashboard_Widget {
 	public function load_notice() {
 
 		$screen = get_current_screen();
-		$ua     = exactmetrics_get_ua();
-		if ( isset( $screen->id ) && 'dashboard' === $screen->id && ! empty( $ua ) ) {
+		$tracking_id     = exactmetrics_get_v4_id();
+		if ( isset( $screen->id ) && 'dashboard' === $screen->id && ! empty( $tracking_id ) ) {
 			?>
 			<div id="exactmetrics-reminder-notice"></div>
 			<?php

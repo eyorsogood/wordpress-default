@@ -22,7 +22,16 @@ class ExactMetrics_Report {
 	public $class;
 	public $name;
 	public $version = '1.0.0';
-	public $source  = 'reports';
+	public $source = 'reports';
+	public $start_date;
+	public $end_date;
+
+	/**
+	 * We will use this value if we are not using the same value for report store and relay path.
+	 *
+	 * @var string
+	 */
+	protected $api_path;
 
 	/**
 	 * Primary class constructor.
@@ -52,24 +61,40 @@ class ExactMetrics_Report {
 	public function show_report( $args = array() ) {
 
 		if ( ! current_user_can( 'exactmetrics_view_dashboard' ) ) {
-			return exactmetrics_get_message( 'error', esc_html__( 'Access denied', 'google-analytics-dashboard-for-wp' ) );
+			return exactmetrics_get_message( 'error', esc_html__( 'Oops! Access is denied. If you believe you should be able to view this report, please contact your website administrator to ensure you have the correct user role to view ExactMetrics reports.', 'google-analytics-dashboard-for-wp' ) );
 		}
 
 		if ( exactmetrics_get_option( 'dashboard_disabled', false ) ) {
 			if ( current_user_can( 'exactmetrics_save_settings' ) ) {
 				$url = is_network_admin() ? network_admin_url( 'admin.php?page=exactmetrics_settings' ) : admin_url( 'admin.php?page=exactmetrics_settings' );
+
 				// Translators: Placeholders add a link to the settings panel.
 				return exactmetrics_get_message( 'error', sprintf( esc_html__( 'Please %1$senable the dashboard%2$s to see report data.', 'google-analytics-dashboard-for-wp' ), '<a href="' . $url . '">', '</a>' ) );
 			} else {
-				return exactmetrics_get_message( 'error', esc_html__( 'The dashboard is disabled.', 'google-analytics-dashboard-for-wp' ) );
+				$message = sprintf(
+				// Translators: Link tag starts with url and link tag ends.
+					esc_html__( 'Oops! The ExactMetrics dashboard has been disabled. Please check with your site administrator that your role is included in the ExactMetrics permissions settings. %1$sClick here for more information%2$s.', 'google-analytics-dashboard-for-wp' ),
+					'<a target="_blank" href="' . exactmetrics_get_url( 'notice', 'cannot-view-reports', 'https://www.exactmetrics.com/docs/how-to-allow-user-roles-to-access-the-exactmetrics-reports-and-settings/' ) . '">',
+					'</a>'
+				);
+
+				return exactmetrics_get_message( 'error', $message );
 			}
 		}
 
 		if ( exactmetrics_is_pro_version() ) {
 			if ( ! ExactMetrics()->license->has_license() ) {
 				$url = is_network_admin() ? network_admin_url( 'admin.php?page=exactmetrics_settings' ) : admin_url( 'admin.php?page=exactmetrics_settings' );
-				// Translators: Placeholders add a link to the settings panel.
-				return exactmetrics_get_message( 'error', esc_html__( 'You do not have an active license. Please %1$scheck your license configuration.%2$s', 'google-analytics-dashboard-for-wp' ), '<a href="' . $url . '">', '</a>' );
+				// Translators: Placeholders add a link to the settings panel, Support link tag starts with url and support link tag ends.
+				$message = sprintf(
+					esc_html__( 'Oops! We did not find an active ExactMetrics license. Please %1$scheck your license settings%2$s or %3$scontact our support team%4$s for help.', 'google-analytics-dashboard-for-wp' ),
+					'<a href="' . $url . '">',
+					'</a>',
+					'<a target="_blank" href="' . exactmetrics_get_url( 'notice', 'no-active-license', 'https://www.exactmetrics.com/my-account/support/' ) . '">',
+					'</a>'
+				);
+
+				return exactmetrics_get_message( 'error', $message );
 			} else if ( ExactMetrics()->license->license_has_error() ) {
 				return exactmetrics_get_message( 'error', $this->get_license_error() );
 			}
@@ -78,10 +103,11 @@ class ExactMetrics_Report {
 		if ( ! ( ExactMetrics()->auth->is_authed() || ExactMetrics()->auth->is_network_authed() ) ) {
 			if ( current_user_can( 'exactmetrics_save_settings' ) ) {
 				$url = is_network_admin() ? network_admin_url( 'admin.php?page=exactmetrics_settings' ) : admin_url( 'admin.php?page=exactmetrics_settings' );
+
 				// Translators: Placeholders add a link to the settings panel.
-				return exactmetrics_get_message( 'error', sprintf( esc_html__( 'Please %1$sauthenticate %2$swith Google Analytics to allow the plugin to fetch data.', 'google-analytics-dashboard-for-wp' ), '<a href="' . $url . '">', '</a>' ) );
+				return exactmetrics_get_message( 'error', sprintf( esc_html__( 'Oops! We did not find a properly authenticated analytics account. Please %1$sauthenticate with Google%2$s to allow ExactMetrics to show you reports.', 'google-analytics-dashboard-for-wp' ), '<a href="' . $url . '">', '</a>' ) );
 			} else {
-				return exactmetrics_get_message( 'error', esc_html__( 'The Google oAuth authentication needs to be re-authenticated to view data.', 'google-analytics-dashboard-for-wp' ) );
+				return exactmetrics_get_message( 'error', esc_html__( 'Oops! It appears as though you do not have the right user permissions to authenticate. Please contact your website administrator to check your user roles.', 'google-analytics-dashboard-for-wp' ) );
 			}
 		}
 
@@ -154,14 +180,18 @@ class ExactMetrics_Report {
 		if ( ! $this->is_valid_date_range( $start, $end ) ) {
 			return array(
 				'success' => false,
-				'error'   => __( 'Invalid date range.', 'google-analytics-dashboard-for-wp' ),
-				'data'    => array(),
+				'error'   => __( 'Whoops! No data found for this date range', 'google-analytics-dashboard-for-wp' ),
+				'data'    => array(
+					'type' => 'INVALID_DATE_RANGE',
+				),
 			);
 		}
 
 		if ( ( $start !== $this->default_start_date() || $end !== $this->default_end_date() ) && ! exactmetrics_is_pro_version() ) {
-			$start = $this->default_start_date();
-			$end   = $this->default_end_date();
+			// On lite version, the date range is blocked with upgrade to pro message and this conflicts with getting YIR report.
+			// $start = $this->default_start_date();
+			// $end   = $this->default_end_date();
+
 			// return array(
 			// 	'success' => false,
 			// 	'error'   => __( 'Please upgrade to ExactMetrics Pro to use custom date ranges.', 'google-analytics-dashboard-for-wp' ),
@@ -178,12 +208,19 @@ class ExactMetrics_Report {
 			) );
 		}
 
-		$check_cache = ( $start === $this->default_start_date() && $end === $this->default_end_date() ) || apply_filters( 'exactmetrics_report_use_cache', false, $this->name );
-		$site_auth   = ExactMetrics()->auth->get_viewname();
-		$ms_auth     = is_multisite() && ExactMetrics()->auth->get_network_viewname();
-		$transient   = 'exactmetrics_report_' . $this->name . '_' . $start . '_' . $end;
+		// These values are going to use on child classes.
+		$this->start_date = $start;
+		$this->end_date   = $end;
+
+		$check_cache       = ( $start === $this->default_start_date() && $end === $this->default_end_date() ) || apply_filters( 'exactmetrics_report_use_cache', false, $this->name );
+		$site_auth         = ExactMetrics()->auth->get_viewname();
+		$ms_auth           = is_multisite() && ExactMetrics()->auth->get_network_viewname();
+		$transient         = 'exactmetrics_report_' . $this->name . '_' . $start . '_' . $end;
+		$current_timestamp = current_time( 'U' );
 		// Set to same time as MI cache. MI caches same day to 15 and others to 1 day, so there's no point pinging MI before then.
-		$expiration = date( 'Y-m-d' ) === $end ? apply_filters( 'exactmetrics_report_transient_expiration', 15 * MINUTE_IN_SECONDS, $this->name ) : HOUR_IN_SECONDS;
+		$expiration = apply_filters( 'exactmetrics_report_transient_expiration',
+			date( 'Y-m-d' ) === $end ? ( 15 * MINUTE_IN_SECONDS ) : ( strtotime( 'Tomorrow 12:05am', $current_timestamp ) - $current_timestamp ),
+			$this->name );
 
 		// Default date range, check.
 		if ( $site_auth || $ms_auth ) {
@@ -199,11 +236,11 @@ class ExactMetrics_Report {
 			}
 
 			if ( ! empty( $data ) &&
-			     ! empty( $data['expires'] ) &&
-			     $data['expires'] >= time() &&
-			     ! empty( $data['data'] ) &&
-			     ! empty( $data['p'] ) &&
-			     $data['p'] === $p
+				 ! empty( $data['expires'] ) &&
+				 $data['expires'] >= time() &&
+				 ! empty( $data['data'] ) &&
+				 ! empty( $data['p'] ) &&
+				 $data['p'] === $p
 			) {
 				return $this->prepare_report_data( array(
 					'success' => true,
@@ -217,7 +254,10 @@ class ExactMetrics_Report {
 				$api_options['network'] = true;
 			}
 
-			$api = new ExactMetrics_API_Request( 'analytics/reports/' . $this->name . '/', $api_options, 'GET' );
+			// Get the path of the relay.
+			$api_path = empty( $this->api_path ) ? $this->name : $this->api_path;
+
+			$api = new ExactMetrics_API_Request( 'analytics/reports/' . $api_path . '/', $api_options, 'GET' );
 
 			// Use a report source indicator for requests.
 			if ( ! empty( $this->source ) ) {
@@ -242,6 +282,12 @@ class ExactMetrics_Report {
 				);
 			} else {
 				// Success
+
+				// Strip any HTML tags from API response
+				$ret['data'] = json_encode($ret['data']);
+				$ret['data'] = strip_tags($ret['data']);
+				$ret['data'] = json_decode($ret['data'], true);
+
 				$data = array(
 					'expires' => time() + $expiration,
 					'p'       => $p,
@@ -261,9 +307,17 @@ class ExactMetrics_Report {
 			}
 
 		} else {
+			$url = admin_url( 'admin.php?page=exactmetrics-onboarding' );
+
+			// Check for MS dashboard
+			if ( is_network_admin() ) {
+				$url = network_admin_url( 'admin.php?page=exactmetrics-onboarding' );
+			}
+
 			return array(
 				'success' => false,
-				'error'   => __( 'You must authenticate with ExactMetrics to use reports.', 'google-analytics-dashboard-for-wp' ),
+				'error'   => sprintf( __( 'You must be properly authenticated with ExactMetrics to use our reports. Please use our %1$ssetup wizard%2$s to get started.', 'google-analytics-dashboard-for-wp' ), '<a href=" ' . $url . ' ">', '</a>' ),
+				// Translators: Wizard link tag starts with url, Wizard link tag ends.
 				'data'    => array(),
 			);
 		}
@@ -279,10 +333,14 @@ class ExactMetrics_Report {
 
 	// Checks to see if date range is valid. Should be 30-yesterday always for lite & any valid date range to today for Pro.
 	public function is_valid_date_range( $start, $end ) {
-		$start = strtotime( $start );
-		$end   = strtotime( $end );
+		$now         = current_datetime();
+		$wp_timezone = wp_timezone_string();
+		$start_date  = DateTime::createFromFormat( 'Y-m-d', $start, new DateTimeZone( $wp_timezone ) );
+		$end_date    = DateTime::createFromFormat( 'Y-m-d', $end, new DateTimeZone( $wp_timezone ) );
 
-		if ( $start > strtotime( 'now' ) || $end > strtotime( 'now' ) || $start < strtotime( '01 January 2005' ) || $end < strtotime( '01 January 2005' ) ) {
+		$ancient_date = DateTime::createFromFormat( 'Y-m-d', '2005-01-01', new DateTimeZone( $wp_timezone ) );
+
+		if ( $start_date > $now || $end_date > $now || $start_date < $ancient_date || $end_date < $ancient_date ) {
 			return false;
 		}
 
@@ -292,7 +350,7 @@ class ExactMetrics_Report {
 
 	// Is a valid date value
 	public function is_valid_date( $date = '' ) {
-		$d = ExactMetricsDateTime::createFromFormat( 'Y-m-d', $date );
+		$d = ExactMetricsDateTime::create_from_format( 'Y-m-d', $date );
 
 		return $d && $d->format( 'Y-m-d' ) === $date;
 	}
@@ -309,27 +367,20 @@ class ExactMetrics_Report {
 		return array();
 	}
 
-	protected function get_ga_report_url( $ua_name, $v4_name, $data, $ua_extra_params = '', $v4_extra_params = '', $v4_endpoint = 'explorer', $is_real_time = false ) {
+	protected function get_ga_report_url( $v4_name, $data, $v4_extra_params = '', $v4_endpoint = 'explorer', $is_real_time = false ) {
 		$auth = ExactMetrics()->auth;
 
 		$params = $this->get_ga_report_range( $data );
 
-		if ( $auth->get_connected_type() === 'v4' ) {
-			$format = 'https://analytics.google.com/analytics/web/#/%1$s/' . ( $is_real_time ? 'realtime' : 'reports' ) . '/%5$s?params=%3$s%4$s&r=%2$s';
+        $format = 'https://analytics.google.com/analytics/web/#/%1$s/' . ( $is_real_time ? 'realtime' : 'reports' ) . '/%5$s?params=%3$s%4$s&r=%2$s';
 
-			if ( empty( $v4_name ) ) {
-				$report_name = '';
-			} else {
-				$report_name = $v4_name;
-			}
-			$extra_params = '&' . $v4_extra_params;
-			$endpoint = $v4_endpoint;
-		} else {
-			$format = 'https://analytics.google.com/analytics/web/#' . ( $is_real_time ? '/realtime' : 'report' ) . '/%2$s/%1$s%3$s%4$s/';
-			$report_name = $ua_name;
-			$extra_params = '?' . $ua_extra_params;
-			$endpoint = '';
-		}
+        if ( empty( $v4_name ) ) {
+            $report_name = '';
+        } else {
+            $report_name = $v4_name;
+        }
+        $extra_params = '&' . $v4_extra_params;
+        $endpoint     = $v4_endpoint;
 
 		return sprintf(
 			$format,
@@ -345,85 +396,87 @@ class ExactMetrics_Report {
 		$has_level = exactmetrics_is_pro_version() ? ExactMetrics()->license->get_license_type() : false;
 		$has_level = $has_level ? $has_level : 'lite';
 		// Translators: Placeholders add the license level and the report title.
-		$message   = sprintf( __( 'You currently have a %1$s level license, but this report requires at least a %2$s level license to view the %3$s. Please upgrade to view this report.', 'google-analytics-dashboard-for-wp' ), $has_level, $this->level, $this->title );
+		$message = sprintf( __( 'You currently have a %1$s level license, but this report requires at least a %2$s level license to view the %3$s. Please upgrade to view this report.', 'google-analytics-dashboard-for-wp' ), $has_level, $this->level, $this->title );
 		ob_start(); ?>
-        <div class="exactmetrics-upsell-report-container exactmetrics-upsell-report-<?php echo $this->name; ?>-bg">
-            <div class="exactmetrics-upsell-container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-10 col-lg-offset-1 align-self-center">
-                        <div class="exactmetrics-upsell-card">
-                            <img class="exactmetrics-upgrade-mascot"
-                                 src="<?php echo trailingslashit( EXACTMETRICS_PLUGIN_URL ); ?>assets/css/images/em-mascot.png"
-                                 srcset="<?php echo trailingslashit( EXACTMETRICS_PLUGIN_URL ); ?>assets/css/images/mascot@2x.png 2x"
-                                 alt="">
-                            <div class="exactmetrics-upsell-card-card-content">
-                                <span class="exactmetrics-upsell-card-title"><?php esc_html_e( 'Ready to Get Analytics Super-Powers?', 'google-analytics-dashboard-for-wp' ); ?></span>
-                                <p class="exactmetrics-upsell-card-subtitle">
-                                    <strong><?php esc_html_e( '(And Crush Your Competition?)', 'google-analytics-dashboard-for-wp' ); ?></strong>
-                                </p> &nbsp;
+		<div
+			class="exactmetrics-upsell-report-container exactmetrics-upsell-report-<?php echo $this->name; ?>-bg">
+			<div class="exactmetrics-upsell-container">
+				<div class="row justify-content-center">
+					<div class="col-lg-10 col-lg-offset-1 align-self-center">
+						<div class="exactmetrics-upsell-card">
+							<img class="exactmetrics-upgrade-mascot"
+								 src="<?php echo trailingslashit( EXACTMETRICS_PLUGIN_URL ); ?>assets/css/images/em-mascot.png"
+								 srcset="<?php echo trailingslashit( EXACTMETRICS_PLUGIN_URL ); ?>assets/css/images/mascot@2x.png 2x"
+								 alt="">
+							<div class="exactmetrics-upsell-card-card-content">
+								<span
+									class="exactmetrics-upsell-card-title"><?php esc_html_e( 'Ready to Get Analytics Super-Powers?', 'google-analytics-dashboard-for-wp' ); ?></span>
+								<p class="exactmetrics-upsell-card-subtitle">
+									<strong><?php esc_html_e( '(And Crush Your Competition?)', 'google-analytics-dashboard-for-wp' ); ?></strong>
+								</p> &nbsp;
 								<?php if ( exactmetrics_is_pro_version() ) { ?>
-                                    <p>
+									<p>
 										<?php
 										// Translators: License level and smiley.
 										echo sprintf( esc_html__( 'Hey there! It looks like you\'ve got the %1$s license installed on your site. That\'s awesome! %s', 'google-analytics-dashboard-for-wp' ), $has_level, '<span class="dashicons dashicons-smiley"></span>' );
 										?>
 									</p>
-                                    &nbsp;
-                                    <p>
+									&nbsp;
+									<p>
 										<?php
 										// Translators: Placeholders add the report title and license level.
 										echo sprintf( esc_html__( 'Do you want to access to %1$s reporting right now%2$s in your WordPress Dashboard? That comes with the %3$s level%4$s of our paid packages. You\'ll need to upgrade your license to get instant access.', 'google-analytics-dashboard-for-wp' ), '<strong>' . $this->title, '</strong>', '<strong><a href="' . exactmetrics_get_url( 'reports-page', $this->name . '-report-upsell-license-link', 'https://exactmetrics.com/my-account/' ) . '">' . $this->level, '</a></strong>' );
 										?>
 									</p>
-                                    &nbsp;
-                                    <p>
+									&nbsp;
+									<p>
 										<?php
 										// Translators: Placeholdes add links to the account area and a guide.
 										echo sprintf( esc_html__( 'It\'s easy! To upgrade, navigate to %1$sMy Account%2$s on ExactMetrics.com, go to the licenses tab, and click upgrade. We also have a %3$sstep by step guide%4$s with pictures of this process.', 'google-analytics-dashboard-for-wp' ), '<a href="' . exactmetrics_get_url( 'reports-page', $this->name . '-report-upsell-license-link', 'https://exactmetrics.com/my-account/' ) . '"><strong>', '</strong></a>', '<a href="' . exactmetrics_get_url( 'reports-page', $this->name . '-report-upsell-license-link', 'https://www.exactmetrics.com/docs/upgrade-exactmetrics-license/' ) . '" style="text-decoration:underline !important">', '</a>' );
 										?>
 									</p>
-                                    &nbsp;
-                                    <p><?php esc_html_e( 'If you have any questions, don\'t hesitate to reach out. We\'re here to help.', 'google-analytics-dashboard-for-wp' ); ?></p>
+									&nbsp;
+									<p><?php esc_html_e( 'If you have any questions, don\'t hesitate to reach out. We\'re here to help.', 'google-analytics-dashboard-for-wp' ); ?></p>
 								<?php } else { ?>
-                                    <p>
+									<p>
 										<?php
 										// Translators: Placeholder adds a smiley face.
 										echo sprintf( esc_html__( 'Hey there! %s It looks like you\'ve got the free version of ExactMetrics installed on your site. That\'s awesome!', 'google-analytics-dashboard-for-wp' ), '<span class="dashicons dashicons-smiley"></span>' );
 										?>
 									</p>
-                                    &nbsp;
-                                    <p>
+									&nbsp;
+									<p>
 										<?php
 										// Translators: Placeholders make the text bold, add the license level and add a link to upgrade.
 										echo sprintf( esc_html__( 'Do you you want to access to %1$s reporting right now%2$s in your WordPress Dashboard? That comes with %3$s level%4$s of our paid packages. To get instant access, you\'ll want to buy a ExactMetrics license, which also gives you access to powerful addons, expanded reporting (including the ability to use custom date ranges), comprehensive tracking features (like UserID tracking) and access to our world-class support team.', 'google-analytics-dashboard-for-wp' ), '<strong>' . $this->title, '</strong>', '<a href="' . exactmetrics_get_upgrade_link( 'reports-page', $this->name . '-report-upsell-license-link' ) . '">' . $this->level, '</a>' );
 										?>
 									</p>
-                                    &nbsp;
-                                    <p>
+									&nbsp;
+									<p>
 										<?php
 										// Translators: Placeholders make the text bold, add the license level and add a link to upgrade.
 										echo sprintf( esc_html__( 'Upgrading is easy! To upgrade, navigate to %1$ssour pricing page%2$s, purchase the required license, and then follow the %3$sinstructions in the email receipt%4$s to upgrade. It only takes a few minutes to unlock the most powerful, yet easy to use analytics tracking system for WordPress.', 'google-analytics-dashboard-for-wp' ), '<a href="' . exactmetrics_get_upgrade_link( 'reports-page', $this->name . '-report-upsell-license-link' ) . '"><strong>', '</strong></a>', '<a style="text-decoration:underline !important" href="' . exactmetrics_get_url( 'reports-page', $this->name . '-report-go-lite-pro-link', 'https://www.exactmetrics.com/docs/go-lite-pro/' ) . '">', '</a>' );
 										?>
 									</p>
-                                    &nbsp;
-                                    <p><?php esc_html_e( 'If you have any questions, don\'t hesitate to reach out. We\'re here to help.', 'google-analytics-dashboard-for-wp' ); ?></p>
+									&nbsp;
+									<p><?php esc_html_e( 'If you have any questions, don\'t hesitate to reach out. We\'re here to help.', 'google-analytics-dashboard-for-wp' ); ?></p>
 								<?php } ?>
-                            </div>
-                            <div class="exactmetrics-upsell-card-action">
+							</div>
+							<div class="exactmetrics-upsell-card-action">
 								<?php if ( exactmetrics_is_pro_version() ) { ?>
-                                    <a href="<?php echo exactmetrics_get_upgrade_link( 'reports-page', $this->name . '-report-upsell-license-link' ); ?>"
-                                       class="exactmetrics-upsell-card-button"><?php esc_html_e( 'Upgrade Now', 'google-analytics-dashboard-for-wp' ); ?></a>
+									<a href="<?php echo exactmetrics_get_upgrade_link( 'reports-page', $this->name . '-report-upsell-license-link' ); ?>"
+									   class="exactmetrics-upsell-card-button"><?php esc_html_e( 'Upgrade Now', 'google-analytics-dashboard-for-wp' ); ?></a>
 								<?php } else { ?>
-                                    <a href="<?php echo exactmetrics_get_url( 'reports-page', $this->name . '-report-upsell-license-link', 'https://www.exactmetrics.com/docs/upgrade-exactmetrics-license/' ); ?>"
-                                       class="exactmetrics-upsell-card-button"><?php esc_html_e( 'Get ExactMetrics Pro', 'google-analytics-dashboard-for-wp' ); ?></a>
+									<a href="<?php echo exactmetrics_get_url( 'reports-page', $this->name . '-report-upsell-license-link', 'https://www.exactmetrics.com/docs/upgrade-exactmetrics-license/' ); ?>"
+									   class="exactmetrics-upsell-card-button"><?php esc_html_e( 'Get ExactMetrics Pro', 'google-analytics-dashboard-for-wp' ); ?></a>
 								<?php } ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
 		<?php
 		return ob_get_clean();
 	}
@@ -493,7 +546,7 @@ class ExactMetrics_Report {
 
 if ( ! class_exists( 'ExactMetricsDateTime' ) ) {
 	class ExactMetricsDateTime extends DateTime {
-		public static function createFromFormat( $format, $time, $timezone = null ) {
+		public static function create_from_format( $format, $time, $timezone = null ) {
 			if ( ! $timezone ) {
 				$timezone = new DateTimeZone( date_default_timezone_get() );
 			}

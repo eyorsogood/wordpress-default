@@ -1,5 +1,4 @@
 <?php
-
 namespace AIOSEO\Plugin\Common\Traits\Helpers;
 
 /**
@@ -294,5 +293,4 @@ trait Constants {
 			'AX' => 'Åland Islands'
 		];
 	}
-
 }

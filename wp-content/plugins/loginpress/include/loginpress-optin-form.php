@@ -296,7 +296,7 @@ $name = empty( $user->user_firstname ) ? $user->display_name : $user->user_first
 $email = $user->user_email;
 $site_link = '<a href="' . get_site_url() . '">'. get_site_url() . '</a>';
 $website = get_site_url();
-
+$nonce   = wp_create_nonce( 'loginpress_submit_optin_nonce' );
 $default_login_press_redirect = 'loginpress-settings';
 
 if ( isset( $_GET['redirect-page'] ) ) {
@@ -306,7 +306,7 @@ if ( isset( $_GET['redirect-page'] ) ) {
 echo '<form method="post" action="' . admin_url( 'admin.php?page=' . $default_login_press_redirect ) . '">';
 
 echo "<input type='hidden' name='email' value='$email'>";
-
+echo "<input type='hidden' name='loginpress_submit_optin_nonce' value='" . sanitize_text_field( $nonce ) . "'>";
 echo '<div id="loginpress-splash">';
 echo '<h1> <img id="loginpress-logo-text" src="' . plugins_url( 'img/loginpress.png', dirname( __FILE__ ) )  . '"> ' . __( 'Welcome to LoginPress', 'loginpress' ) . '</h1>';
 

@@ -126,16 +126,16 @@ if ( ! class_exists( 'LoginPress_Notification' ) ) :
 
   		<div class="loginpress-review-notice">
   			<div class="loginpress-review-thumbnail">
-  				<img src="<?php echo plugins_url( '../img/thumbnail/gray-loginpress.png', __FILE__ ) ?>" alt="">
+  				<img src="<?php echo esc_url( plugins_url( '../img/thumbnail/gray-loginpress.png', __FILE__ ) ); ?>" alt="">
   			</div>
   			<div class="loginpress-review-text">
-  				<h3><?php _e( 'Leave A Review?', 'loginpress' ) ?></h3>
-  				<p><?php _e( 'We hope you\'ve enjoyed using LoginPress! Would you consider leaving us a review on WordPress.org?', 'loginpress' ) ?></p>
+  				<h3><?php esc_html_e( 'Leave A Review?', 'loginpress' ); ?></h3>
+  				<p><?php esc_html_e( 'We hope you\'ve enjoyed using LoginPress! Would you consider leaving us a review on WordPress.org?', 'loginpress' ); ?></p>
   				<ul class="loginpress-review-ul">
-            <li><a href="https://wordpress.org/support/view/plugin-reviews/loginpress?rate=5#postform" target="_blank"><span class="dashicons dashicons-external"></span><?php _e( 'Sure! I\'d love to!', 'loginpress' ) ?></a></li>
-            <li><a href="<?php echo $dismiss_url ?>"><span class="dashicons dashicons-smiley"></span><?php _e( 'I\'ve already left a review', 'loginpress' ) ?></a></li>
-            <li><a href="<?php echo $later_url ?>"><span class="dashicons dashicons-calendar-alt"></span><?php _e( 'Maybe Later', 'loginpress' ) ?></a></li>
-            <li><a href="<?php echo $dismiss_url ?>"><span class="dashicons dashicons-dismiss"></span><?php _e( 'Never show again', 'loginpress' ) ?></a></li></ul>
+            <li><a href="https://wordpress.org/support/view/plugin-reviews/loginpress?rate=5#postform" target="_blank"><span class="dashicons dashicons-external"></span><?php esc_html_e( 'Sure! I\'d love to!', 'loginpress' ); ?></a></li>
+            <li><a href="<?php echo esc_url( $dismiss_url ); ?>"><span class="dashicons dashicons-smiley"></span><?php esc_html_e( 'I\'ve already left a review', 'loginpress' ); ?></a></li>
+            <li><a href="<?php echo esc_url( $later_url ); ?>"><span class="dashicons dashicons-calendar-alt"></span><?php esc_html_e( 'Maybe Later', 'loginpress' ); ?></a></li>
+            <li><a href="<?php echo esc_url( $dismiss_url ); ?>"><span class="dashicons dashicons-dismiss"></span><?php esc_html_e( 'Never show again', 'loginpress' ); ?></a></li></ul>
   			</div>
   		</div>
   	<?php
@@ -157,15 +157,15 @@ if ( ! class_exists( 'LoginPress_Notification' ) ) :
         <a href="<?php echo $dismiss_url ?>" class="notice-dismiss" ><span class="screen-reader-text"></span></a>
         <a href="https://wpbrigade.com/wordpress/plugins/loginpress/addons/?utm_source=loginpress-lite&utm_medium=addons-notice-banner&utm_campaign=pro-upgrade" class="loginpress-addon-notice-link" target="_blank">
         <div class="loginpress-alert-thumbnail">
-          <img src="<?php echo plugins_url( '../img/loginpress_logo.svg', __FILE__ ) ?>" alt="">
+          <img src="<?php echo esc_url( plugins_url( '../img/loginpress_logo.svg', __FILE__ ) ); ?>" alt="">
         </div>
         <div class="loginpress-alert-text">
-          <h3><?php _e( 'Introducing LoginPress Addons!', 'loginpress' ) ?></h3>
-          <p><?php _e( 'Extend LoginPress with these add-ons and supercharge your login pages.', 'loginpress' ) ?></p>
+          <h3><?php esc_html_e( 'Introducing LoginPress Addons!', 'loginpress' ); ?></h3>
+          <p><?php esc_html_e( 'Extend LoginPress with these add-ons and supercharge your login pages.', 'loginpress' ); ?></p>
         </div>
         </a>
         <div class="loginpress-alert-button-section">
-          <a href="https://wpbrigade.com/wordpress/plugins/loginpress/addons/?utm_source=loginpress-lite&utm_medium=addons-notice-more&utm_campaign=pro-upgrade" class="loginpress-alert-button" target="_blank"><?php _e( 'Learn More', 'loginpress' ) ?></a>
+          <a href="https://wpbrigade.com/wordpress/plugins/loginpress/addons/?utm_source=loginpress-lite&utm_medium=addons-notice-more&utm_campaign=pro-upgrade" class="loginpress-alert-button" target="_blank"><?php esc_html_e( 'Learn More', 'loginpress' ); ?></a>
         </div>
       </div>
     <?php
@@ -284,13 +284,13 @@ if ( ! class_exists( 'LoginPress_Notification' ) ) :
         <a href="<?php echo $dismiss_url ?>" class="notice-dismiss" ><span class="screen-reader-text"></span></a>
         <a href="https://loginpress.pro/black-friday/?utm_source=loginpress-lite&utm_medium=freepluginbanner&utm_campaign=blackfriday2021" target="_blank">
         <div class="loginpress-alert-thumbnail">
-          <img src="<?php echo plugins_url( '../img/loginpress_logo.svg', __FILE__ ) ?>" alt="">
+          <img src="<?php echo esc_url( plugins_url( '../img/loginpress_logo.svg', __FILE__ ) ); ?>" alt="">
         </div>
         <div class="loginpress-alert-text black_friday">
-          <img src="<?php echo plugins_url( '../img/black-friday.png', __FILE__ ) ?>" alt="Black Friday 2021">
+          <img src="<?php echo esc_url( plugins_url( '../img/black-friday.png', __FILE__ ) ); ?>" alt="Black Friday 2021">
 
          <div class="loginpress-alert-button-section black_friday_sale_btn">
-          <a href="https://loginpress.pro/black-friday/?utm_source=loginpress-lite&utm_medium=freepluginbanner-button&utm_campaign=blackfriday2021" class="loginpress-alert-button" target="_blank"><?php _e( 'FLAT 50% OFF', 'loginpress' ) ?></a>
+          <a href="https://loginpress.pro/black-friday/?utm_source=loginpress-lite&utm_medium=freepluginbanner-button&utm_campaign=blackfriday2021" class="loginpress-alert-button" target="_blank"><?php esc_html_e( 'FLAT 50% OFF', 'loginpress' ); ?></a>
         </div>
         </div>
         </a>

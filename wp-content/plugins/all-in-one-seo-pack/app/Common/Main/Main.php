@@ -20,26 +20,12 @@ class Main {
 	 * @since 4.0.0
 	 */
 	public function __construct() {
-		$this->media = new Media();
+		new Media();
+		new QueryArgs();
 
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueueAssets' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueueTranslations' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueueFrontEndAssets' ] );
 		add_action( 'admin_footer', [ $this, 'adminFooter' ] );
-	}
-
-	/**
-	 * Enqueue styles.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @return void
-	 */
-	public function enqueueAssets() {
-		$this->enqueueTranslations();
-
-		aioseo()->core->assets->load( 'src/vue/standalone/notifications/main.js', [], [
-			'newNotifications' => count( Models\Notification::getNewNotifications() )
-		], 'aioseoNotifications' );
 	}
 
 	/**
@@ -71,7 +57,7 @@ class Main {
 			return;
 		}
 
-		aioseo()->core->assets->enqueueCss( 'admin-bar.css', [], 'src/vue/assets/scss/app/admin-bar.scss' );
+		aioseo()->core->assets->enqueueCss( 'src/vue/assets/scss/app/admin-bar.scss' );
 	}
 
 	/**

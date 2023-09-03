@@ -1,5 +1,4 @@
 <?php
-
 namespace AIOSEO\Plugin\Common\Sitemap\Html {
 	// Exit if accessed directly.
 	if ( ! defined( 'ABSPATH' ) ) {
@@ -72,7 +71,9 @@ namespace AIOSEO\Plugin\Common\Sitemap\Html {
 		 * @return void
 		 */
 		public function registerWidget() {
-			register_widget( 'AIOSEO\Plugin\Common\Sitemap\Html\Widget' );
+			if ( aioseo()->helpers->canRegisterLegacyWidget( 'aioseo-html-sitemap-widget' ) ) {
+				register_widget( 'AIOSEO\Plugin\Common\Sitemap\Html\Widget' );
+			}
 		}
 
 		/**

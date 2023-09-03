@@ -12,8 +12,8 @@ final class ExactMetrics_Notification_Upgrade_For_Google_Optimize extends ExactM
 	public $notification_interval = 30; // in days
 	public $notification_type = array( 'basic', 'lite', 'plus' );
 	public $notification_icon = 'warning';
-    public $notification_category = 'insight';
-    public $notification_priority = 3;
+	public $notification_category = 'insight';
+	public $notification_priority = 3;
 
 	/**
 	 * Build Notification
@@ -28,9 +28,9 @@ final class ExactMetrics_Notification_Upgrade_For_Google_Optimize extends ExactM
 		$notification['content'] = sprintf( __( '%sGoogle Optimize%s is a free A/B testing and personalization product by Google that lets you easily conduct experiments to see what content, images, and layouts work best on your site. With Google Optimize, you can use split testing and personalization to create online experiences that engage and delight your customers. %sUpgrade to ExactMetrics Pro%s to unlock the Google Optimize addon.', 'google-analytics-dashboard-for-wp' ), '<a href="' . $this->build_external_link( 'https://www.exactmetrics.com/addon/google-optimize/' ) . '" target="_blank">', '</a>', '<a href="' . $this->get_upgrade_url() . '" target="_blank">', '</a>' );
 		$notification['btns']    = array(
 			"get_exactmetrics_pro" => array(
-				'url'           => $this->get_upgrade_url(),
-				'text'          => __( 'Get ExactMetrics Pro', 'google-analytics-dashboard-for-wp' ),
-				'is_external'   => true,
+				'url'         => $this->get_upgrade_url(),
+				'text'        => __( 'Get ExactMetrics Pro', 'google-analytics-dashboard-for-wp' ),
+				'is_external' => true,
 			),
 		);
 

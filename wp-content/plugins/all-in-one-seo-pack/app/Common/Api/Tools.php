@@ -16,63 +16,85 @@ use AIOSEO\Plugin\Common\Tools as CommonTools;
  */
 class Tools {
 	/**
-	 * Import and delete the static robots.txt.
+	 * Import contents from a robots.txt url, static file or pasted text.
 	 *
-	 * @since 4.0.0
+	 * @since   4.0.0
+	 * @version 4.4.2
 	 *
 	 * @param  \WP_REST_Request  $request The REST Request
-	 * @return \WP_REST_Response The response.
+	 * @return \WP_REST_Response          The response.
 	 */
 	public static function importRobotsTxt( $request ) {
-		$body    = $request->get_json_params();
-		$network = ! empty( $body['network'] ) ? (bool) $body['network'] : false;
+		$body         = $request->get_json_params();
+		$blogId       = ! empty( $body['blogId'] ) ? absint( $body['blogId'] ) : 0;
+		$networkLevel = ! empty( $body['networkLevel'] ) || ! empty( $body['network'] );
+		$source       = ! empty( $body['source'] ) ? $body['source'] : '';
+		$text         = ! empty( $body['text'] ) ? sanitize_textarea_field( $body['text'] ) : '';
+		$url          = ! empty( $body['url'] ) ? sanitize_url( $body['url'], [ 'http', 'https' ] ) : '';
 
-		if ( ! aioseo()->robotsTxt->importPhysicalRobotsTxt( $network ) ) {
+		try {
+			if ( 0 < $blogId && ! $networkLevel ) {
+				aioseo()->helpers->switchToBlog( $blogId );
+			}
+
+			switch ( $source ) {
+				case 'url':
+					aioseo()->robotsTxt->importRobotsTxtFromUrl( $url, $networkLevel );
+
+					break;
+				case 'text':
+					aioseo()->robotsTxt->importRobotsTxtFromText( $text, $networkLevel );
+
+					break;
+				case 'static':
+				default:
+					aioseo()->robotsTxt->importPhysicalRobotsTxt( $networkLevel );
+					aioseo()->robotsTxt->deletePhysicalRobotsTxt();
+
+					$options = aioseo()->options;
+					if ( $networkLevel ) {
+						$options = aioseo()->networkOptions;
+					}
+
+					$options->tools->robots->enable = true;
+
+					break;
+			}
+
+			return new \WP_REST_Response( [
+				'success'       => true,
+				'notifications' => Models\Notification::getNotifications()
+			], 200 );
+		} catch ( \Exception $e ) {
 			return new \WP_REST_Response( [
 				'success' => false,
-				'message' => __( 'There was an error importing the physical robots.txt file.', 'all-in-one-seo-pack' )
+				'message' => $e->getMessage()
 			], 400 );
 		}
-
-		aioseo()->options->tools->robots->enable = true;
-
-		if ( ! aioseo()->robotsTxt->deletePhysicalRobotsTxt() ) {
-			return new \WP_REST_Response( [
-				'success' => false,
-				'message' => __( 'There was an error deleting the physical robots.txt file.', 'all-in-one-seo-pack' )
-			], 400 );
-		}
-
-		Models\Notification::deleteNotificationByName( 'robots-physical-file' );
-
-		return new \WP_REST_Response( [
-			'success'       => true,
-			'notifications' => Models\Notification::getNotifications()
-		], 200 );
 	}
 
 	/**
-	 * Delete the static robots.txt.
+	 * Delete the static robots.txt file.
 	 *
-	 * @since 4.0.0
+	 * @since   4.0.0
+	 * @version 4.4.5
 	 *
-	 * @param  \WP_REST_Request  $request The REST Request
 	 * @return \WP_REST_Response The response.
 	 */
 	public static function deleteRobotsTxt() {
-		if ( ! aioseo()->robotsTxt->deletePhysicalRobotsTxt() ) {
+		try {
+			aioseo()->robotsTxt->deletePhysicalRobotsTxt();
+
+			return new \WP_REST_Response( [
+				'success'       => true,
+				'notifications' => Models\Notification::getNotifications()
+			], 200 );
+		} catch ( \Exception $e ) {
 			return new \WP_REST_Response( [
 				'success' => false,
-				'message' => __( 'There was an error deleting the physical robots.txt file.', 'all-in-one-seo-pack' )
+				'message' => $e->getMessage()
 			], 400 );
 		}
-
-		Models\Notification::deleteNotificationByName( 'robots-physical-file' );
-
-		return new \WP_REST_Response( [
-			'success'       => true,
-			'notifications' => Models\Notification::getNotifications()
-		], 200 );
 	}
 
 	/**
@@ -118,7 +140,7 @@ class Tools {
 		) ) {
 			return new \WP_REST_Response( [
 				'success' => false,
-				'message' => __( 'Unable to send debug email, please check your email send settings and try again.', 'all-in-one-seo-pack' )
+				'message' => 'Unable to send debug email, please check your email send settings and try again.'
 			], 400 );
 		}
 
@@ -135,7 +157,7 @@ class Tools {
 	 * @param  \WP_REST_Request  $request The REST Request
 	 * @return \WP_REST_Response          The response.
 	 */
-	public static function createBackup() {
+	public static function createBackup( $request ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		aioseo()->backup->create();
 
 		return new \WP_REST_Response( [
@@ -217,11 +239,13 @@ class Tools {
 			], 400 );
 		}
 
-		$htaccess = aioseo()->helpers->decodeHtmlEntities( $htaccess );
-		if ( ! aioseo()->htaccess->saveContents( $htaccess ) ) {
+		$htaccess     = aioseo()->helpers->decodeHtmlEntities( $htaccess );
+		$saveHtaccess = (object) aioseo()->htaccess->saveContents( $htaccess );
+		if ( ! $saveHtaccess->success ) {
 			return new \WP_REST_Response( [
 				'success' => false,
-				'message' => __( 'An error occurred while trying to write to the .htaccess file. Please try again later.', 'all-in-one-seo-pack' )
+				'message' => $saveHtaccess->message ? $saveHtaccess->message : __( 'An error occurred while trying to write to the .htaccess file. Please try again later.', 'all-in-one-seo-pack' ),
+				'reason'  => $saveHtaccess->reason
 			], 400 );
 		}
 

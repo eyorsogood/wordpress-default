@@ -14,7 +14,8 @@ class ExactMetrics_License_Compat {
 	/**
 	 * ExactMetrics_License_Shim constructor.
 	 */
-	public function __construct() {}
+	public function __construct() {
+	}
 
 	/**
 	 * @return string

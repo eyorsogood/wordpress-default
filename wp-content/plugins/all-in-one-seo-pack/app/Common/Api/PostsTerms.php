@@ -133,7 +133,7 @@ class PostsTerms {
 		if ( empty( $args['postId'] ) ) {
 			return new \WP_REST_Response( [
 				'success' => false,
-				'message' => __( 'No post ID was provided.', 'all-in-one-seo-pack' )
+				'message' => 'No post ID was provided.'
 			], 400 );
 		}
 
@@ -165,7 +165,7 @@ class PostsTerms {
 		if ( empty( $args['postId'] ) ) {
 			return new \WP_REST_Response( [
 				'success' => false,
-				'message' => __( 'No post ID was provided.', 'all-in-one-seo-pack' )
+				'message' => 'No post ID was provided.'
 			], 400 );
 		}
 
@@ -189,20 +189,11 @@ class PostsTerms {
 	 *
 	 * @since 4.0.6
 	 *
-	 * @param  WP_Post|int $post The post.
-	 * @return string            The custom field content.
+	 * @param  \WP_Post|int $post The post.
+	 * @return string             The custom field content.
 	 */
 	private static function getAnalysisContent( $post = null ) {
-		$post            = ( $post && is_object( $post ) ) ? $post : aioseo()->helpers->getPost( $post );
-		$customFieldKeys = aioseo()->dynamicOptions->searchAppearance->postTypes->{$post->post_type}->customFields;
-
-		if ( empty( $customFieldKeys ) ) {
-			return get_post_field( 'post_content', $post->ID );
-		}
-
-		$customFieldKeys    = explode( ' ', sanitize_text_field( $customFieldKeys ) );
-		$customFieldContent = aioseo()->helpers->getCustomFieldsContent( $post->ID, $customFieldKeys );
-		$analysisContent    = $post->post_content . apply_filters( 'aioseo_analysis_content', $customFieldContent );
+		$analysisContent = apply_filters( 'aioseo_analysis_content', aioseo()->helpers->getPostContent( $post ) );
 
 		return sanitize_post_field( 'post_content', $analysisContent, $post->ID, 'display' );
 	}
@@ -222,7 +213,7 @@ class PostsTerms {
 		if ( ! $postId ) {
 			return new \WP_REST_Response( [
 				'success' => false,
-				'message' => __( 'Post ID is missing.', 'all-in-one-seo-pack' )
+				'message' => 'Post ID is missing.'
 			], 400 );
 		}
 
@@ -237,7 +228,6 @@ class PostsTerms {
 		$body['twitter_title']       = ! empty( $body['twitter_title'] ) ? sanitize_text_field( $body['twitter_title'] ) : null;
 		$body['twitter_description'] = ! empty( $body['twitter_description'] ) ? sanitize_text_field( $body['twitter_description'] ) : null;
 
-		// @TODO: Refactor this as it's not the best way to look for errors.
 		$error = Models\Post::savePost( $postId, $body );
 
 		if ( ! empty( $error ) ) {
@@ -265,7 +255,6 @@ class PostsTerms {
 		$body    = $request->get_json_params();
 		$postId  = ! empty( $body['postId'] ) ? intval( $body['postId'] ) : null;
 		$isMedia = isset( $body['isMedia'] ) ? true : false;
-		$post    = aioseo()->helpers->getPost( $postId );
 
 		if ( ! $postId ) {
 			return new \WP_REST_Response( [
@@ -274,47 +263,29 @@ class PostsTerms {
 			], 400 );
 		}
 
-		$thePost = Models\Post::getPost( $postId );
+		$aioseoPost = Models\Post::getPost( $postId );
+		$aioseoData = json_decode( wp_json_encode( $aioseoPost ), true );
 
-		if ( $thePost->exists() ) {
-			$metaTitle = aioseo()->meta->title->getPostTypeTitle( $post->post_type );
-			if ( empty( $thePost->title ) && ! empty( $body['title'] ) && trim( $body['title'] ) === trim( $metaTitle ) ) {
-				$body['title'] = null;
-			}
-			$thePost->title = ! empty( $body['title'] ) ? sanitize_text_field( $body['title'] ) : null;
-
-			$metaDescription = aioseo()->meta->description->getPostTypeDescription( $post->post_type );
-			if ( empty( $thePost->description ) && ! empty( $body['description'] ) && trim( $body['description'] ) === trim( $metaDescription ) ) {
-				$body['description'] = null;
-			}
-			$thePost->description = ! empty( $body['description'] ) ? sanitize_text_field( $body['description'] ) : '';
-			$thePost->updated     = gmdate( 'Y-m-d H:i:s' );
-			if ( $isMedia ) {
-				wp_update_post(
-					[
-						'ID'         => $postId,
-						'post_title' => sanitize_text_field( $body['imageTitle'] ),
-					]
-				);
-				update_post_meta( $postId, '_wp_attachment_image_alt', sanitize_text_field( $body['imageAltTag'] ) );
-			}
-		} else {
-			$thePost->post_id     = $postId;
-			$thePost->title       = ! empty( $body['title'] ) ? sanitize_text_field( $body['title'] ) : '';
-			$thePost->description = ! empty( $body['description'] ) ? sanitize_text_field( $body['description'] ) : null;
-			$thePost->created     = gmdate( 'Y-m-d H:i:s' );
-			$thePost->updated     = gmdate( 'Y-m-d H:i:s' );
-			if ( $isMedia ) {
-				wp_update_post(
-					[
-						'ID'         => $postId,
-						'post_title' => sanitize_text_field( $body['imageTitle'] ),
-					]
-				);
-				update_post_meta( $postId, '_wp_attachment_image_alt', sanitize_text_field( $body['imageAltTag'] ) );
-			}
+		// Decode these below because `savePost()` expects them to be an array.
+		if ( ! empty( $aioseoData['keyphrases'] ) ) {
+			$aioseoData['keyphrases'] = json_decode( $aioseoData['keyphrases'], true );
 		}
-		$thePost->save();
+
+		if ( ! empty( $aioseoData['page_analysis'] ) ) {
+			$aioseoData['page_analysis'] = json_decode( $aioseoData['page_analysis'], true );
+		}
+
+		if ( $isMedia ) {
+			wp_update_post(
+				[
+					'ID'         => $postId,
+					'post_title' => sanitize_text_field( $body['imageTitle'] ),
+				]
+			);
+			update_post_meta( $postId, '_wp_attachment_image_alt', sanitize_text_field( $body['imageAltTag'] ) );
+		}
+
+		Models\Post::savePost( $postId, array_replace( $aioseoData, $body ) );
 
 		$lastError = aioseo()->core->db->lastError();
 		if ( ! empty( $lastError ) ) {
@@ -377,6 +348,89 @@ class PostsTerms {
 		return new \WP_REST_Response( [
 			'success' => true,
 			'post'    => $postId
+		], 200 );
+	}
+
+	/**
+	 * Disable the Primary Term education.
+	 *
+	 * @since 4.3.6
+	 *
+	 * @param  \WP_REST_Request  $request The REST Request
+	 * @return \WP_REST_Response          The response.
+	 */
+	public static function disablePrimaryTermEducation( $request ) {
+		$args = $request->get_params();
+
+		if ( empty( $args['postId'] ) ) {
+			return new \WP_REST_Response( [
+				'success' => false,
+				'message' => 'No post ID was provided.'
+			], 400 );
+		}
+
+		$thePost = Models\Post::getPost( $args['postId'] );
+		$thePost->options->primaryTerm->productEducationDismissed = true;
+		$thePost->save();
+
+		return new \WP_REST_Response( [
+			'success' => true
+		], 200 );
+	}
+
+	/**
+	 * Disable the link format education.
+	 *
+	 * @since 4.2.2
+	 *
+	 * @param  \WP_REST_Request  $request The REST Request
+	 * @return \WP_REST_Response          The response.
+	 */
+	public static function disableLinkFormatEducation( $request ) {
+		$args = $request->get_params();
+
+		if ( empty( $args['postId'] ) ) {
+			return new \WP_REST_Response( [
+				'success' => false,
+				'message' => 'No post ID was provided.'
+			], 400 );
+		}
+
+		$thePost = Models\Post::getPost( $args['postId'] );
+		$thePost->options->linkFormat->linkAssistantDismissed = true;
+		$thePost->save();
+
+		return new \WP_REST_Response( [
+			'success' => true
+		], 200 );
+	}
+
+	/**
+	 * Increment the internal link count.
+	 *
+	 * @since 4.2.2
+	 *
+	 * @param  \WP_REST_Request  $request The REST Request
+	 * @return \WP_REST_Response          The response.
+	 */
+	public static function updateInternalLinkCount( $request ) {
+		$args  = $request->get_params();
+		$body  = $request->get_json_params();
+		$count = ! empty( $body['count'] ) ? intval( $body['count'] ) : null;
+
+		if ( empty( $args['postId'] ) || null === $count ) {
+			return new \WP_REST_Response( [
+				'success' => false,
+				'message' => 'No post ID or count was provided.'
+			], 400 );
+		}
+
+		$thePost = Models\Post::getPost( $args['postId'] );
+		$thePost->options->linkFormat->internalLinkCount = $count;
+		$thePost->save();
+
+		return new \WP_REST_Response( [
+			'success' => true
 		], 200 );
 	}
 }

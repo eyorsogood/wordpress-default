@@ -87,13 +87,12 @@ class ExactMetrics_Welcome {
 		delete_transient( '_exactmetrics_activation_redirect' );
 
 		// Bail if activating from network, or bulk.
-		if ( isset( $_GET['activate-multi'] ) ) { // WPCS: CSRF ok, input var ok.
+		if ( isset( $_GET['activate-multi'] ) ) { 
 			return;
 		}
 
 		$upgrade = get_option( 'exactmetrics_version_upgraded_from', false );
 		if ( apply_filters( 'exactmetrics_enable_onboarding_wizard', false === $upgrade ) ) {
-			$redirect = admin_url( 'index.php?page=exactmetrics-getting-started&exactmetrics-redirect=1' );
 			$path     = 'index.php?page=exactmetrics-getting-started&exactmetrics-redirect=1';
 			$redirect = is_network_admin() ? network_admin_url( $path ) : admin_url( $path );
 			wp_safe_redirect( $redirect );

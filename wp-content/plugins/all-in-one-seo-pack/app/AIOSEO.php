@@ -7,16 +7,18 @@ namespace AIOSEO\Plugin {
 
 	/**
 	 * Main AIOSEO class.
+	 * We extend the abstract class as that one holds all the class properties.
 	 *
 	 * @since 4.0.0
 	 */
-	final class AIOSEO {
+	final class AIOSEO extends \AIOSEOAbstract {
+
 		/**
 		 * Holds the instance of the plugin currently in use.
 		 *
 		 * @since 4.0.0
 		 *
-		 * @var AIOSEO\Plugin\AIOSEO
+		 * @var AIOSEO
 		 */
 		private static $instance;
 
@@ -47,96 +49,6 @@ namespace AIOSEO\Plugin {
 		 * @var boolean
 		 */
 		public $versionPath = 'Lite';
-
-		/**
-		 * The AIOSEO options.
-		 *
-		 * @since 4.0.0
-		 *
-		 * @var array
-		 */
-		public $options = [];
-
-		/**
-		 * The AIOSEO dynamic options.
-		 *
-		 * @since 4.1.4
-		 *
-		 * @var array
-		 */
-		public $dynamicOptions = [];
-
-		/**
-		 * The WordPress filters to run.
-		 *
-		 * @since 4.0.0
-		 *
-		 * @var Filters
-		 */
-		private $filters = null;
-
-		/**
-		 * For usage tracking when enabled.
-		 *
-		 * @since 4.0.0
-		 *
-		 * @var Filters
-		 */
-		private $usage = null;
-
-		/**
-		 * For WP site health.
-		 *
-		 * @since 4.0.0
-		 *
-		 * @var Filters
-		 */
-		private $siteHealth = null;
-
-		/**
-		 * For auto updates.
-		 *
-		 * @since 4.0.0
-		 *
-		 * @var Filters
-		 */
-		private $autoUpdates = null;
-
-		/**
-		 * Holds our addon helper and loaded addons.
-		 *
-		 * @since 4.0.17
-		 *
-		 * @var object
-		 */
-		public $addons;
-
-		/**
-		 * Holds our template helper.
-		 *
-		 * @since 4.0.17
-		 *
-		 * @var Common\Utils\Templates
-		 */
-		public $templates;
-
-		/**
-		 * Holds our cache helper.
-		 *
-		 * @since 4.1.5
-		 *
-		 * @var Common\Utils\Cache
-		 */
-		public $cache;
-
-		/**
-		 * Holds our cache prune.
-		 *
-		 * @since 4.1.6
-		 *
-		 * @var Common\Utils\CachePrune
-		 */
-		public $cachePrune;
 
 		/**
 		 * Whether we're in a dev environment.
@@ -181,7 +93,9 @@ namespace AIOSEO\Plugin {
 			$this->constants();
 			$this->includes();
 			$this->preLoad();
-			$this->load();
+			if ( ! $this->core->isUninstalling() ) {
+				$this->load();
+			}
 		}
 
 		/**
@@ -228,20 +142,23 @@ namespace AIOSEO\Plugin {
 		 */
 		private function includes() {
 			$dependencies = [
-				'/vendor/autoload.php',
-				'/vendor/woocommerce/action-scheduler/action-scheduler.php'
+				'/vendor/autoload.php'                                      => true,
+				'/vendor/woocommerce/action-scheduler/action-scheduler.php' => true,
+				'/vendor/jwhennessey/phpinsight/autoload.php'               => false,
+				'/vendor_prefixed/monolog/monolog/src/Monolog/Logger.php'   => false
 			];
 
-			foreach ( $dependencies as $path ) {
+			foreach ( $dependencies as $path => $shouldRequire ) {
 				if ( ! file_exists( AIOSEO_DIR . $path ) ) {
 					// Something is not right.
 					status_header( 500 );
 					wp_die( esc_html__( 'Plugin is missing required dependencies. Please contact support for more information.', 'all-in-one-seo-pack' ) );
 				}
-				require AIOSEO_DIR . $path;
-			}
 
-			add_action( 'plugins_loaded', [ $this, 'actionScheduler' ], 10 );
+				if ( $shouldRequire ) {
+					require_once AIOSEO_DIR . $path;
+				}
+			}
 
 			$this->loadVersion();
 		}
@@ -266,39 +183,23 @@ namespace AIOSEO\Plugin {
 				return;
 			}
 
-			$dotenv = \Dotenv\Dotenv::create( AIOSEO_DIR, '/build/.env' );
+			$dotenv = \Dotenv\Dotenv::createUnsafeImmutable( AIOSEO_DIR, '/build/.env' );
 			$dotenv->load();
 
-			$version = strtolower( getenv( 'VITE_VERSION' ) );
+			$version = defined( 'AIOSEO_DEV_VERSION' )
+				? strtolower( AIOSEO_DEV_VERSION )
+				: strtolower( getenv( 'VITE_VERSION' ) );
 			if ( ! empty( $version ) ) {
 				$this->isDev = true;
+
+				if ( file_exists( AIOSEO_DIR . '/build/filters.php' ) ) {
+					require_once AIOSEO_DIR . '/build/filters.php';
+				}
 			}
 
 			if ( $proDir && 'pro' === $version ) {
 				$this->pro         = true;
 				$this->versionPath = 'Pro';
-			}
-		}
-
-		/**
-		 * Ensure our action scheduler tables are always set.
-		 *
-		 * @since 4.0.0
-		 *
-		 * @return void
-		 */
-		public function actionScheduler() {
-			// Only need to run this check in the admin.
-			if ( ! is_admin() ) {
-				return;
-			}
-
-			if ( class_exists( 'ActionScheduler' ) && class_exists( 'ActionScheduler_ListTable' ) ) {
-				new Common\Utils\ActionScheduler(
-					\ActionScheduler::store(),
-					\ActionScheduler::logger(),
-					\ActionScheduler::runner()
-				);
 			}
 		}
 
@@ -315,7 +216,9 @@ namespace AIOSEO\Plugin {
 			$this->backwardsCompatibility();
 
 			// Internal Options.
-			$this->internalOptions = $this->pro ? new Pro\Options\InternalOptions() : new Lite\Options\InternalOptions();
+			$this->helpers                = $this->pro ? new Pro\Utils\Helpers() : new Lite\Utils\Helpers();
+			$this->internalNetworkOptions = ( $this->pro && $this->helpers->isPluginNetworkActivated() ) ? new Pro\Options\InternalNetworkOptions() : new Common\Options\InternalNetworkOptions();
+			$this->internalOptions        = $this->pro ? new Pro\Options\InternalOptions() : new Lite\Options\InternalOptions();
 
 			// Run pre-updates.
 			$this->preUpdates = $this->pro ? new Pro\Main\PreUpdates() : new Common\Main\PreUpdates();
@@ -338,6 +241,18 @@ namespace AIOSEO\Plugin {
 		}
 
 		/**
+		 * To prevent errors and bugs from popping up,
+		 * we will run this backwards compatibility method.
+		 *
+		 * @since 4.2.0
+		 *
+		 * @return void
+		 */
+		private function backwardsCompatibilityLoad() {
+			$this->postSettings->integrations = $this->standalone->pageBuilderIntegrations;
+		}
+
+		/**
 		 * Load our classes.
 		 *
 		 * @since 4.0.0
@@ -350,31 +265,33 @@ namespace AIOSEO\Plugin {
 				$translations = new Pro\Main\Translations(
 					'plugin',
 					'all-in-one-seo-pack',
-					'https://packages.translationspress.com/aioseo/all-in-one-seo-pack/packages.json'
+					'https://aioseo.com/aioseo-plugin/all-in-one-seo-pack/packages.json'
 				);
 				$translations->init();
 
 				$translations = new Pro\Main\Translations(
 					'plugin',
 					'aioseo-pro',
-					'https://packages.translationspress.com/aioseo/aioseo-pro/packages.json'
+					'https://aioseo.com/aioseo-plugin/aioseo-pro/packages.json'
 				);
 				$translations->init();
 			}
 
-			$this->helpers            = $this->pro ? new Pro\Utils\Helpers() : new Common\Utils\Helpers();
 			$this->addons             = $this->pro ? new Pro\Utils\Addons() : new Common\Utils\Addons();
+			$this->features           = $this->pro ? new Pro\Utils\Features() : new Common\Utils\Features();
 			$this->tags               = $this->pro ? new Pro\Utils\Tags() : new Common\Utils\Tags();
+			$this->blocks             = new Common\Utils\Blocks();
 			$this->badBotBlocker      = new Common\Tools\BadBotBlocker();
-			$this->headlineAnalyzer   = new Common\HeadlineAnalyzer\HeadlineAnalyzer();
 			$this->breadcrumbs        = $this->pro ? new Pro\Breadcrumbs\Breadcrumbs() : new Common\Breadcrumbs\Breadcrumbs();
 			$this->dynamicBackup      = $this->pro ? new Pro\Options\DynamicBackup() : new Common\Options\DynamicBackup();
 			$this->options            = $this->pro ? new Pro\Options\Options() : new Lite\Options\Options();
+			$this->networkOptions     = ( $this->pro && $this->helpers->isPluginNetworkActivated() ) ? new Pro\Options\NetworkOptions() : new Common\Options\NetworkOptions();
 			$this->dynamicOptions     = $this->pro ? new Pro\Options\DynamicOptions() : new Common\Options\DynamicOptions();
 			$this->backup             = new Common\Utils\Backup();
 			$this->access             = $this->pro ? new Pro\Utils\Access() : new Common\Utils\Access();
 			$this->usage              = $this->pro ? new Pro\Admin\Usage() : new Lite\Admin\Usage();
 			$this->siteHealth         = $this->pro ? new Pro\Admin\SiteHealth() : new Common\Admin\SiteHealth();
+			$this->networkLicense     = $this->pro && $this->helpers->isPluginNetworkActivated() ? new Pro\Admin\NetworkLicense() : null;
 			$this->license            = $this->pro ? new Pro\Admin\License() : null;
 			$this->autoUpdates        = $this->pro ? new Pro\Admin\AutoUpdates() : null;
 			$this->updates            = $this->pro ? new Pro\Main\Updates() : new Common\Main\Updates();
@@ -384,34 +301,60 @@ namespace AIOSEO\Plugin {
 			$this->htaccess           = new Common\Tools\Htaccess();
 			$this->term               = $this->pro ? new Pro\Admin\Term() : null;
 			$this->notices            = $this->pro ? new Pro\Admin\Notices\Notices() : new Lite\Admin\Notices\Notices();
+			$this->wpNotices          = new Common\Admin\Notices\WpNotices();
 			$this->admin              = $this->pro ? new Pro\Admin\Admin() : new Lite\Admin\Admin();
+			$this->networkAdmin       = $this->helpers->isPluginNetworkActivated() ? ( $this->pro ? new Pro\Admin\NetworkAdmin() : new Common\Admin\NetworkAdmin() ) : null;
 			$this->activate           = $this->pro ? new Pro\Main\Activate() : new Common\Main\Activate();
 			$this->conflictingPlugins = $this->pro ? new Pro\Admin\ConflictingPlugins() : new Common\Admin\ConflictingPlugins();
-			$this->limitModifiedDate  = new Common\Admin\LimitModifiedDate();
 			$this->migration          = $this->pro ? new Pro\Migration\Migration() : new Common\Migration\Migration();
 			$this->importExport       = $this->pro ? new Pro\ImportExport\ImportExport() : new Common\ImportExport\ImportExport();
 			$this->sitemap            = $this->pro ? new Pro\Sitemap\Sitemap() : new Common\Sitemap\Sitemap();
 			$this->htmlSitemap        = new Common\Sitemap\Html\Sitemap();
-			$this->templates          = new Common\Utils\Templates();
+			$this->templates          = $this->pro ? new Pro\Utils\Templates() : new Common\Utils\Templates();
+			$this->categoryBase       = $this->pro ? new Pro\Main\CategoryBase() : null;
 			$this->postSettings       = $this->pro ? new Pro\Admin\PostSettings() : new Lite\Admin\PostSettings();
+			$this->standalone         = new Common\Standalone\Standalone();
+			$this->searchStatistics   = $this->pro ? new Pro\SearchStatistics\SearchStatistics() : new Common\SearchStatistics\SearchStatistics();
+			$this->slugMonitor        = new Common\Admin\SlugMonitor();
+			$this->schema             = $this->pro ? new Pro\Schema\Schema() : new Common\Schema\Schema();
+			$this->actionScheduler    = new Common\Utils\ActionScheduler();
+			$this->seoRevisions       = $this->pro ? new Pro\SeoRevisions\SeoRevisions() : new Common\SeoRevisions\SeoRevisions();
+			$this->ai                 = $this->pro ? new Pro\Ai\Ai() : null;
+			$this->filters            = $this->pro ? new Pro\Main\Filters() : new Lite\Main\Filters();
 
 			if ( ! wp_doing_ajax() && ! wp_doing_cron() ) {
 				$this->rss       = new Common\Rss();
 				$this->main      = $this->pro ? new Pro\Main\Main() : new Common\Main\Main();
-				$this->schema    = $this->pro ? new Pro\Schema\Schema() : new Common\Schema\Schema();
 				$this->head      = $this->pro ? new Pro\Main\Head() : new Common\Main\Head();
-				$this->filters   = $this->pro ? new Pro\Main\Filters() : new Lite\Main\Filters();
 				$this->dashboard = $this->pro ? new Pro\Admin\Dashboard() : new Common\Admin\Dashboard();
 				$this->api       = $this->pro ? new Pro\Api\Api() : new Lite\Api\Api();
-				$this->filter    = new Common\Utils\Filter();
 				$this->help      = new Common\Help\Help();
 			}
 
-			if ( wp_doing_ajax() || wp_doing_cron() ) {
+			$this->backwardsCompatibilityLoad();
+
+			if ( wp_doing_ajax() ) {
+				add_action( 'init', [ $this, 'loadAjaxInit' ], 999 );
+
+				return;
+			}
+
+			if ( wp_doing_cron() ) {
 				return;
 			}
 
 			add_action( 'init', [ $this, 'loadInit' ], 999 );
+		}
+
+		/**
+		 * Things that need to load after init, on AJAX requests.
+		 *
+		 * @since 4.2.4
+		 *
+		 * @return void
+		 */
+		public function loadAjaxInit() {
+			$this->addons->registerUpdateCheck();
 		}
 
 		/**

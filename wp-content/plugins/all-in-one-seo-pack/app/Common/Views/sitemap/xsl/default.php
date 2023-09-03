@@ -20,8 +20,7 @@ if ( '/sitemap.rss' === $sitemapPath ) {
 	version="2.0"
 	xmlns:html="http://www.w3.org/TR/html40"
 	xmlns:sitemap="http://www.sitemaps.org/schemas/sitemap/0.9"
-	xmlns:video="https://www.google.com/schemas/sitemap-video/1.1"
-	xmlns:image="https://www.google.com/schemas/sitemap-image/1.1"
+	xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 >
 	<xsl:output method="html" version="1.0" encoding="UTF-8" indent="yes"/>
@@ -155,14 +154,16 @@ if ( '/sitemap.rss' === $sitemapPath ) {
 							<?php endif; ?>
 						</td>
 						<td class="datetime">
-							<?php 
-							aioseo()->templates->getTemplate(
-								'sitemap/xsl/partials/date-time.php',
-								[
-									'datetime' => $xslParams['datetime'],
-									'node'     => 'sitemap:loc'
-								]
-							);
+							<?php
+							if ( ! empty( $xslParams['datetime'] ) ) {
+								aioseo()->templates->getTemplate(
+									'sitemap/xsl/partials/date-time.php',
+									[
+										'datetime' => $xslParams['datetime'],
+										'node'     => 'sitemap:loc'
+									]
+								);
+							}
 							?>
 						</td>
 					</tr>
@@ -230,13 +231,15 @@ if ( '/sitemap.rss' === $sitemapPath ) {
 						</td>
 						<td class="datetime">
 							<?php 
-							aioseo()->templates->getTemplate(
-								'sitemap/xsl/partials/date-time.php',
-								[
-									'datetime' => $xslParams['datetime'],
-									'node'     => 'link'
-								]
-							);
+							if ( ! empty( $xslParams['datetime'] ) ) {
+								aioseo()->templates->getTemplate(
+									'sitemap/xsl/partials/date-time.php',
+									[
+										'datetime' => $xslParams['datetime'],
+										'node'     => 'link'
+									]
+								);
+							}
 							?>
 						</td>
 					</tr>
@@ -267,7 +270,7 @@ if ( '/sitemap.rss' === $sitemapPath ) {
 						<th class="left">
 							<?php _e( 'URL', 'all-in-one-seo-pack' ); ?>
 						</th>
-						<?php if ( ! $advanced || ! apply_filters( 'aioseo_sitemap_images', $excludeImages ) ) : ?>
+						<?php if ( ! aioseo()->sitemap->helpers->excludeImages() ) : ?>
 							<th>
 								<?php
 								aioseo()->templates->getTemplate(
@@ -353,15 +356,21 @@ if ( '/sitemap.rss' === $sitemapPath ) {
 						<xsl:if test="position() mod 2 != 0">
 							<xsl:attribute name="class">stripe</xsl:attribute>
 						</xsl:if>
+
 						<td class="left">
 							<xsl:variable name="itemURL">
 								<xsl:value-of select="sitemap:loc"/>
 							</xsl:variable>
+
 							<xsl:choose>
-								<xsl:when test="sitemap:loc/@language != ''">
-									<a href="{$itemURL}" class="localized">
-										<xsl:value-of select="sitemap:loc"/>
-									</a> &#160;&#8594; <xsl:value-of select="sitemap:loc/@language"/>
+								<xsl:when test="count(./*[@rel='alternate']) > 0">
+									<xsl:for-each select="./*[@rel='alternate']">
+										<xsl:if test="position() = last()">
+											<a href="{current()/@href}" class="localized">
+												<xsl:value-of select="@href"/>
+											</a> &#160;&#8594; <xsl:value-of select="@hreflang"/>
+										</xsl:if>
+									</xsl:for-each>
 								</xsl:when>
 								<xsl:otherwise>
 									<a href="{$itemURL}">
@@ -369,14 +378,17 @@ if ( '/sitemap.rss' === $sitemapPath ) {
 									</a>
 								</xsl:otherwise>
 							</xsl:choose>
+
 							<xsl:for-each select="./*[@rel='alternate']">
 								<br />
-								<a href="{current()/@href}" class="localized">
-									<xsl:value-of select="@href"/>
-								</a> &#160;&#8594; <xsl:value-of select="@hreflang"/>
+								<xsl:if test="position() != last()">
+									<a href="{current()/@href}" class="localized">
+										<xsl:value-of select="@href"/>
+									</a> &#160;&#8594; <xsl:value-of select="@hreflang"/>
+								</xsl:if>
 							</xsl:for-each>
 						</td>
-						<?php if ( ! $advanced || ! apply_filters( 'aioseo_sitemap_images', $excludeImages ) ) : ?>
+						<?php if ( ! aioseo()->sitemap->helpers->excludeImages() ) : ?>
 						<td>
 							<div class="item-count">
 								<xsl:value-of select="count(image:image)"/>
@@ -395,13 +407,15 @@ if ( '/sitemap.rss' === $sitemapPath ) {
 						</td>
 						<td class="datetime">
 							<?php 
-							aioseo()->templates->getTemplate(
-								'sitemap/xsl/partials/date-time.php',
-								[
-									'datetime' => $xslParams['datetime'],
-									'node'     => 'sitemap:loc'
-								]
-							);
+							if ( ! empty( $xslParams['datetime'] ) ) {
+								aioseo()->templates->getTemplate(
+									'sitemap/xsl/partials/date-time.php',
+									[
+										'datetime' => $xslParams['datetime'],
+										'node'     => 'sitemap:loc'
+									]
+								);
+							}
 							?>
 						</td>
 					</tr>

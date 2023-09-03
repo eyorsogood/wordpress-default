@@ -1,6 +1,7 @@
 <?php
 
 $base = ExactMetrics();
+require_once plugin_dir_path( $base->file ) . '/includes/admin/notifications/notification-install-user-feedback.php';
 require_once plugin_dir_path( $base->file ) . '/includes/admin/notifications/notification-visitors.php';
 require_once plugin_dir_path( $base->file ) . '/includes/admin/notifications/notification-audience.php';
 require_once plugin_dir_path( $base->file ) . '/includes/admin/notifications/notification-mobile-device-high-traffic.php';
@@ -8,7 +9,6 @@ require_once plugin_dir_path( $base->file ) . '/includes/admin/notifications/not
 require_once plugin_dir_path( $base->file ) . '/includes/admin/notifications/notification-upgrade-to-pro.php';
 require_once plugin_dir_path( $base->file ) . '/includes/admin/notifications/notification-upgrade-to-pro-high-traffic.php';
 require_once plugin_dir_path( $base->file ) . '/includes/admin/notifications/notification-bounce-rate.php';
-require_once plugin_dir_path( $base->file ) . '/includes/admin/notifications/notification-dual-tracking.php';
 require_once plugin_dir_path( $base->file ) . '/includes/admin/notifications/notification-returning-visitors.php';
 require_once plugin_dir_path( $base->file ) . '/includes/admin/notifications/notification-traffic-dropping.php';
 require_once plugin_dir_path( $base->file ) . '/includes/admin/notifications/notification-upgrade-for-post-templates.php';

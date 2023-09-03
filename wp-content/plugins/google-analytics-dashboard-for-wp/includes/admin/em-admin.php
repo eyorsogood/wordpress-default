@@ -2,9 +2,10 @@
 /**
  * Add menu items in admin bar
  *
+ * @param object $wp_admin_bar WP_Admin_Bar instance, passed by reference
+ *
  * @since 6.6.0
  *
- * @param object $wp_admin_bar WP_Admin_Bar instance, passed by reference
  */
 function exactmetrics_admin_bar_items( $admin_bar ) {
 	if ( ! current_user_can( 'exactmetrics_view_dashboard' ) ) {
@@ -22,4 +23,5 @@ function exactmetrics_admin_bar_items( $admin_bar ) {
 		),
 	) );
 }
+
 add_action( 'admin_bar_menu', 'exactmetrics_admin_bar_items', 500 );

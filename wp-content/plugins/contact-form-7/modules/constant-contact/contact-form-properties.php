@@ -56,16 +56,8 @@ function wpcf7_constant_contact_setup_property( $property, $contact_form ) {
 
 	$service_option = (array) WPCF7::get_option( 'constant_contact' );
 
-	$additional_settings = $contact_form->additional_setting(
-		'constant_contact',
-		false
-	);
-
-	$property['enable_contact_list'] = ! array_filter(
-		$additional_settings,
-		function ( $setting ) {
-			return in_array( $setting, array( 'off', 'false', '0' ), true );
-		}
+	$property['enable_contact_list'] = ! $contact_form->is_false(
+		'constant_contact'
 	);
 
 	if ( isset( $service_option['contact_lists'] ) ) {
@@ -163,7 +155,7 @@ function wpcf7_constant_contact_editor_panels( $panels ) {
 		)
 	);
 
-	$editor_panel = function () use ( $prop, $service ) {
+	$editor_panel = static function () use ( $prop, $service ) {
 
 		$description = sprintf(
 			esc_html(
@@ -236,9 +228,7 @@ function wpcf7_constant_contact_editor_panels( $panels ) {
 						'type' => 'checkbox',
 						'name' => 'wpcf7-ctct[contact_lists][]',
 						'value' => $list['list_id'],
-						'checked' => in_array( $list['list_id'], $prop['contact_lists'] )
-							? 'checked'
-							: '',
+						'checked' => in_array( $list['list_id'], $prop['contact_lists'] ),
 					) ),
 					esc_html( $list['name'] )
 				);

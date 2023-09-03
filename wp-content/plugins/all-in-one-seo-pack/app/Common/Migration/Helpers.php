@@ -49,7 +49,8 @@ class Helpers {
 				if ( ! $options->has( $lastOption, false ) ) {
 					$error = true;
 					break;
-				};
+				}
+
 				if ( count( $values['newOption'] ) - 1 !== $i ) {
 					$options = $options->$lastOption;
 				}
@@ -108,7 +109,7 @@ class Helpers {
 			'%date%'                   => '#archive_date',
 			'%day%'                    => '#post_day',
 			'%month%'                  => '#post_month',
-			'%monthnum%'               => '#monthnum',
+			'%monthnum%'               => '#post_month',
 			'%year%'                   => '#post_year',
 			'%current_date%'           => '#current_date',
 			'%current_day%'            => '#current_day',
@@ -240,7 +241,7 @@ class Helpers {
 		aioseo()->core->cache->delete( 'v3_migration_in_progress_posts' );
 		aioseo()->core->cache->delete( 'v3_migration_in_progress_terms' );
 
-		aioseo()->helpers->unscheduleAction( 'aioseo_migrate_post_meta' );
-		aioseo()->helpers->unscheduleAction( 'aioseo_migrate_term_meta' );
+		aioseo()->actionScheduler->unschedule( 'aioseo_migrate_post_meta' );
+		aioseo()->actionScheduler->unschedule( 'aioseo_migrate_term_meta' );
 	}
 }

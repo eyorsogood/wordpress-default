@@ -41,9 +41,9 @@ final class ExactMetrics_Notification_Audience extends ExactMetrics_Notification
 				'text' => __( 'View Report', 'google-analytics-dashboard-for-wp' )
 			),
 			"learn_more"  => array(
-				'url'           => $this->build_external_link( 'https://www.wpbeginner.com/showcase/9-best-translation-plugins-for-wordpress-websites/' ),
-				'text'          => __( 'Learn More', 'google-analytics-dashboard-for-wp' ),
-				'is_external'   => true,
+				'url'         => $this->build_external_link( 'https://www.wpbeginner.com/showcase/9-best-translation-plugins-for-wordpress-websites/' ),
+				'text'        => __( 'Learn More', 'google-analytics-dashboard-for-wp' ),
+				'is_external' => true,
 			),
 		);
 

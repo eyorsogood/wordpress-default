@@ -4,6 +4,8 @@
  *
  * This file demonstrates how to define sanitization callback functions for various data types.
  * @since 1.1.16
+ *
+ * @version 1.6.1
  */
 
 /**
@@ -62,35 +64,49 @@ function loginpress_sanitize_select( $input, $setting ) {
  * @param string               $image   Image filename.
  * @param WP_Customize_Setting $setting Setting instance.
  * @return string The image filename if the extension is allowed; otherwise, the setting default.
- * @version 1.2.2
+ *
+ * @since 1.1.17
+ *
+ * @version 1.6.1
  */
 function loginpress_sanitize_image( $image, $setting ) {
 
-		/*
-		 * Array of valid image file types.
-		 *
-		 * The array includes image mime types that are included in wp_get_mime_types()
-		 */
+	/*
+	 * Array of valid image file types.
+	 *
+	 * The array includes image mime types that are included in wp_get_mime_types()
+	 */
     $mimes = array(
         'jpg|jpeg|jpe' => 'image/jpeg',
         'gif'          => 'image/gif',
         'png'          => 'image/png',
         'bmp'          => 'image/bmp',
         'tif|tiff'     => 'image/tiff',
-        'ico'          => 'image/x-icon'
+        'ico'          => 'image/x-icon',
     );
 
-		// Allowed svg mime type in version 1.2.2
 		$allowed_mime   = get_allowed_mime_types();
-		$svg_mime_check = isset( $allowed_mime['svg'] ) ? true : false;
 
-		if ( $svg_mime_check ) {
-			$allow_mime = array( 'svg' => 'image/svg+xml' );
-			$mimes      = array_merge( $mimes, $allow_mime );
+		/**
+		 * Filter the list of mime types that are allowed for uploads.
+		 *
+		 * @since 1.6.1
+		 */
+		$extra_mimes    = array(
+			'svg'  => 'image/svg+xml', // Allowed svg mime type in version 1.2.2
+			'webp' => 'image/webp',   // Allowed webp mime type in version 1.6.1
+		);
+
+		foreach ( $extra_mimes as $key => $value ) {
+			$mime_check = isset( $allowed_mime[ $key ] ) ? true : false;
+			if ( $mime_check ) {
+				$allow_mime = array( $key => $value );
+				$mimes      = array_merge( $mimes, $allow_mime );
+			}
 		}
 
-		// Return an array with file extension and mime_type.
+	// Return an array with file extension and mime_type.
     $file = wp_check_filetype( $image, $mimes );
-		// If $image has a valid mime_type, return it; otherwise, return the default.
+	// If $image has a valid mime_type, return it; otherwise, return the default.
     return ( $file['ext'] ? $image : $setting->default );
 }

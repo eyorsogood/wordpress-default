@@ -852,7 +852,7 @@ text-shadow: none;
 .loginpress-show-love a{
   text-decoration: none;
 }
-.love-postion{
+.love-position{
 	left: 0;
 	padding-left: 20px;
 }
@@ -1144,6 +1144,39 @@ body.login label[for="authcode"]:after{
 body.login label[for="authcode"]+input{
 	padding-left: 15px;
 }
+
+/* Default Login Popup styling */
+
+.interim-login.login form {
+	margin: 30px !important;
+}
+
+.interim-login #login_error, .interim-login.login .message{
+	margin: 0 20px 16px !important;
+}
+
+.interim-login.login {
+    min-height: 520px;
+	height: 100vh;
+}
+
+.interim-login #login {
+    width: 100%;
+    max-width: 380px;
+    margin-top: 0;
+    margin-bottom: 0;
+    height: 100%;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+	padding: 20px 0;
+}
+
+.interim-login #login .submit{
+	margin-top: 10px;
+}
+
 <?php
 /**
  * Load the following the Language Switcher with the language availability.

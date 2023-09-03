@@ -15,6 +15,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Titles {
 	/**
+	 * List of options.
+	 *
+	 * @since 4.2.7
+	 *
+	 * @var array
+	 */
+	private $options = [];
+
+	/**
 	 * Class constructor.
 	 *
 	 * @since 4.1.4
@@ -177,7 +186,7 @@ class Titles {
 	 * @return void
 	 */
 	private function migrateTaxonomiesSettings() {
-		$titles = $this->options['seopress_titles_tax_titles'];
+		$titles = ! empty( $this->options['seopress_titles_tax_titles'] ) ? $this->options['seopress_titles_tax_titles'] : '';
 		if ( empty( $titles ) ) {
 			return;
 		}

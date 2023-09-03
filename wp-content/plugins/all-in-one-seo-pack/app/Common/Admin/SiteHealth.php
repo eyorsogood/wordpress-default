@@ -18,8 +18,8 @@ class SiteHealth {
 	 * @since 4.0.0
 	 */
 	public function __construct() {
-		add_filter( 'site_status_tests', [ $this, 'registerTests' ], 0, 1 );
-		add_filter( 'debug_information', [ $this, 'addDebugInfo' ], 0, 1 );
+		add_filter( 'site_status_tests', [ $this, 'registerTests' ], 0 );
+		add_filter( 'debug_information', [ $this, 'addDebugInfo' ], 0 );
 	}
 
 	/**
@@ -32,24 +32,20 @@ class SiteHealth {
 	 */
 	public function registerTests( $tests ) {
 		$tests['direct']['aioseo_site_public'] = [
-			// Translators: 1 - The plugin short name ("AIOSEO").
-			'label' => sprintf( __( '%1$s Site Public', 'all-in-one-seo-pack' ), AIOSEO_PLUGIN_SHORT_NAME ),
+			'label' => 'AIOSEO Site Public',
 			'test'  => [ $this, 'testCheckSitePublic' ],
 		];
 		$tests['direct']['aioseo_site_info'] = [
-			// Translators: 1 - The plugin short name ("AIOSEO").
-			'label' => sprintf( __( '%1$s Site Info', 'all-in-one-seo-pack' ), AIOSEO_PLUGIN_SHORT_NAME ),
+			'label' => 'AIOSEO Site Info',
 			'test'  => [ $this, 'testCheckSiteInfo' ],
 		];
 		$tests['direct']['aioseo_plugin_update'] = [
-			// Translators: 1 - The plugin short name ("AIOSEO").
-			'label' => sprintf( __( '%1$s Plugin Update', 'all-in-one-seo-pack' ), AIOSEO_PLUGIN_SHORT_NAME ),
+			'label' => 'AIOSEO Plugin Update',
 			'test'  => [ $this, 'testCheckPluginUpdate' ],
 		];
 
 		$tests['direct']['aioseo_schema_markup'] = [
-			// Translators: 1 - The plugin short name ("AIOSEO").
-			'label' => sprintf( __( '%1$s Schema Markup', 'all-in-one-seo-pack' ), AIOSEO_PLUGIN_SHORT_NAME ),
+			'label' => 'AIOSEO Schema Markup',
 			'test'  => [ $this, 'testCheckSchemaMarkup' ],
 		];
 

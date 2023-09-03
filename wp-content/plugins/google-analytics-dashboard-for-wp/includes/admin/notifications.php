@@ -409,7 +409,7 @@ class ExactMetrics_Notifications {
 
 		$option = $this->get_option();
 
-        $current_notifications = $option['events'];
+		$current_notifications = $option['events'];
 
 		foreach ( $current_notifications as $item ) {
 			if ( $item['id'] === $notification['id'] ) {
@@ -417,12 +417,12 @@ class ExactMetrics_Notifications {
 			}
 		}
 
-        $notification = $this->verify( array( $notification ) );
+		$notification = $this->verify( array( $notification ) );
 
-        $notifications = array_merge( $notification, $current_notifications );
+		$notifications = array_merge( $notification, $current_notifications );
 
-        //  Sort notifications by priority
-		usort( $notifications, function( $a, $b ) {
+		//  Sort notifications by priority
+		usort( $notifications, function ( $a, $b ) {
 			if ( ! isset( $a['priority'] ) || ! isset( $b['priority'] ) ) {
 				return 0;
 			}
@@ -431,8 +431,8 @@ class ExactMetrics_Notifications {
 				return 0;
 			}
 
-			return $a['priority'] < $b['priority'] ? -1 : 1;
-		});
+			return $a['priority'] < $b['priority'] ? - 1 : 1;
+		} );
 
 		update_option(
 			$this->option_name,
@@ -563,17 +563,17 @@ class ExactMetrics_Notifications {
 	 *
 	 * @return string
 	 */
-	public function get_view_url( $scroll_to, $page, $tab='' ) {
-		$disabled   = exactmetrics_get_option( 'dashboards_disabled', false );
+	public function get_view_url( $scroll_to, $page, $tab = '' ) {
+		$disabled = exactmetrics_get_option( 'dashboards_disabled', false );
 
 		$url = add_query_arg( array(
-			'page' => $page,
-			'exactmetrics-scroll' => $scroll_to,
+			'page'                      => $page,
+			'exactmetrics-scroll'    => $scroll_to,
 			'exactmetrics-highlight' => $scroll_to,
 		), admin_url( 'admin.php' ) );
 
 		if ( ! empty( $tab ) ) {
-			$url .= '#/'. $tab;
+			$url .= '#/' . $tab;
 		}
 
 		if ( false !== $disabled ) {

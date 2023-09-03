@@ -119,6 +119,23 @@ class PostMeta {
 				$name  = $record->meta_key;
 				$value = $record->meta_value;
 
+				// Handles primary taxonomy terms.
+				// We need to handle it separately because it's stored in a different format.
+				if ( false !== stripos( $name, '_yoast_wpseo_primary_' ) ) {
+					sscanf( $name, '_yoast_wpseo_primary_%s', $taxonomy );
+					if ( null === $taxonomy ) {
+						continue;
+					}
+
+					$options = new \stdClass();
+					if ( isset( $meta['primary_term'] ) ) {
+						$options = json_decode( $meta['primary_term'] );
+					}
+
+					$options->$taxonomy   = (int) $value;
+					$meta['primary_term'] = wp_json_encode( $options );
+				}
+
 				if ( ! in_array( $name, array_keys( $mappedMeta ), true ) ) {
 					continue;
 				}
@@ -167,12 +184,17 @@ class PostMeta {
 						if ( in_array( $post->post_type, [ 'post', 'page', 'attachment' ], true ) ) {
 							break;
 						}
-						if ( in_array( $value, ImportExport\SearchAppearance::$supportedWebPageGraphs, true ) ) {
-							$meta[ $mappedMeta[ $name ] ] = 'WebPage';
-							$options          = new \stdClass();
-							$options->webPage = [ 'webPageType' => $value ];
+
+						if ( ! in_array( $value, ImportExport\SearchAppearance::$supportedWebPageGraphs, true ) ) {
+							break;
 						}
-						$meta['schema_type_options'] = wp_json_encode( $options );
+
+						$meta[ $mappedMeta[ $name ] ] = 'WebPage';
+						$meta['schema_type_options']  = wp_json_encode( [
+							'webPage' => [
+								'webPageType' => $value
+							]
+						] );
 						break;
 					case '_yoast_wpseo_schema_article_type':
 						$value = aioseo()->helpers->pregReplace( '#\s#', '', $value );
@@ -201,11 +223,16 @@ class PostMeta {
 						$meta['schema_type_options'] = wp_json_encode( $options );
 						break;
 					case '_yoast_wpseo_focuskw':
-						$keyphrase = [
-							'focus'      => [ 'keyphrase' => aioseo()->helpers->sanitizeOption( $value ) ],
-							'additional' => []
+						$focusKeyphrase = [
+							'focus' => [ 'keyphrase' => aioseo()->helpers->sanitizeOption( $value ) ]
 						];
-						$meta['keyphrases'] = $keyphrase;
+
+						// Merge with existing keyphrases if the array key already exists.
+						if ( ! empty( $meta['keyphrases'] ) ) {
+							$meta['keyphrases'] = array_merge( $meta['keyphrases'], $focusKeyphrase );
+						} else {
+							$meta['keyphrases'] = $focusKeyphrase;
+						}
 						break;
 					case '_yoast_wpseo_focuskeywords':
 						$keyphrases = [];
@@ -213,14 +240,23 @@ class PostMeta {
 							$keyphrases = (array) json_decode( $meta[ $mappedMeta[ $name ] ] );
 						}
 
-						$yoastKeyphrases = json_decode( $value );
-						for ( $i = 0; $i < count( $yoastKeyphrases ); $i++ ) {
-							$keyphrase = [ 'keyphrase' => aioseo()->helpers->sanitizeOption( $yoastKeyphrases[ $i ]->keyword ) ];
-							$keyphrases['additional'][ $i ] = $keyphrase;
+						$yoastKeyphrases = json_decode( $value, true );
+						if ( is_array( $yoastKeyphrases ) ) {
+							foreach ( $yoastKeyphrases as $yoastKeyphrase ) {
+								if ( ! empty( $yoastKeyphrase['keyword'] ) ) {
+									$keyphrase = [ 'keyphrase' => aioseo()->helpers->sanitizeOption( $yoastKeyphrase['keyword'] ) ];
+
+									if ( ! isset( $keyphrases['additional'] ) ) {
+										$keyphrases['additional'] = [];
+									}
+
+									$keyphrases['additional'][] = $keyphrase;
+								}
+							}
 						}
 
 						if ( ! empty( $keyphrases ) ) {
-							// Merge previous 'keyphrases' with the focus keyword.
+							// Merge with existing keyphrases if the array key already exists.
 							if ( ! empty( $meta['keyphrases'] ) ) {
 								$meta['keyphrases'] = array_merge( $meta['keyphrases'], $keyphrases );
 							} else {
@@ -269,6 +305,9 @@ class PostMeta {
 			$aioseoPost->save();
 
 			aioseo()->migration->meta->migrateAdditionalPostMeta( $post->ID );
+
+			// Clear the Overview cache.
+			aioseo()->postSettings->clearPostTypeOverviewCache( $post->ID );
 		}
 
 		if ( count( $posts ) === $postsPerAction ) {

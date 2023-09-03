@@ -15,6 +15,24 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class GeneralSettings {
 	/**
+	 * List of options.
+	 *
+	 * @since 4.2.7
+	 *
+	 * @var array
+	 */
+	private $options = [];
+
+	/**
+	 * List of our access control roles.
+	 *
+	 * @since 4.2.7
+	 *
+	 * @var array
+	 */
+	private $roles = [];
+
+	/**
 	 * Class constructor.
 	 *
 	 * @since 4.1.4
@@ -49,7 +67,7 @@ class GeneralSettings {
 	 * @return void
 	 */
 	private function migrateBlockMetaboxRoles() {
-		$seoPressRoles = $this->options['seopress_advanced_security_metaboxe_role'];
+		$seoPressRoles = ! empty( $this->options['seopress_advanced_security_metaboxe_role'] ) ? $this->options['seopress_advanced_security_metaboxe_role'] : '';
 		if ( empty( $seoPressRoles ) ) {
 			return;
 		}
@@ -82,7 +100,7 @@ class GeneralSettings {
 	 * @return void
 	 */
 	private function migrateBlockContentAnalysisRoles() {
-		$seoPressRoles = $this->options['seopress_advanced_security_metaboxe_ca_role'];
+		$seoPressRoles = ! empty( $this->options['seopress_advanced_security_metaboxe_ca_role'] ) ? $this->options['seopress_advanced_security_metaboxe_ca_role'] : '';
 		if ( empty( $seoPressRoles ) ) {
 			return;
 		}

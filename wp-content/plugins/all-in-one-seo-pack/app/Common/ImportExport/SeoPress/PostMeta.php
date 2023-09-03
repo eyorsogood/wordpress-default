@@ -40,6 +40,7 @@ class PostMeta {
 		'_seopress_social_fb_title'      => 'og_title',
 		'_seopress_titles_desc'          => 'description',
 		'_seopress_titles_title'         => 'title',
+		'_seopress_robots_primary_cat'   => 'primary_term'
 	];
 
 	/**
@@ -48,7 +49,7 @@ class PostMeta {
 	 * @since 4.1.4
 	 */
 	public function scheduleImport() {
-		if ( aioseo()->helpers->scheduleSingleAction( aioseo()->importExport->seoPress->postActionName, 0 ) ) {
+		if ( aioseo()->actionScheduler->scheduleSingle( aioseo()->importExport->seoPress->postActionName, 0 ) ) {
 			if ( ! aioseo()->core->cache->get( 'import_post_meta_seopress' ) ) {
 				aioseo()->core->cache->update( 'import_post_meta_seopress', time(), WEEK_IN_SECONDS );
 			}
@@ -95,21 +96,32 @@ class PostMeta {
 				->run()
 				->result();
 
-			if ( ! $postMeta || ! count( $postMeta ) ) {
-				continue;
-			}
-
 			$meta = array_merge( [
 				'post_id' => (int) $post->ID,
 			], $this->getMetaData( $postMeta, $post->ID ) );
 
+			if ( ! $postMeta || ! count( $postMeta ) ) {
+				$aioseoPost = Models\Post::getPost( (int) $post->ID );
+				$aioseoPost->set( $meta );
+				$aioseoPost->save();
+
+				aioseo()->migration->meta->migrateAdditionalPostMeta( $post->ID );
+
+				continue;
+			}
+
 			$aioseoPost = Models\Post::getPost( (int) $post->ID );
 			$aioseoPost->set( $meta );
 			$aioseoPost->save();
+
+			aioseo()->migration->meta->migrateAdditionalPostMeta( $post->ID );
+
+			// Clear the Overview cache.
+			aioseo()->postSettings->clearPostTypeOverviewCache( $post->ID );
 		}
 
 		if ( count( $posts ) === $postsPerAction ) {
-			aioseo()->helpers->scheduleSingleAction( aioseo()->importExport->seoPress->postActionName, 5, [], true );
+			aioseo()->actionScheduler->scheduleSingle( aioseo()->importExport->seoPress->postActionName, 5, [], true );
 		} else {
 			aioseo()->core->cache->delete( 'import_post_meta_seopress' );
 		}
@@ -135,11 +147,17 @@ class PostMeta {
 
 			switch ( $name ) {
 				case '_seopress_analysis_target_kw':
-					$keyphrase = [
-						'focus'      => [ 'keyphrase' => aioseo()->helpers->sanitizeOption( $value ) ],
+					$keyphrases     = array_map( 'trim', explode( ',', $value ) );
+					$keyphraseArray = [
+						'focus'      => [ 'keyphrase' => aioseo()->helpers->sanitizeOption( $keyphrases[0] ) ],
 						'additional' => []
 					];
-					$meta['keyphrases'] = wp_json_encode( $keyphrase );
+					unset( $keyphrases[0] );
+					foreach ( $keyphrases as $keyphrase ) {
+						$keyphraseArray['additional'][] = [ 'keyphrase' => aioseo()->helpers->sanitizeOption( $keyphrase ) ];
+					}
+
+					$meta['keyphrases'] = wp_json_encode( $keyphraseArray );
 					break;
 				case '_seopress_robots_snippet':
 				case '_seopress_robots_archive':
@@ -160,6 +178,12 @@ class PostMeta {
 				case '_seopress_social_fb_img':
 					$meta['og_image_type']        = 'custom_image';
 					$meta[ $this->mappedMeta[ $name ] ] = esc_url( $value );
+					break;
+				case '_seopress_robots_primary_cat':
+					$taxonomy                           = 'category';
+					$options                            = new \stdClass();
+					$options->$taxonomy                 = (int) $value;
+					$meta[ $this->mappedMeta[ $name ] ] = wp_json_encode( $options );
 					break;
 				case '_seopress_titles_title':
 				case '_seopress_titles_desc':

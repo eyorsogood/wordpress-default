@@ -119,6 +119,33 @@ if ( ! class_exists( 'LoginPress_Compatibility' ) ) :
        */
 			wp_dequeue_style( 'listable-custom-login' );
 
+		$loginpress_setting = get_option( 'loginpress_setting' );
+		$pci_compliance 	= isset( $loginpress_setting['enable_pci_compliance'] ) ? $loginpress_setting['enable_pci_compliance'] : 'off';
+
+		/**
+		 * PCI Compliance
+		 */
+		if ( $pci_compliance !== 'off' ) {
+
+			echo '<script>document.addEventListener("DOMContentLoaded", function() {
+				var inputs = document.querySelectorAll("input[type=text]");
+				for (var i = 0; i < inputs.length; i++) {
+				  inputs[i].setAttribute("autocomplete", "off");
+				}
+			  });</script>';
+			echo '<script>document.addEventListener("DOMContentLoaded", function() {
+				var inputs = document.querySelectorAll("input[type=password]");
+				for (var i = 0; i < inputs.length; i++) {
+				  inputs[i].setAttribute("autocomplete", "off");
+				}
+			  });</script>';
+			  echo '<script>document.addEventListener("DOMContentLoaded", function() {
+				var inputs = document.querySelectorAll("input[type=email]");
+				for (var i = 0; i < inputs.length; i++) {
+				  inputs[i].setAttribute("autocomplete", "off");
+				}
+			  });</script>';
+		}
     }
 
 		/**

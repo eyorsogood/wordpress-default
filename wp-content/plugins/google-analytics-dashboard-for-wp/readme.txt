@@ -3,9 +3,9 @@ Contributors: chriscct7, smub
 Donate link: http://www.wpbeginner.com/wpbeginner-needs-your-help/
 Tags: analytics,google analytics,google analytics dashboard,google analytics plugin,google analytics widget,gtag
 Requires at least: 4.8.0
-Tested up to: 5.9
-Stable tag: 7.5.0
-Requires PHP: 5.5
+Tested up to: 6.3
+Stable tag: 7.19
+Requires PHP: 5.6
 License: GPL v3
 
 Connects Google Analytics with your WordPress site. Displays stats to help you understand your users and site content on a whole new level!
@@ -19,13 +19,13 @@ Our goal at ExactMetrics is to help you grow your business faster with data-driv
 
 This is why we built the most comprehensive Google Analytics plugin for WordPress, so you can setup all the powerful tracking features that website owners otherwise miss out on when simply pasting the analytics code in WordPress.
 
-We go beyond the simple analytics script and add the advanced event tracking, so you can see all important user behavior in WordPress with just a few clicks (without hiring a developer).
+We go beyond the simple google analytics script and add the advanced event tracking, so you can see all important user behavior in WordPress with just a few clicks (without hiring a developer).
 
-With our dual tracking feature, ExactMetrics tracks automatically both Universal Google Analytics (GA3) as well as Google Analytics 4 (GA4),  so that you track your website can be prepared for the future.
+ExactMetrics automatically Google Analytics 4 (GA4) so that you can your website can be prepared for the future of Google Analytics.
 
 Basically, we made the same advanced Google analytics setup that big enterprise companies used to pay thousands of dollars for, available to every small business owner without the high costs.
 
-This is why even the large companies like Microsoft, Quickbooks, Pizza Hut, Delta, Pepsi, Coldwell Bankers, and many others are using Exact Metrics to properly setup Google Analytics and see the custom analytics reports in WordPress.
+This is why even the large companies like Microsoft, Quickbooks, Pizza Hut, Delta, Pepsi, Coldwell Bankers, and many others are using ExactMetrics to properly setup Google Analytics and see the custom analytics reports in WordPress.
 
 > <strong>ExactMetrics Pro</strong><br />
 > This plugin is the lite version of ExactMetrics Pro plugin that comes with all the Google analytics tracking features you will ever need including events tracking, ecommerce tracking, custom dimensions tracking, form conversion tracking, affiliate link tracking, and tons more. <a href="https://exactmetrics.com/?utm_source=wprepo&utm_medium=link&utm_campaign=liteversion" rel="friend" title="ExactMetrics">Click here to purchase the best premium Google Analytics plugin for WordPress now!</a>
@@ -44,12 +44,13 @@ See what one business owner is saying about ExactMetrics:
 * Accurate Tracking - Properly setup all powerful Google Analytics features with just a few clicks (without hiring a developer)
 * Easy Google Analytics Dashboard - See your Google analytics reports right inside your WordPress dashboard with actionable insights.
 * Google Analytics 4 Support -  Easily set up and send proper website tracking data to Google Analytics 4
-* Dual Tracking (Universal Analytics 3 and Google Analytics 4) - Seamlessly track website data in both Universal Analytics (GA 3) and Google Analytics 4 with dual tracking.
 * Real-time Stats - See who is viewing your website, what they're doing, where they're coming from, how they found your site, and more.
-* Ecommerce Tracking - Setup Google Analytics Enhanced eCommerce tracking for WooCommerce, Easy Digital Downloads, & MemberPress (with 1-click).
+* Ecommerce Tracking - Setup Google Analytics eCommerce tracking for WooCommerce, Easy Digital Downloads, MemberPress, GiveWP, LifterLMS and MemberMouse (with 1-click).
 * GDPR / CCPA Compliant - Automatically make Google Analytics compliant with GDPR, CCPA, and other privacy regulations.
 * Affiliate Link Tracking - Automatically track clicks on your affiliate links with our enhanced link attribution.
-* Ad Tracking - Automatically track clicks on Google AdSense banner ads inside Google Analytics.
+* Google Ads Conversions - Track Google Ads automatically with no coding needed. Works with WooCommerce, Easy Digital Downloads, MemberPress, LifterMLS, Restrict Content Pro, or GiveWP.
+* Meta Pixel Conversions (Facebook and Instagram Ads Pixel) - Automatically fire pageview events and purchases for or WooCommerce, Easy Digital Downloads, MemberPress, LifterLMS, Restrict Content Pro, or GiveWP websites.
+* Microsoft Ads (Bing Ads) Conversion Tracking - automatically with no coding needed. Works with WooCommerce, Easy Digital Downloads, MemberPress, LifterMLS, Restrict Content Pro, or GiveWP.
 * File Download Tracking - Track every file download with just one-click.
 * Outbound link tracking - Track your outbound link clicks inside Google Analytics.
 * Custom Dimensions Tracking - Enable Google analytics custom dimensions tracking for WordPress events.
@@ -78,6 +79,13 @@ See what one business owner is saying about ExactMetrics:
 * Real Time Report - see who is online on your website in real-time, right inside your WordPress dashboard.
 * Customizable Google Analytics Dashboard Widget - Our dashboard widget allows you to have quick access to your most important stats at the moment you login to your WordPress dashboard.
 * Page Insights in Admin Bar - Easily view analytics for each individual page and post from the ExactMetrics menu in WordPress admin bar while browsing your website.
+* Landing Page Report - Shows you which pages your visitors land, without needing to log into Google Analytics.
+* Source and Medium Report - gives you an easy view of Google Analytics UTM tracking.
+* Technology Report - See which devices and browsers use your website the most.
+* Campaign Report - Shows you Google Analytics UTM tracking and key metrics.
+* Pages Report - See which pages are most poplular on your website.
+* Coupon Report - See which coupons are used most on your website.
+* Funnel Report - See how people buy from your store.
 * Email Summaries - Get the most important metrics delivered to you and/or your client's email inboxes weekly with our brandable Email Summaries, allowing you to keep up to date on your website's Google Analytics results even without needing to login to the Google Analytics dashboard.
 * PDF Exports - Easily take your ExactMetrics reports with you or send them to clients or colleagues by exporting all ExactMetrics reports as a brandable PDF.
 * Site Speed Report - helps you improve your website’s performance by displaying key metrics and actionable tips to improve those based on WordPress-specific solutions.
@@ -100,6 +108,8 @@ See what one business owner is saying about ExactMetrics:
 * Pretty Links Google Analytics - Automatically setup affiliate link tracking for Pretty Links.
 * Thirsty Affiliates Google Analytics - Automatically setup affiliate link tracking for Thirsty Affiliates.
 * AffiliateWP Google Analytics - Automatically setup affiliate link tracking for AffiliateWP.
+* User Journey Orders - See which pages visit before becoming customers with WooCommerce, Easy Digital Downloads, MemberPress, LifterLMS, Restrict Content Pro, or GiveWP.
+* User Feedback - Automatically track events and impressions with the popular User Feedback plugin.
 * Google AdSense + Google Analytics - Automatically setup banner ads tracking for Google AdSense.
 * Google Optimize + Google Analytics - Easily enable A/B testing in WordPress with Google Optimize and Google Analytics.
 
@@ -144,7 +154,7 @@ You can also learn about other <a href="https://www.wpbeginner.com/showcase/24-m
 
 = Does ExactMetrics support Google Analytics v4 (GAv4) =
 
-Yes, we fully support Google Analytics v4 (GAv4) properties as well as GAv3 (Universal) properties. In fact, you can track your site to both at the same time using [our exclusive dual tracking feature](https://www.exactmetrics.com/announcing-google-analytics-4-dual-analytics-tracking-for-wordpress/?utm_source=wprepo&utm_medium=link&utm_campaign=liteversion).
+Yes, we fully support Google Analytics v4 (GAv4) properties .
 
 = Where can I find lite support? =
 
@@ -176,50 +186,197 @@ You can translate Google Analytics Dashboard for WP by ExactMetrics on [translat
 3. Navigate to the Insights tab in your WordPress admin menu and configure the plugin.
 4. Want more features? <a href="https://www.exactmetrics.com/?utm_source=wprepo&utm_medium=link&utm_campaign=liteversion">Purchase ExactMetrics Pro</a>!
 
+
 == Changelog ==
+= 7.19: August 22, 2023 =
+- New: Ecommerce funnel report for WooCommerce and Easy Digital Downloads.
+- New: Setup checklist to get up and running faster
+- Enhanced: Improved support for PHP 8.2.
+- Fixed: We fixed a bug that occurred with Yoast SEO Scores.
+- Fixed: We fixed a bug in the Pretty Links integration.
+
+= 7.18.1: July 24, 2023 =
+- Update: We improved the GoogleAnalytics 4 reports.
+
+= 7.18: July 20, 2023 =
+- New: Added 6 Completely New Pro Reports to bring the power of Google Analytics into your WordPress dashboard.
+- Fixed: We fixed an issue that prevented tracking with WPML.
+- Fixed: We fixed an issue that prevented tracking the User Journey with MemberPress.
+
+= 7.17: June 29, 2023 =
+- Updated: Removed dual tracking panel and limit reporting to GA4 only properties.
+- Fixed: We fixed a bug in the WPForms integration.
+- Fixed: We fixed a bug in the AffiliateWP integration.
+
+= 7.16: June 15, 2023 =
+- New: User Journey report now available! See all of your website's purchases in one screen. 
+- Update: We updated the Popular Posts to support themes that allow widgets. 
+- Fixed: We fixed some layout issues in exported PDF reports.
+- Fixed: We fixed the deprecated YOAST function WPSEO_Utils::translate_score().
+- Fixed: We fixed a bug occurring while downloading files having the file download tracking enabled.
+
+= 7.15.3: May 08, 2023 =
+- Enhancement: We updated and tweaked some settings with our Site Notes feature.
+
+= 7.15.2: May 03, 2023 =
+- New: Site Notes allows you to record important website events right inside your WordPress dashboard.
+- Update: Fix EDD integration.
+- Update: Mobile screen optimizations.
+
+= 7.15.1: May 02, 2023 =
+- Fix: Fixed a critical error.
+
+= 7.15: May 02, 2023 =
+- New: Site Notes allows you to record important website events right inside your WordPress dashboard.
+- Update: Fix EDD integration.
+- Update: Mobile screen optimizations.
+
+= 7.14.2: Apr 11, 2023 =
+- Fixed: We fixed a PHP warning error and added additional security hardening.
+
+= 7.14.1: Mar 29, 2023 =
+- Fixed: We fixed the Addons page UI.
+
+= 7.14.0: Mar 27, 2023 =
+- New: Our New PPC Tracking addon allows you to effortlessly track sales inside Google Ads, Microsoft Ads, and Meta.
+- Enhancement: We updated and tweaked lots elements to make our dashboard easier to use
+
+= 7.13.1: Mar 21, 2023 =
+- Fixed: We fixed the admin menu text.
+
+= 7.13.0: Mar 13, 2023 =
+- Enhancement: We enhanced the notifications user experience.
+- Fixed: We fixed the PDF reports header.
+- Update: We applied additional security hardening.
+
+= 7.12.1: Jan 12, 2023 =
+- Fix: We made updates to authentication
+
+= 7.12.0: Jan 12, 2023 =
+- Enhancement: We updated and fixed some UI/UX elements to make ExactMetrics easier to use
+- Enhancement: We optimized our Javascript code to work better with minification plugins
+- Enhancement: We optimized our Javascript code to work better with minification plugins
+- Enhancement: We optimized the Javascript code to work nicely with minification plugins
+- Enhancement: We optimized our code to work better with PHP8
+
+= 7.11.0: Dec 12, 2022 =
+- New: With our limited-time-only Year in Review report you’ll be able to see how your site performed in 2022 and how to improve in 2023. This report will be automatically available from January 1 to January 14, 2023, inside the Reports section of ExactMetrics.
+- Enhancement: We optimized our media addon events.
+
+= 7.10.1: Nov 09, 2022 =
+- Fix: We fixed a bug in our auto-update logic when it encounters double digit version numbers. 
+
+= 7.10.0: Nov 07, 2022 =
+- New: We created a new Media report available right inside WordPress Admin dashboard to view video plays and engagement
+- New: We added file download support for Pretty Links
+- Enhancement: We enhanced some UI elements within the plugin
+- Fix: We updated User Journey to work with older versions of Easy Digital Downloads
+
+= 7.9.1: Oct 11, 2022 =
+- Enhancement: Our UserJourney addon works with sequential orders
+- Enhancement: We updated some language inside the WordPress Admin area for GA4 reporting
+- Fix: Headline analyzer now understands queries better
+- Fix: We updated our Ads addon to work with Easy Digital Downloads 3.0 
+
+= 7.9.0: Sept 20, 2022 =
+- New: You can now show an ExactMetrics badge on your website!
+- Enhancement: We updated and tweaked many UI elements to better help with onboarding and plugin usage.
+- Enhancement: We now include our dashboard fonts locally.
+- Fix: We updated support for PHP 8 with our headline analyzer tool.
+
+= 7.8.2: Aug 26, 2022 =
+- Fix: We fixed the headline analyzer issues reported by our lite users.
+- Fix: We fixed the PHP errors reported by WordPress 4.8 users.
+
+= 7.8.1: Aug 24, 2022 =
+- Fix: Updated eCommerce session tracking for GA4 properties.
+
+= 7.8.0: Aug 22, 2022 =
+- New: We added UserJourney for Easy Digital Downloads, MemberPress, LifterLMS, Restrict Content Pro, and GiveWP.
+- Enhancement: We enhanced the PageInsights addon to better support query strings
+- Enhancement: We optimized the reports cache.
+- Enhancement: We optimized the LearnDash integration.
+- Enhancement: We optimized reports data for eCommerce integrations.
+- Enhancement: We optimized report queries for certain timezones.
+- Enhancement: We updated some of our error messages to provide better direction.
+- Enhancement: We optimized the code for PHP 8.1.
+- Enhancement: We optimized our onboarding wizard to include all GA properties.
+- Fix: We fixed non zero data in eCommerce reports.
+- Fix: We fixed the purchase events for LifterLMS.
+- Fix: We updated the report URL for all downloads button inside the WordPress dashboard.
+
+= 7.7.0: Jul 11, 2022 =
+- Fix: We fixed the logged-in sessions data in our dimensions report.
+- Fix: We fixed the test mode detection PayPal Express Payment method when Smart Button is used.
+- Enhancement: We optimized our plugin's backend javascript.
+- Enhancement: We optimized the membership levels tracking for Restrict Content Pro integration.
+- Enhancement: We optimized the integration with EDD latest versions.
+- Update: License validation now checks to ensure active license exists.
+
+= 7.6.0: Jun 13, 2022 =
+- Enhancement: We updated the User Journey display
+- Enhancement: We optimized the plugin activation process, popular posts, userID tracking, and onboarding
+
+= 7.5.3: May 18, 2022 =
+- Fix: We optimized the user ID custom dimension for GAv4
+- Fix: We optimized the affiliate events for GAv4
+- Fix: We optimized the Easy Digital Downloads purchase events for GAv4
+
+= 7.5.2: May 06, 2022 =
+Fix: We fixed an error reported by users using older versions of PHP.
+
+= 7.5.1: May 03, 2022 =
+- New: We launched a new User Journey addon to easily see which pages and for how long each customer visited before making a purchase from your WooCommerce store.
+- Enhancement: We enhanced Page Insights to show stats right in the WordPress sidebar while editing public post types.
+- Enhancement: We enhanced our Headline Analyzer tool.
+- Fix: We fixed the URL query string parameters in reports.
+- Fix: We fixed anchor tag targets to enhance user experience.
+- Fix: We restricted excluding page tracking only for public post_types.
+- Fix: We fixed console errors reported by a few customers on the admin homepage.
+
 = 7.5.0: March 31, 2022 =
 - Tweak: We enhanced and optimized the backend styles.
-- Fixed: We fixed a few PHP warnings when no add-ons are installed.
-- Fixed: We optimized the filters to add dynamic attributes in all frontend script tags.
+- Fix: We fixed a few PHP warnings when no add-ons are installed.
+- Fix: We optimized the filters to add dynamic attributes in all frontend script tags.
 
 = 7.4.0: February 28, 2022 =
-- Fixed: We fixed the plugin requirements for Forms Addons version 2.2.1+
-- Fixed: We optimized the popular posts widgets display in edit screens
-- Fixed: We fixed console errors for users who have CookieYes enabled
-- Fixed: We fixed custom dimensions for all single post types.
+- Fix: We fixed the plugin requirements for Forms Addons version 2.2.1+
+- Fix: We optimized the popular posts widgets display in edit screens
+- Fix: We fixed console errors for users who have CookieYes enabled
+- Fix: We fixed custom dimensions for all single post types.
 
 
 = 7.3.4: February 10, 2022 =
-- Fixed: Resolved a PHP Notice message some users received after upgrading to 7.3.3
+- Fix: Resolved a PHP Notice message some users received after upgrading to 7.3.3
 
 = 7.3.3: February 09, 2022 =
-- Fixed: We fixed the PDF reports format.
+- Fix: We fixed the PDF reports format.
 - Tweak: We optimized the Ajax requests for notifications.
 
 = 7.3.2: January 25, 2022 =
-- Fixed: We fixed the fatal error that occurred due to a generic class name conflict.
-- Fixed: Fixed errors some users were having with our Exclude from Tracking feature.
+- Fix: We fixed the fatal error that occurred due to a generic class name conflict.
+- Fix: Fixed errors some users were having with our Exclude from Tracking feature.
 
 = 7.3.1: January 24, 2022 =
 - New: With our new Exclude from Tracking Feature admins can now exclude any page or post from tracking.
-- Fixed: We fixed the local gtag.js where it didn’t work with only the GAv4 connection.
-- Fixed: We fixed the messages in the plugin settings based on the Media Addon activation status.
+- Fix: We fixed the local gtag.js where it didn’t work with only the GAv4 connection.
+- Fix: We fixed the messages in the plugin settings based on the Media Addon activation status.
 - Tweak: We categorized and enhanced the plugin notifications.
-- Fixed: We fixed Javascript errors when the CookieBot plugin is active and the Forms addon is not.
-- Fixed: We fixed UTM parameters in tracking links.
-- Fixed: We remove the type attribute from the script tag if the current theme supports html5.
-- Fixed: We fixed GA4 eCommerce missing events.
-- Fixed: We fixed the incorrect numbers for Year In Review average page views.
-- Fixed: We fixed the integration with Enfold theme Ajax forms where conversions were not being tracked.
-- Fixed: We fixed the backward compatibility for AffiliateWP versions below 2.7.
+- Fix: We fixed Javascript errors when the CookieBot plugin is active and the Forms addon is not.
+- Fix: We fixed UTM parameters in tracking links.
+- Fix: We remove the type attribute from the script tag if the current theme supports html5.
+- Fix: We fixed GA4 eCommerce missing events.
+- Fix: We fixed the incorrect numbers for Year In Review average page views.
+- Fix: We fixed the integration with Enfold theme Ajax forms where conversions were not being tracked.
+- Fix: We fixed the backward compatibility for AffiliateWP versions below 2.7.
 
 = 7.3.0: December 14, 2021 =
 - New: From January 1 to 14, 2022, a limited time only Year In Review report will appear in the Reports section to reflect on your site's analytics in 2021 and offer insights and suggestions for improvement.
 - New In Pro: We've released a new integration with AffiliateWP to make it super simple to see how your affiliates are impacting your eCommerce stores.
 - New In Pro: We've released our ExactMetrics Media addon which makes it easy to track YouTube, Vimeo and media-library-uploaded videos.
 - Tweak: We've ensured all links to our documentation will open in a new tab to make them easier to use.
-- Fixed: An issue with the headline analyzer has been fixed that could have caused it to unpin in Gutenberg when another plugin's item was unpinned.
-- Fixed: A bug that caused the bounce rate box to sometimes show twice on the GAv3 dashboard widget has been fixed.
+- Fix: An issue with the headline analyzer has been fixed that could have caused it to unpin in Gutenberg when another plugin's item was unpinned.
+- Fix: A bug that caused the bounce rate box to sometimes show twice on the GAv3 dashboard widget has been fixed.
 
 = 7.2.0: November 3, 2021 =
 - New In Pro: 7 day traffic Email Summaries

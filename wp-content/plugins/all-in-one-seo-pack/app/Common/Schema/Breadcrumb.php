@@ -29,10 +29,15 @@ class Breadcrumb {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  WP_Post $post The post object.
-	 * @return array         The breadcrumb trail.
+	 * @param  \WP_Post $post The post object.
+	 * @return array          The breadcrumb trail.
 	 */
 	public function post( $post ) {
+		// Check if page is the static homepage.
+		if ( aioseo()->helpers->isStaticHomePage() ) {
+			return $this->home();
+		}
+
 		if ( is_post_type_hierarchical( $post->post_type ) ) {
 			return $this->setPositions( $this->postHierarchical( $post ) );
 		}
@@ -45,8 +50,8 @@ class Breadcrumb {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  WP_Post $post        The post object.
-	 * @return array   $breadcrumbs The breadcrumb trail.
+	 * @param  \WP_Post $post The post object.
+	 * @return array          The breadcrumb trail.
 	 */
 	private function postHierarchical( $post ) {
 		$breadcrumbs = [];
@@ -57,7 +62,7 @@ class Breadcrumb {
 					'name'        => $post->post_title,
 					'description' => aioseo()->meta->description->getDescription( $post ),
 					'url'         => get_permalink( $post ),
-					'type'        => aioseo()->helpers->isWooCommerceShopPage( $post->ID ) || is_home() ? 'CollectionPage' : $this->getPostGraph()
+					'type'        => aioseo()->helpers->isWooCommerceShopPage( $post->ID ) || is_home() ? 'CollectionPage' : $this->getPostWebPageGraph()
 				]
 			);
 
@@ -78,8 +83,8 @@ class Breadcrumb {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  WP_Post $post        The post object.
-	 * @return array   $breadcrumbs The breadcrumb trail.
+	 * @param  \WP_Post $post The post object.
+	 * @return array          The breadcrumb trail.
 	 */
 	private function postNonHierarchical( $post ) {
 		global $wp_query;
@@ -88,7 +93,7 @@ class Breadcrumb {
 		$slug      = preg_replace( "/$homeUrl/", '', $permalink );
 		$tags      = array_filter( explode( '/', get_option( 'permalink_structure' ) ) ); // Permalink structure exploded into separate tag strings.
 		$objects   = array_filter( explode( '/', $slug ) ); // Permalink slug exploded into separate object slugs.
-		$postGraph = $this->getPostGraph();
+		$postGraph = $this->getPostWebPageGraph();
 
 		if ( count( $tags ) !== count( $objects ) ) {
 			return [
@@ -116,7 +121,11 @@ class Breadcrumb {
 			$breadcrumb = [];
 			switch ( $tag ) {
 				case '%category%':
-					$term = get_category_by_slug( $object );
+					$term = aioseo()->standalone->primaryTerm->getPrimaryTerm( $post->ID, 'category' );
+					if ( ! $term ) {
+						$term = get_category_by_slug( $object );
+					}
+
 					if ( ! $term ) {
 						break;
 					}
@@ -128,7 +137,7 @@ class Breadcrumb {
 					$breadcrumb = [
 						'name'        => $term->name,
 						'description' => aioseo()->meta->description->getDescription(),
-						'url'         => $url[0],
+						'url'         => get_term_link( $term ),
 						'type'        => 'CollectionPage'
 					];
 
@@ -187,8 +196,8 @@ class Breadcrumb {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  WP_Term $term The term object.
-	 * @return array         The breadcrumb trail.
+	 * @param  \WP_Term $term The term object.
+	 * @return array          The breadcrumb trail.
 	 */
 	public function term( $term ) {
 		$breadcrumbs = [];
@@ -218,7 +227,7 @@ class Breadcrumb {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @return array $breadcrumbs The breadcrumb trail.
+	 * @return array The breadcrumb trail.
 	 */
 	public function date() {
 		global $wp_query;
@@ -289,7 +298,7 @@ class Breadcrumb {
 	 * @since 4.0.0
 	 *
 	 * @param  array $breadcrumbs The breadcrumb trail.
-	 * @return array $breadcrumbs The modified breadcrumb trail.
+	 * @return array              The modified breadcrumb trail.
 	 */
 	public function setPositions( $breadcrumbs = [] ) {
 		// If the array isn't two-dimensional, then we need to wrap it in another array before continuing.
@@ -319,19 +328,20 @@ class Breadcrumb {
 	}
 
 	/**
-	 * Returns the most relevant graph for the post.
+	 * Returns the most relevant WebPage graph for the post.
 	 *
-	 * @since 4.0.0
+	 * @since 4.2.5
 	 *
-	 * @return string $graph The graph name.
+	 * @return string The graph name.
 	 */
-	private function getPostGraph() {
-		$graph = aioseo()->schema->getPostGraphs();
-		if ( is_array( $graph ) ) {
-			$graph     = array_values( array_diff( $graph, [ 'WebPage' ] ) );
-			$graph = 1 === count( $graph ) ? $graph[0] : 'WebPage';
+	private function getPostWebPageGraph() {
+		foreach ( aioseo()->schema->graphs as $graphName ) {
+			if ( in_array( $graphName, aioseo()->schema->webPageGraphs, true ) ) {
+				return $graphName;
+			}
 		}
 
-		return $graph;
+		// Return the default if no WebPage graph was found.
+		return 'WebPage';
 	}
 }

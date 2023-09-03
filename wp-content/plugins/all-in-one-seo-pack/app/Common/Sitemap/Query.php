@@ -25,6 +25,7 @@ class Query {
 	 */
 	public function posts( $postTypes, $additionalArgs = [] ) {
 		$includedPostTypes = $postTypes;
+		$postTypesArray    = ! is_array( $postTypes ) ? [ $postTypes ] : $postTypes;
 		if ( is_array( $postTypes ) ) {
 			$includedPostTypes = implode( "', '", $postTypes );
 		}
@@ -40,7 +41,14 @@ class Query {
 		$fields  = '`p`.`ID`, `p`.`post_title`, `p`.`post_content`, `p`.`post_excerpt`, `p`.`post_type`, `p`.`post_password`, ';
 		$fields .= '`p`.`post_parent`, `p`.`post_date_gmt`, `p`.`post_modified_gmt`, `ap`.`priority`, `ap`.`frequency`';
 		$maxAge  = '';
-		$orderBy = '`p`.`ID` ASC';
+
+		if ( ! aioseo()->sitemap->helpers->excludeImages() ) {
+			$fields .= ', `ap`.`images`';
+		}
+
+		// Order by highest priority first (highest priority at the top),
+		// then by post modified date (most recently updated at the top).
+		$orderBy = '`ap`.`priority` DESC, `p`.`post_modified_gmt` DESC';
 
 		// Override defaults if passed as additional arg.
 		foreach ( $additionalArgs as $name => $value ) {
@@ -61,27 +69,63 @@ class Query {
 			->where( 'p.post_status', 'attachment' === $includedPostTypes ? 'inherit' : 'publish' )
 			->whereRaw( "p.post_type IN ( '$includedPostTypes' )" );
 
+		$homePageId = (int) get_option( 'page_on_front' );
+
 		if ( ! is_array( $postTypes ) ) {
 			if ( ! aioseo()->helpers->isPostTypeNoindexed( $includedPostTypes ) ) {
-				$query->whereRaw( '( `ap`.`robots_noindex` IS NULL OR `ap`.`robots_default` = 1 OR `ap`.`robots_noindex` = 0 )' );
+				$query->whereRaw( "( `ap`.`robots_noindex` IS NULL OR `ap`.`robots_default` = 1 OR `ap`.`robots_noindex` = 0 OR post_id = $homePageId )" );
 			} else {
-				$query->whereRaw( '( `ap`.`robots_default` = 0 AND `ap`.`robots_noindex` = 0 )' );
+				$query->whereRaw( "( `ap`.`robots_default` = 0 AND `ap`.`robots_noindex` = 0 OR post_id = $homePageId )" );
 			}
 		} else {
 			$robotsMetaSql = [];
 			foreach ( $postTypes as $postType ) {
 				if ( ! aioseo()->helpers->isPostTypeNoindexed( $postType ) ) {
-					$robotsMetaSql[] = "( `p`.`post_type` = '$postType' AND ( `ap`.`robots_noindex` IS NULL OR `ap`.`robots_default` = 1 OR `ap`.`robots_noindex` = 0 ) )";
+					$robotsMetaSql[] = "( `p`.`post_type` = '$postType' AND ( `ap`.`robots_noindex` IS NULL OR `ap`.`robots_default` = 1 OR `ap`.`robots_noindex` = 0 OR post_id = $homePageId ) )";
 				} else {
-					$robotsMetaSql[] = "( `p`.`post_type` = '$postType' AND ( `ap`.`robots_default` = 0 AND `ap`.`robots_noindex` = 0 ) )";
+					$robotsMetaSql[] = "( `p`.`post_type` = '$postType' AND ( `ap`.`robots_default` = 0 AND `ap`.`robots_noindex` = 0 OR post_id = $homePageId ) )";
 				}
 			}
 			$query->whereRaw( '( ' . implode( ' OR ', $robotsMetaSql ) . ' )' );
 		}
 
 		$excludedPosts = aioseo()->sitemap->helpers->excludedPosts();
+
+		$isStaticHomepage = 'page' === get_option( 'show_on_front' );
+		if ( $isStaticHomepage ) {
+			$excludedPostIds = explode( ',', $excludedPosts );
+			$blogPageId      = (int) get_option( 'page_for_posts' );
+
+			if ( in_array( 'page', $postTypesArray, true ) ) {
+				// Exclude the blog page from the pages post type.
+				if ( $blogPageId ) {
+					$query->whereRaw( "`p`.`ID` != $blogPageId" );
+				}
+
+				// Custom order by statement to always move the home page to the top.
+				if ( $homePageId ) {
+					$orderBy = "case when `p`.`ID` = $homePageId then 0 else 1 end, $orderBy";
+				}
+			}
+
+			// Include the blog page in the posts post type unless manually excluded.
+			if (
+				$blogPageId &&
+				! in_array( $blogPageId, $excludedPostIds, true ) &&
+				in_array( 'post', $postTypesArray, true )
+			) {
+				// We are using a database class hack to get in an OR clause to
+				// bypass all the other WHERE statements and just include the
+				// blog page ID manually.
+				$query->whereRaw( "1=1 OR `p`.`ID` = $blogPageId" );
+
+				// Custom order by statement to always move the blog posts page to the top.
+				$orderBy = "case when `p`.`ID` = $blogPageId then 0 else 1 end, $orderBy";
+			}
+		}
+
 		if ( $excludedPosts ) {
-			$query->whereRaw( "( `p`.`ID` NOT IN ( $excludedPosts ) )" );
+			$query->whereRaw( "( `p`.`ID` NOT IN ( $excludedPosts ) OR post_id = $homePageId )" );
 		}
 
 		// Exclude posts assigned to excluded terms.
@@ -103,9 +147,12 @@ class Query {
 		}
 
 		if (
-			aioseo()->sitemap->indexes &&
-			empty( $additionalArgs['root'] ) &&
-			( empty( $additionalArgs['count'] ) || ! $additionalArgs['count'] )
+			'rss' === aioseo()->sitemap->type ||
+			(
+				aioseo()->sitemap->indexes &&
+				empty( $additionalArgs['root'] ) &&
+				( empty( $additionalArgs['count'] ) || ! $additionalArgs['count'] )
+			)
 		) {
 			$query->limit( aioseo()->sitemap->linksPerIndex, aioseo()->sitemap->offset );
 		}

@@ -38,10 +38,9 @@ class ExactMetrics_Onboarding_Wizard {
 			'get_install_errors',
 		) );
 
-		add_action( 'wp_ajax_exactmetrics_onboarding_disable_wpforms_onboarding', array(
-			$this,
-			'disable_wp_forms_onboarding_process',
-		) );
+		add_action( 'exactmetrics_after_ajax_activate_addon', array( $this, 'disable_aioseo_onboarding_wizard' ) );
+		add_action( 'exactmetrics_after_ajax_activate_addon', array( $this, 'disable_wpforms_onboarding_wizard' ) );
+		add_action( 'exactmetrics_after_ajax_activate_addon', array( $this, 'disable_optin_monster_onboarding_wizard' ) );
 
 		// This will only be called in the Onboarding Wizard context because of previous checks.
 		add_filter( 'exactmetrics_maybe_authenticate_siteurl', array( $this, 'change_return_url' ) );
@@ -246,7 +245,7 @@ class ExactMetrics_Onboarding_Wizard {
 
 		if ( ! exactmetrics_can_install_plugins() ) {
 			wp_send_json( array(
-				'message' => esc_html__( 'You are not allowed to install plugins', 'google-analytics-dashboard-for-wp' ),
+				'message' => esc_html__( 'Oops! You are not allowed to install plugins. Please contact your site administrator for assistance.', 'google-analytics-dashboard-for-wp' ),
 			) );
 		}
 
@@ -443,27 +442,48 @@ class ExactMetrics_Onboarding_Wizard {
 
 	}
 
-	/**
-	 * Disable WPForms Welcome Screen/Onboarding.
-	 *
-	 * This needs to be done, so that ExactMetrics Onboarding goe to ExactMetrics
-	 * Screen rather than displaying WPForms Welcome Screen when a user has gone
-	 * through ExactMetrics Onboarding.
-	 *
-	 * @since 8.4.0
-	 *
-	 * @return bool
-	 */
-	public function disable_wp_forms_onboarding_process() {
-		 if ( function_exists( 'wpforms' ) ) {
-			if ( get_transient( 'wpforms_activation_redirect' ) ) {
-				delete_transient( 'wpforms_activation_redirect' );
+	public function disable_aioseo_onboarding_wizard( $plugin ) {
+		if ( empty( $plugin ) ) {
+			return;
+		}
 
-				wp_send_json_success();
-			}
-		 }
+		if ( 'all-in-one-seo-pack/all_in_one_seo_pack.php' !== $plugin ) {
+			return;
+		}
 
-		 wp_send_json_success();
+		update_option( 'aioseo_activation_redirect', true );
+	}
+
+	public function disable_wpforms_onboarding_wizard( $plugin ) {
+		if ( empty( $plugin ) ) {
+			return;
+		}
+
+		if ( 'wpforms-lite/wpforms.php' !== $plugin ) {
+			return;
+		}
+
+		if ( false === get_transient( 'wpforms_activation_redirect' ) ) {
+			return;
+		}
+
+		delete_transient( 'wpforms_activation_redirect' );
+	}
+
+	public function disable_optin_monster_onboarding_wizard( $plugin ) {
+		if ( empty( $plugin ) ) {
+			return;
+		}
+
+		if ( 'optinmonster/optin-monster-wp-api.php' !== $plugin ) {
+			return;
+		}
+
+		if ( false === get_transient( 'optin_monster_api_activation_redirect' ) ){
+			return;
+		}
+
+		delete_transient( 'optin_monster_api_activation_redirect' );
 	}
 
 }

@@ -37,6 +37,18 @@ trait DateTime {
 	}
 
 	/**
+	 * Formats a date & time in RFC-822 format.
+	 *
+	 * @since 4.2.1
+	 *
+	 * @param  string $dateTime The date.
+	 * @return string           The date formatted in RFC-822 format.
+	 */
+	public function dateTimeToRfc822( $dateTime ) {
+		return gmdate( 'D, d M Y H:i:s O', strtotime( $dateTime ) );
+	}
+
+	/**
 	 * Returns the timezone offset.
 	 * We use the code from wp_timezone_string() which became available in WP 5.3+
 	 *
@@ -62,16 +74,32 @@ trait DateTime {
 	}
 
 	/**
-	 * Formats an amount of minutes in ISO8601 format.
+	 * Formats an amount of days, hours and minutes in ISO8601 duration format.
 	 * This is used in our JSON schema to adhere to Google's standards.
 	 *
-	 * @since 4.1.2
+	 * @since 4.2.5
 	 *
+	 * @param  integer|string $days    The days.
+	 * @param  integer|string $hours   The hours.
 	 * @param  integer|string $minutes The minutes.
-	 * @return                         The minutes formatted in ISO8601 format.
+	 * @return string                  The days, hours and minutes formatted in ISO8601 duration format.
 	 */
-	public function minutesToIso8601( $minutes ) {
-		return "PT${minutes}M";
+	public function timeToIso8601DurationFormat( $days, $hours, $minutes ) {
+		$duration = 'P';
+		if ( $days ) {
+			$duration .= $days . 'D';
+		}
+
+		$duration .= 'T';
+		if ( $hours ) {
+			$duration .= $hours . 'H';
+		}
+
+		if ( $minutes ) {
+			$duration .= $minutes . 'M';
+		}
+
+		return $duration;
 	}
 
 	/**

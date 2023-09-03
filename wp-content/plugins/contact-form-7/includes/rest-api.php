@@ -2,7 +2,7 @@
 
 add_action(
 	'rest_api_init',
-	function () {
+	static function () {
 		$controller = new WPCF7_REST_Controller;
 		$controller->register_routes();
 	},
@@ -22,7 +22,7 @@ class WPCF7_REST_Controller {
 				array(
 					'methods' => WP_REST_Server::READABLE,
 					'callback' => array( $this, 'get_contact_forms' ),
-					'permission_callback' => function () {
+					'permission_callback' => static function () {
 						if ( current_user_can( 'wpcf7_read_contact_forms' ) ) {
 							return true;
 						} else {
@@ -36,7 +36,7 @@ class WPCF7_REST_Controller {
 				array(
 					'methods' => WP_REST_Server::CREATABLE,
 					'callback' => array( $this, 'create_contact_form' ),
-					'permission_callback' => function () {
+					'permission_callback' => static function () {
 						if ( current_user_can( 'wpcf7_edit_contact_forms' ) ) {
 							return true;
 						} else {
@@ -56,7 +56,7 @@ class WPCF7_REST_Controller {
 				array(
 					'methods' => WP_REST_Server::READABLE,
 					'callback' => array( $this, 'get_contact_form' ),
-					'permission_callback' => function ( WP_REST_Request $request ) {
+					'permission_callback' => static function ( WP_REST_Request $request ) {
 						$id = (int) $request->get_param( 'id' );
 
 						if ( current_user_can( 'wpcf7_edit_contact_form', $id ) ) {
@@ -72,7 +72,7 @@ class WPCF7_REST_Controller {
 				array(
 					'methods' => WP_REST_Server::EDITABLE,
 					'callback' => array( $this, 'update_contact_form' ),
-					'permission_callback' => function ( WP_REST_Request $request ) {
+					'permission_callback' => static function ( WP_REST_Request $request ) {
 						$id = (int) $request->get_param( 'id' );
 
 						if ( current_user_can( 'wpcf7_edit_contact_form', $id ) ) {
@@ -88,7 +88,7 @@ class WPCF7_REST_Controller {
 				array(
 					'methods' => WP_REST_Server::DELETABLE,
 					'callback' => array( $this, 'delete_contact_form' ),
-					'permission_callback' => function ( WP_REST_Request $request ) {
+					'permission_callback' => static function ( WP_REST_Request $request ) {
 						$id = (int) $request->get_param( 'id' );
 
 						if ( current_user_can( 'wpcf7_delete_contact_form', $id ) ) {
@@ -112,6 +112,18 @@ class WPCF7_REST_Controller {
 					'callback' => array( $this, 'create_feedback' ),
 					'permission_callback' => '__return_true',
 				),
+			)
+		);
+
+		register_rest_route( self::route_namespace,
+			'/contact-forms/(?P<id>\d+)/feedback/schema',
+			array(
+				array(
+					'methods' => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'get_schema' ),
+					'permission_callback' => '__return_true',
+				),
+				'schema' => 'wpcf7_swv_get_meta_schema',
 			)
 		);
 
@@ -167,6 +179,7 @@ class WPCF7_REST_Controller {
 		foreach ( $items as $item ) {
 			$response[] = array(
 				'id' => $item->id(),
+				'hash' => $item->hash(),
 				'slug' => $item->name(),
 				'title' => $item->title(),
 				'locale' => $item->locale(),
@@ -314,6 +327,15 @@ class WPCF7_REST_Controller {
 	}
 
 	public function create_feedback( WP_REST_Request $request ) {
+		$content_type = $request->get_header( 'Content-Type' );
+
+		if ( ! str_starts_with( $content_type, 'multipart/form-data' ) ) {
+			return new WP_Error( 'wpcf7_unsupported_media_type',
+				__( "The request payload format is not supported.", 'contact-form-7' ),
+				array( 'status' => 415 )
+			);
+		}
+
 		$url_params = $request->get_url_params();
 
 		$item = null;
@@ -344,13 +366,14 @@ class WPCF7_REST_Controller {
 			$invalid_fields = array();
 
 			foreach ( (array) $result['invalid_fields'] as $name => $field ) {
-				$name = sanitize_html_class( $name );
+				if ( ! wpcf7_is_name( $name ) ) {
+					continue;
+				}
+
+				$name = strtr( $name, '.', '_' );
 
 				$invalid_fields[] = array(
-					'into' => sprintf(
-						'span.wpcf7-form-control-wrap.%s',
-						$name
-					),
+					'field' => $name,
 					'message' => $field['reason'],
 					'idref' => $field['idref'],
 					'error_id' => sprintf(
@@ -375,6 +398,31 @@ class WPCF7_REST_Controller {
 
 		return rest_ensure_response( $response );
 	}
+
+
+	public function get_schema( WP_REST_Request $request ) {
+		$url_params = $request->get_url_params();
+
+		$item = null;
+
+		if ( ! empty( $url_params['id'] ) ) {
+			$item = wpcf7_contact_form( $url_params['id'] );
+		}
+
+		if ( ! $item ) {
+			return new WP_Error( 'wpcf7_not_found',
+				__( "The requested contact form was not found.", 'contact-form-7' ),
+				array( 'status' => 404 )
+			);
+		}
+
+		$schema = $item->get_schema();
+
+		$response = isset( $schema ) ? $schema->to_array() : array();
+
+		return rest_ensure_response( $response );
+	}
+
 
 	public function get_refill( WP_REST_Request $request ) {
 		$id = (int) $request->get_param( 'id' );
@@ -405,7 +453,7 @@ class WPCF7_REST_Controller {
 		$properties['form'] = array(
 			'content' => (string) $properties['form'],
 			'fields' => array_map(
-				function ( WPCF7_FormTag $form_tag ) {
+				static function ( WPCF7_FormTag $form_tag ) {
 					return array(
 						'type' => $form_tag->type,
 						'basetype' => $form_tag->basetype,
@@ -427,7 +475,7 @@ class WPCF7_REST_Controller {
 		$properties['additional_settings'] = array(
 			'content' => (string) $properties['additional_settings'],
 			'settings' => array_filter( array_map(
-				function ( $setting ) {
+				static function ( $setting ) {
 					$pattern = '/^([a-zA-Z0-9_]+)[\t ]*:(.*)$/';
 
 					if ( preg_match( $pattern, $setting, $matches ) ) {

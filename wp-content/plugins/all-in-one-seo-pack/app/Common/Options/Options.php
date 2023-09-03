@@ -34,7 +34,6 @@ class Options {
 			'baidu'                     => [ 'type' => 'string' ],
 			'pinterest'                 => [ 'type' => 'string' ],
 			'microsoftClarityProjectId' => [ 'type' => 'string' ],
-			'alexa'                     => [ 'type' => 'string' ],
 			'norton'                    => [ 'type' => 'string' ],
 			'miscellaneousVerification' => [ 'type' => 'html' ]
 		],
@@ -43,7 +42,7 @@ class Options {
 			'separator'             => [ 'type' => 'string', 'default' => '&raquo;' ],
 			'homepageLink'          => [ 'type' => 'boolean', 'default' => true ],
 			'homepageLabel'         => [ 'type' => 'string', 'default' => 'Home' ],
-			'breadcrumbPrefix'      => [ 'type' => 'string' ],
+			'breadcrumbPrefix'      => [ 'type' => 'string', 'localized' => true, 'default' => '' ],
 			'archiveFormat'         => [ 'type' => 'string', 'default' => 'Archives for #breadcrumb_archive_post_type_name', 'localized' => true ],
 			'searchResultFormat'    => [ 'type' => 'string', 'default' => 'Search Results for \'#breadcrumb_search_string\'', 'localized' => true ],
 			'errorFormat404'        => [ 'type' => 'string', 'default' => '404 - Page Not Found', 'localized' => true ],
@@ -65,7 +64,7 @@ TEMPLATE
 			'truSeo'           => [ 'type' => 'boolean', 'default' => true ],
 			'headlineAnalyzer' => [ 'type' => 'boolean', 'default' => true ],
 			'seoAnalysis'      => [ 'type' => 'boolean', 'default' => true ],
-			'dashboardWidget'  => [ 'type' => 'boolean', 'default' => true ],
+			'dashboardWidgets' => [ 'type' => 'array', 'default' => [ 'seoSetup', 'seoOverview', 'seoNews' ] ],
 			'announcements'    => [ 'type' => 'boolean', 'default' => true ],
 			'postTypes'        => [
 				'all'      => [ 'type' => 'boolean', 'default' => true ],
@@ -163,13 +162,13 @@ TEMPLATE
 			],
 		],
 		'social'           => [
-			'profiles'           => [
-				'sameUsername' => [
+			'profiles' => [
+				'sameUsername'   => [
 					'enable'   => [ 'type' => 'boolean', 'default' => false ],
 					'username' => [ 'type' => 'string' ],
 					'included' => [ 'type' => 'array', 'default' => [ 'facebookPageUrl', 'twitterUrl', 'pinterestUrl', 'instagramUrl', 'youtubeUrl', 'linkedinUrl' ] ]
 				],
-				'urls'         => [
+				'urls'           => [
 					'facebookPageUrl' => [ 'type' => 'string' ],
 					'twitterUrl'      => [ 'type' => 'string' ],
 					'instagramUrl'    => [ 'type' => 'string' ],
@@ -182,10 +181,10 @@ TEMPLATE
 					'wikipediaUrl'    => [ 'type' => 'string' ],
 					'myspaceUrl'      => [ 'type' => 'string' ],
 					'googlePlacesUrl' => [ 'type' => 'string' ]
-				]
+				],
+				'additionalUrls' => [ 'type' => 'string' ]
 			],
-			'siteSocialProfiles' => [ 'type' => 'array' ],
-			'facebook'           => [
+			'facebook' => [
 				'general'  => [
 					'enable'                  => [ 'type' => 'boolean', 'default' => true ],
 					'defaultImageSourcePosts' => [ 'type' => 'string', 'default' => 'default' ],
@@ -215,11 +214,11 @@ TEMPLATE
 					'usePostTagsInTags'   => [ 'type' => 'boolean', 'default' => true ]
 				]
 			],
-			'twitter'            => [
+			'twitter'  => [
 				'general'  => [
 					'enable'                  => [ 'type' => 'boolean', 'default' => true ],
 					'useOgData'               => [ 'type' => 'boolean', 'default' => true ],
-					'defaultCardType'         => [ 'type' => 'string', 'default' => 'summary' ],
+					'defaultCardType'         => [ 'type' => 'string', 'default' => 'summary_large_image' ],
 					'defaultImageSourcePosts' => [ 'type' => 'string', 'default' => 'default' ],
 					'customFieldImagePosts'   => [ 'type' => 'string' ],
 					'defaultImagePosts'       => [ 'type' => 'string', 'default' => '' ],
@@ -241,15 +240,17 @@ TEMPLATE
 				'metaDescription' => [ 'type' => 'string', 'localized' => true, 'default' => '#tagline' ],
 				'keywords'        => [ 'type' => 'string', 'localized' => true ],
 				'schema'          => [
-					'siteRepresents'    => [ 'type' => 'string', 'default' => 'organization' ],
-					'person'            => [ 'type' => 'string' ],
-					'organizationName'  => [ 'type' => 'string' ],
-					'organizationLogo'  => [ 'type' => 'string' ],
-					'personName'        => [ 'type' => 'string' ],
-					'personLogo'        => [ 'type' => 'string' ],
-					'phone'             => [ 'type' => 'string' ],
-					'contactType'       => [ 'type' => 'string' ],
-					'contactTypeManual' => [ 'type' => 'string' ]
+					'websiteName'          => [ 'type' => 'string' ],
+					'websiteAlternateName' => [ 'type' => 'string' ],
+					'siteRepresents'       => [ 'type' => 'string', 'default' => 'organization' ],
+					'person'               => [ 'type' => 'string' ],
+					'organizationName'     => [ 'type' => 'string' ],
+					'organizationLogo'     => [ 'type' => 'string' ],
+					'personName'           => [ 'type' => 'string' ],
+					'personLogo'           => [ 'type' => 'string' ],
+					'phone'                => [ 'type' => 'string' ],
+					'contactType'          => [ 'type' => 'string' ],
+					'contactTypeManual'    => [ 'type' => 'string' ]
 				]
 			],
 			'advanced' => [
@@ -278,7 +279,38 @@ TEMPLATE
 				'useCategoriesForMetaKeywords' => [ 'type' => 'boolean', 'default' => false ],
 				'useTagsForMetaKeywords'       => [ 'type' => 'boolean', 'default' => false ],
 				'dynamicallyGenerateKeywords'  => [ 'type' => 'boolean', 'default' => false ],
-				'pagedFormat'                  => [ 'type' => 'string', 'default' => '- Page #page_number', 'localized' => true ]
+				'pagedFormat'                  => [ 'type' => 'string', 'default' => '- Page #page_number', 'localized' => true ],
+				'runShortcodes'                => [ 'type' => 'boolean', 'default' => false ],
+				'crawlCleanup'                 => [
+					'enable'                      => [ 'type' => 'boolean', 'default' => false ],
+					'feeds'                       => [
+						'global'         => [ 'type' => 'boolean', 'default' => true ],
+						'globalComments' => [ 'type' => 'boolean', 'default' => false ],
+						'staticBlogPage' => [ 'type' => 'boolean', 'default' => true ],
+						'authors'        => [ 'type' => 'boolean', 'default' => true ],
+						'postComments'   => [ 'type' => 'boolean', 'default' => false ],
+						'search'         => [ 'type' => 'boolean', 'default' => false ],
+						'attachments'    => [ 'type' => 'boolean', 'default' => false ],
+						'archives'       => [
+							'all'      => [ 'type' => 'boolean', 'default' => false ],
+							'included' => [ 'type' => 'array', 'default' => [] ],
+						],
+						'taxonomies'     => [
+							'all'      => [ 'type' => 'boolean', 'default' => false ],
+							'included' => [ 'type' => 'array', 'default' => [ 'category' ] ],
+						],
+						'atom'           => [ 'type' => 'boolean', 'default' => false ],
+						'rdf'            => [ 'type' => 'boolean', 'default' => false ],
+						'paginated'      => [ 'type' => 'boolean', 'default' => false ]
+					],
+					'removeUnrecognizedQueryArgs' => [ 'type' => 'boolean', 'default' => true ],
+					'allowedQueryArgs'            => [
+						'type'    => 'html',
+						'default' => <<<TEMPLATE
+/^utm_*/
+TEMPLATE
+					]
+				],
 			],
 			'archives' => [
 				'author' => [
@@ -355,6 +387,12 @@ TEMPLATE
 				]
 			]
 		],
+		'searchStatistics' => [
+			'postTypes' => [
+				'all'      => [ 'type' => 'boolean', 'default' => true ],
+				'included' => [ 'type' => 'array', 'default' => [ 'post', 'page' ] ],
+			]
+		],
 		'tools'            => [
 			'robots'       => [
 				'enable'         => [ 'type' => 'boolean', 'default' => false ],
@@ -393,7 +431,7 @@ TEMPLATE
 				],
 				'advanced' => [
 					'autogenerateDescriptions'               => [ 'type' => 'boolean', 'default' => true ],
-					'runShortcodesInDescription'             => [ 'type' => 'boolean', 'default' => true ],
+					'runShortcodesInDescription'             => [ 'type' => 'boolean', 'default' => true ], // TODO: Remove this in a future update.
 					'useContentForAutogeneratedDescriptions' => [ 'type' => 'boolean', 'default' => false ],
 					'excludePosts'                           => [ 'type' => 'array', 'default' => [] ],
 					'excludeTerms'                           => [ 'type' => 'array', 'default' => [] ],
@@ -430,7 +468,7 @@ TEMPLATE
 	 * @param string $optionsName An array of options.
 	 */
 	public function __construct( $optionsName = 'aioseo_options' ) {
-		$this->optionsName = is_network_admin() ? $optionsName . '_network' : $optionsName;
+		$this->optionsName = $optionsName;
 
 		$this->init();
 
@@ -444,7 +482,7 @@ TEMPLATE
 	 *
 	 * @return void
 	 */
-	protected function init() {
+	public function init() {
 		$this->setInitialDefaults();
 		$this->translateDefaults();
 
@@ -499,6 +537,10 @@ TEMPLATE
 		$this->defaults['searchAppearance']['global']['schema']['organizationName']['default'] = aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'name' ) );
 		$this->defaults['deprecated']['tools']['blocker']['custom']['bots']['default']         = implode( "\n", aioseo()->badBotBlocker->getBotList() );
 		$this->defaults['deprecated']['tools']['blocker']['custom']['referer']['default']      = implode( "\n", aioseo()->badBotBlocker->getRefererList() );
+
+		$this->defaults['searchAppearance']['global']['schema']['organizationName']['default'] = aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'name' ) );
+		$this->defaults['searchAppearance']['global']['schema']['websiteName']['default']      = aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'name' ) );
+		$this->defaults['searchAppearance']['global']['schema']['organizationLogo']['default'] = aioseo()->helpers->getSiteLogoUrl() ? aioseo()->helpers->getSiteLogoUrl() : '';
 	}
 
 	/**
@@ -528,9 +570,6 @@ TEMPLATE
 		$this->defaults['breadcrumbs']['archiveFormat']['default']      = sprintf( '%1$s #breadcrumb_archive_post_type_name', __( 'Archives for', 'all-in-one-seo-pack' ) );
 		$this->defaults['breadcrumbs']['searchResultFormat']['default'] = sprintf( '%1$s \'#breadcrumb_search_string\'', __( 'Search Results for', 'all-in-one-seo-pack' ) );
 		$this->defaults['breadcrumbs']['errorFormat404']['default']     = __( '404 - Page Not Found', 'all-in-one-seo-pack' );
-
-		$this->defaults['searchAppearance']['global']['schema']['organizationName']['default'] = aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'name' ) );
-		$this->defaults['searchAppearance']['global']['schema']['organizationLogo']['default'] = aioseo()->helpers->getSiteLogoUrl() ? aioseo()->helpers->getSiteLogoUrl() : '';
 	}
 
 	/**
@@ -552,7 +591,7 @@ TEMPLATE
 		$phoneNumberOptions          = isset( $options['searchAppearance']['global']['schema']['phone'] )
 				? $options['searchAppearance']['global']['schema']['phone']
 				: null;
-		$oldHtmlSitemapUrl = $this->sitemap->html->pageUrl;
+		$oldHtmlSitemapUrl = aioseo()->options->sitemap->html->pageUrl;
 
 		$options = $this->maybeRemoveUnfilteredHtmlFields( $options );
 
@@ -562,68 +601,29 @@ TEMPLATE
 			return;
 		}
 
-		// Refactor options.
+		// First, recursively replace the new options into the cached state.
+		// It's important we use the helper method since we want to replace populated arrays with empty ones if needed (when a setting was cleared out).
 		$cachedOptions = aioseo()->core->optionsCache->getOptions( $this->optionsName );
-		$dbOptions     = array_replace_recursive(
+		$dbOptions     = aioseo()->helpers->arrayReplaceRecursive(
 			$cachedOptions,
 			$this->addValueToValuesArray( $cachedOptions, $options, [], true )
 		);
 
-		// TODO: Refactor this into an array since importing old settings imports fail because new settings might not exist in the $options being passed in here. (i.e. 'html' below).
-		// The above works for most options, but there are a few that need to be forcibly updated.
-		if ( $sitemapOptions ) {
-			$dbOptions['sitemap']['general']['postTypes']['included']['value']            = $this->sanitizeField( $options['sitemap']['general']['postTypes']['included'], 'array' );
-			$dbOptions['sitemap']['general']['taxonomies']['included']['value']           = $this->sanitizeField( $options['sitemap']['general']['taxonomies']['included'], 'array' );
-			$dbOptions['sitemap']['general']['additionalPages']['pages']['value']         = $this->sanitizeField( $options['sitemap']['general']['additionalPages']['pages'], 'array' );
-			$dbOptions['sitemap']['general']['advancedSettings']['excludePosts']['value'] = $this->sanitizeField( $options['sitemap']['general']['advancedSettings']['excludePosts'], 'array' );
-			$dbOptions['sitemap']['general']['advancedSettings']['excludeTerms']['value'] = $this->sanitizeField( $options['sitemap']['general']['advancedSettings']['excludeTerms'], 'array' );
-			$dbOptions['sitemap']['rss']['postTypes']['included']['value']                = $this->sanitizeField( $options['sitemap']['rss']['postTypes']['included'], 'array' );
-			$dbOptions['sitemap']['html']['postTypes']['included']['value']               = $this->sanitizeField( $options['sitemap']['html']['postTypes']['included'], 'array' );
-			$dbOptions['sitemap']['html']['taxonomies']['included']['value']              = $this->sanitizeField( $options['sitemap']['html']['taxonomies']['included'], 'array' );
-			$dbOptions['sitemap']['html']['advancedSettings']['excludePosts']['value']    = $this->sanitizeField( $options['sitemap']['html']['advancedSettings']['excludePosts'], 'array' );
-			$dbOptions['sitemap']['html']['advancedSettings']['excludeTerms']['value']    = $this->sanitizeField( $options['sitemap']['html']['advancedSettings']['excludeTerms'], 'array' );
-		}
+		// Now, we must also intersect both arrays to delete any individual keys that were unset.
+		// We must do this because, while arrayReplaceRecursive will update the values for keys or empty them out,
+		// it will keys that aren't present in the replacement array unaffected in the target array.
+		$dbOptions = aioseo()->helpers->arrayIntersectRecursive(
+			$dbOptions,
+			$this->addValueToValuesArray( $cachedOptions, $options, [], true ),
+			'value'
+		);
 
-		// Advanced options.
-		if ( ! empty( $options['advanced'] ) ) {
-			if ( isset( $options['advanced']['postTypes']['included'] ) ) {
-				$dbOptions['advanced']['postTypes']['included']['value'] = $this->sanitizeField( $options['advanced']['postTypes']['included'], 'array' );
-			}
-
-			if ( isset( $options['advanced']['taxonomies']['included'] ) ) {
-				$dbOptions['advanced']['taxonomies']['included']['value'] = $this->sanitizeField( $options['advanced']['taxonomies']['included'], 'array' );
-			}
-		}
-
-		// Tools.
-		if ( ! empty( $options['tools'] ) ) {
-			if ( isset( $options['tools']['robots']['rules'] ) ) {
-				$dbOptions['tools']['robots']['rules']['value'] = $this->sanitizeField( $options['tools']['robots']['rules'], 'array' );
-			}
-		}
-
-		// Deprecated options.
-		if ( ! empty( $options['deprecated'] ) ) {
-
-			if ( isset( $options['deprecated']['webmasterTools']['googleAnalytics']['excludeUsers'] ) ) {
-				$dbOptions['deprecated']['webmasterTools']['googleAnalytics']['excludeUsers']['value'] = $this->sanitizeField( $options['deprecated']['webmasterTools']['googleAnalytics']['excludeUsers'], 'array' ); // phpcs:ignore Generic.Files.LineLength.MaxExceeded
-			}
-			if ( isset( $options['deprecated']['searchAppearance']['advanced']['excludePosts'] ) ) {
-				$dbOptions['deprecated']['searchAppearance']['advanced']['excludePosts']['value'] = $this->sanitizeField( $options['deprecated']['searchAppearance']['advanced']['excludePosts'], 'array' ); // phpcs:ignore Generic.Files.LineLength.MaxExceeded
-			}
-
-			if ( isset( $options['deprecated']['searchAppearance']['advanced']['excludeTerms'] ) ) {
-				$dbOptions['deprecated']['searchAppearance']['advanced']['excludeTerms']['value'] = $this->sanitizeField( $options['deprecated']['searchAppearance']['advanced']['excludeTerms'], 'array' ); // phpcs:ignore Generic.Files.LineLength.MaxExceeded
-			}
-		}
-
-		// Social networks.
-		if ( isset( $options['social']['profiles']['sameUsername']['included'] ) ) {
-			$dbOptions['social']['profiles']['sameUsername']['included']['value'] = $this->sanitizeField( $options['social']['profiles']['sameUsername']['included'], 'array' );
+		if ( isset( $options['social']['profiles']['additionalUrls'] ) ) {
+			$dbOptions['social']['profiles']['additionalUrls'] = preg_replace( '/\h/', "\n", $options['social']['profiles']['additionalUrls'] );
 		}
 
 		$newOptions = ! empty( $options['sitemap']['html'] ) ? $options['sitemap']['html'] : null;
-		if ( ! empty( $newOptions ) && $this->sitemap->html->enable ) {
+		if ( ! empty( $newOptions ) && aioseo()->options->sitemap->html->enable ) {
 			$newOptions = ! empty( $options['sitemap']['html'] ) ? $options['sitemap']['html'] : null;
 
 			$pageUrl = wp_parse_url( $newOptions['pageUrl'] );
@@ -637,12 +637,13 @@ TEMPLATE
 			}
 		}
 
+		// Update the cache state.
 		aioseo()->core->optionsCache->setOptions( $this->optionsName, $dbOptions );
 
 		// Update localized options.
 		update_option( $this->optionsName . '_localized', $this->localized );
 
-		// Update values.
+		// Finally, save the new values to the DB.
 		$this->save( true );
 
 		// If phone settings have changed, let's see if we need to dump the phone number notice.
@@ -686,27 +687,29 @@ TEMPLATE
 	 * @return array          An array of options.
 	 */
 	private function maybeRemoveUnfilteredHtmlFields( $options ) {
-		if ( ! current_user_can( 'unfiltered_html' ) ) {
-			if (
-				! empty( $options['webmasterTools'] ) &&
-				isset( $options['webmasterTools']['miscellaneousVerification'] )
-			) {
-				unset( $options['webmasterTools']['miscellaneousVerification'] );
-			}
+		if ( current_user_can( 'unfiltered_html' ) ) {
+			return $options;
+		}
 
-			if (
-				! empty( $options['rssContent'] ) &&
-				isset( $options['rssContent']['before'] )
-			) {
-				unset( $options['rssContent']['before'] );
-			}
+		if (
+			! empty( $options['webmasterTools'] ) &&
+			isset( $options['webmasterTools']['miscellaneousVerification'] )
+		) {
+			unset( $options['webmasterTools']['miscellaneousVerification'] );
+		}
 
-			if (
-				! empty( $options['rssContent'] ) &&
-				isset( $options['rssContent']['after'] )
-			) {
-				unset( $options['rssContent']['after'] );
-			}
+		if (
+			! empty( $options['rssContent'] ) &&
+			isset( $options['rssContent']['before'] )
+		) {
+			unset( $options['rssContent']['before'] );
+		}
+
+		if (
+			! empty( $options['rssContent'] ) &&
+			isset( $options['rssContent']['after'] )
+		) {
+			unset( $options['rssContent']['after'] );
 		}
 
 		return $options;

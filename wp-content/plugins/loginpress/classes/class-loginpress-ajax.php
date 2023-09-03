@@ -21,9 +21,9 @@ if ( ! class_exists( 'LoginPress_AJAX' ) ) :
     * * * * * * * * * */
     public function __construct() {
 
-      $this::init();
+      $this->init();
     }
-    public static function init() {
+    public function init() {
 
       $ajax_calls = array(
         'export'           => false,
@@ -32,17 +32,17 @@ if ( ! class_exists( 'LoginPress_AJAX' ) ) :
         'deactivate'       => false,
         'optout_yes'       => false,
         'presets'          => false,
-				'video_url'        => false,
-				'activate_addon'   => false,
-				'deactivate_addon' => false
+		'video_url'        => false,
+		'activate_addon'   => false,
+		'deactivate_addon' => false
       );
 
       foreach ( $ajax_calls as $ajax_call => $no_priv ) {
         // code...
-        add_action( 'wp_ajax_loginpress_' . $ajax_call, array( __CLASS__, $ajax_call ) );
+        add_action( 'wp_ajax_loginpress_' . $ajax_call, array( $this, $ajax_call ) );
 
         if ( $no_priv ) {
-          add_action( 'wp_ajax_nopriv_loginpress_' . $ajax_call, array( __CLASS__, $ajax_call ) );
+          add_action( 'wp_ajax_nopriv_loginpress_' . $ajax_call, array( $this, $ajax_call ) );
         }
       }
 		}

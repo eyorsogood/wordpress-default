@@ -132,6 +132,7 @@ class Helpers {
 			}
 
 			$lastModified = 0;
+			$timestamp    = time();
 			foreach ( $additionalPages as $page ) {
 				if ( empty( $page['lastmod'] ) ) {
 					continue;
@@ -188,7 +189,6 @@ class Helpers {
 		$memory    = $this->performance['memory'];
 		$type      = aioseo()->sitemap->type;
 		$indexName = aioseo()->sitemap->indexName;
-		// @TODO: [V4+] Use dedicated logger class once available.
 		error_log( wp_json_encode( "$indexName index of $type sitemap generated in $time seconds using a maximum of $memory mb of memory." ) );
 	}
 
@@ -254,8 +254,8 @@ class Helpers {
 	 * @return bool             Whether or not there is an indexed post.
 	 */
 	private function checkForIndexedPost( $postType ) {
-		$posts = aioseo()->core->db
-			->start( aioseo()->core->db->db->posts . ' as p', true )
+		$db    = aioseo()->core->db->noConflict();
+		$posts = $db->start( aioseo()->core->db->db->posts . ' as p', true )
 			->select( 'p.ID' )
 			->join( 'aioseo_posts as ap', '`ap`.`post_id` = `p`.`ID`' )
 			->where( 'p.post_status', 'attachment' === $postType ? 'inherit' : 'publish' )
@@ -378,16 +378,54 @@ class Helpers {
 	 */
 	private function excludedObjects( $option ) {
 		$type = aioseo()->sitemap->type;
-		// The RSS Sitemap needs to exclude whatever's excluded in the general sitemap.
+		// The RSS Sitemap needs to exclude whatever is excluded in the general sitemap.
 		if ( 'rss' === $type ) {
 			$type = 'general';
 		}
 
+		// Allow WPML to filter out hidden language posts/terms.
+		$hiddenObjectIds = [];
+		if ( aioseo()->helpers->isWpmlActive() ) {
+			$hiddenLanguages = apply_filters( 'wpml_setting', [], 'hidden_languages' );
+			foreach ( $hiddenLanguages as $language ) {
+				$objectTypes = [];
+				if ( 'excludePosts' === $option ) {
+					$objectTypes = aioseo()->sitemap->helpers->includedPostTypes();
+					$objectTypes = array_map( function( $postType ) {
+						return "post_{$postType}";
+					}, $objectTypes );
+				}
+
+				if ( 'excludeTerms' === $option ) {
+					$objectTypes = aioseo()->sitemap->helpers->includedTaxonomies();
+					$objectTypes = array_map( function( $taxonomy ) {
+						return "tax_{$taxonomy}";
+					}, $objectTypes );
+				}
+
+				$dbNoConflict = aioseo()->core->db->noConflict();
+				$rows         = $dbNoConflict->start( 'icl_translations' )
+					->select( 'element_id' )
+					->whereIn( 'element_type', $objectTypes )
+					->where( 'language_code', $language )
+					->run()
+					->result();
+
+				$ids = array_map( function( $row ) {
+					return (int) $row->element_id;
+				}, $rows );
+
+				$hiddenObjectIds = array_merge( $hiddenObjectIds, $ids );
+			}
+		}
+
 		$hasFilter = has_filter( 'aioseo_sitemap_' . aioseo()->helpers->toSnakeCase( $option ) );
 		$advanced  = aioseo()->options->sitemap->$type->advancedSettings->enable;
-		$excluded  = aioseo()->options->sitemap->$type->advancedSettings->$option;
+		$excluded  = array_merge( $hiddenObjectIds, aioseo()->options->sitemap->{$type}->advancedSettings->{$option} );
+
 		if (
-			( ! $advanced || empty( $excluded ) ) &&
+			! $advanced &&
+			empty( $excluded ) &&
 			! $hasFilter
 		) {
 			return '';
@@ -395,6 +433,11 @@ class Helpers {
 
 		$ids = [];
 		foreach ( $excluded as $object ) {
+			if ( is_numeric( $object ) ) {
+				$ids[] = (int) $object;
+				continue;
+			}
+
 			$object = json_decode( $object );
 			if ( is_int( $object->value ) ) {
 				$ids[] = $object->value;
@@ -425,10 +468,10 @@ class Helpers {
 			return $urls;
 		}
 
-		foreach ( aioseo()->sitemap->addons as $classes ) {
-			if ( ! empty( $classes['helpers'] ) ) {
-				$urls = array_merge( $urls, $classes['helpers']->getSitemapUrls() );
-			}
+		$addonsUrls = array_filter( aioseo()->addons->doAddonFunction( 'helpers', 'getSitemapUrls' ) );
+
+		foreach ( $addonsUrls as $addonUrls ) {
+			$urls = array_merge( $urls, $addonUrls );
 		}
 
 		if ( aioseo()->options->sitemap->general->enable ) {
@@ -472,5 +515,32 @@ class Helpers {
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Returns if images should be excluded from the sitemap.
+	 *
+	 * @since 4.2.2
+	 *
+	 * @return bool
+	 */
+	public function excludeImages() {
+		$shouldExclude = aioseo()->options->sitemap->general->advancedSettings->enable && aioseo()->options->sitemap->general->advancedSettings->excludeImages;
+
+		return apply_filters( 'aioseo_sitemap_exclude_images', $shouldExclude );
+	}
+
+	/**
+	 * Returns the post types to check against for the author sitemap.
+	 *
+	 * @since 4.4.4
+	 *
+	 * @return array The post types.
+	 */
+	public function getAuthorPostTypes() {
+		// By default, WP only considers posts for author archives, but users can include additional post types.
+		$postTypes = [ 'post' ];
+
+		return apply_filters( 'aioseo_sitemap_author_post_types', $postTypes );
 	}
 }

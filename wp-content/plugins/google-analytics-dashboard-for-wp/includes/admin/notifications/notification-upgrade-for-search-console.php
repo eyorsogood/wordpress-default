@@ -12,8 +12,8 @@ final class ExactMetrics_Notification_Upgrade_For_Search_Console extends ExactMe
 	public $notification_interval = 30; // in days
 	public $notification_type = array( 'lite' );
 	public $notification_icon = 'warning';
-    public $notification_category = 'insight';
-    public $notification_priority = 3;
+	public $notification_category = 'insight';
+	public $notification_priority = 3;
 
 	/**
 	 * Build Notification
@@ -28,9 +28,9 @@ final class ExactMetrics_Notification_Upgrade_For_Search_Console extends ExactMe
 		$notification['content'] = sprintf( __( '%sUpgrade to ExactMetrics Pro%s to see which keywords are driving traffic to your website so you can focus on what\'s working.', 'google-analytics-dashboard-for-wp' ), '<a href="' . $this->get_upgrade_url() . '" target="_blank">', '</a>' );
 		$notification['btns']    = array(
 			"get_exactmetrics_pro" => array(
-				'url'           => $this->get_upgrade_url(),
-				'text'          => __( 'Upgrade Now', 'google-analytics-dashboard-for-wp' ),
-				'is_external'   => true,
+				'url'         => $this->get_upgrade_url(),
+				'text'        => __( 'Upgrade Now', 'google-analytics-dashboard-for-wp' ),
+				'is_external' => true,
 			),
 		);
 

@@ -1,16 +1,16 @@
 <?php
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 }
 
 /**
  * ExactMetrics settings export.
  *
+ * @return void
  * @since 6.0.0
  * @access public
  *
- * @return void
  */
 function exactmetrics_process_export_settings() {
 	if ( ! isset( $_POST['exactmetrics_action'] ) || empty( $_POST['exactmetrics_action'] ) ) {
@@ -24,8 +24,8 @@ function exactmetrics_process_export_settings() {
 	if ( 'exactmetrics_export_settings' !== $_POST['exactmetrics_action'] ) {
 		return;
 	}
-
-	if ( empty( $_POST['exactmetrics_export_settings'] ) || ! wp_verify_nonce( $_POST['exactmetrics_export_settings'], 'mi-admin-nonce' ) ) {
+	
+	if ( empty( $_POST['exactmetrics_export_settings'] ) || ! wp_verify_nonce( $_POST['exactmetrics_export_settings'], 'mi-admin-nonce' ) ) { // phpcs:ignore
 		return;
 	}
 
@@ -36,8 +36,7 @@ function exactmetrics_process_export_settings() {
 	header( 'Content-Type: application/json; charset=utf-8' );
 	header( 'Content-Disposition: attachment; filename=exactmetrics-settings-export-' . date( 'm-d-Y' ) . '.json' );
 	header( "Expires: 0" );
-
-	echo $settings;
+	echo $settings; // phpcs:ignore
 	exit;
 }
 

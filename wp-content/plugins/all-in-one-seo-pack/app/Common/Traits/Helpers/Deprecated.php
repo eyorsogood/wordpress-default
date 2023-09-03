@@ -114,11 +114,11 @@ trait Deprecated {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  array         $args The connection args.
-	 * @return WP_Filesystem       The filesystem object.
+	 * @param  array                    $args The connection args.
+	 * @return \WP_Filesystem_Base|bool       The filesystem object.
 	 */
 	public function wpfs( $args = [] ) {
-		require_once( ABSPATH . 'wp-admin/includes/file.php' );
+		require_once ABSPATH . 'wp-admin/includes/file.php';
 		WP_Filesystem( $args );
 
 		global $wp_filesystem;

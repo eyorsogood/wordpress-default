@@ -223,6 +223,9 @@ class ExactMetrics_Popular_Posts {
 	 * @return string
 	 */
 	public function render_shortcode( $args ) {
+		if ( empty( $args ) || ! is_array( $args ) ) {
+			$args = array();
+		}
 
 		return apply_filters( 'exactmetrics_popular_posts_shortcode_output', $this->shortcode_output( $args ), $args, $this );
 
@@ -493,10 +496,10 @@ class ExactMetrics_Popular_Posts {
 	/**
 	 * Generic helper function to build style attributes for elements based on shortcode/block parameters.
 	 *
-	 * @param string $theme The theme for which  we're building the style.
+	 * @param string $theme  The theme for which  we're building the style.
 	 * @param string $object Object we're styling like title, label, background, etc.
-	 * @param array  $atts Attributes passed from shortcode/block.
-	 * @param string $key The key of the style we're going to output.
+	 * @param array  $atts   Attributes passed from shortcode/block.
+	 * @param string $key    The key of the style we're going to output.
 	 *
 	 * @return string
 	 */
@@ -513,7 +516,6 @@ class ExactMetrics_Popular_Posts {
 
 		// Find theme-specific available options and check if our attributes have those set.
 		$theme_styles = $this->get_theme_props( $theme )->get_theme();
-		$style_output = '';
 		$style_css    = '';
 
 		if ( ! empty( $theme_styles['styles'] ) ) {
@@ -549,12 +551,7 @@ class ExactMetrics_Popular_Posts {
 			}
 		}
 
-		if ( ! empty( $style_css ) ) {
-			$style_output = 'style="' . $style_css . '"';
-		}
-
-		return $style_output;
-
+		return $style_css;
 	}
 
 	/**
@@ -702,6 +699,7 @@ class ExactMetrics_Popular_Posts {
 
 		if ( apply_filters( 'exactmetrics_popular_posts_show_duplicates', true ) && count( $posts ) > 0 && count( $this->shown_posts ) > 0 && count( $returned_posts ) === 0 ) {
 			$this->shown_posts = array(); // Reset shown posts.
+
 			return $this->get_posts_to_display(); // Run the function to grab the same posts again.
 		}
 

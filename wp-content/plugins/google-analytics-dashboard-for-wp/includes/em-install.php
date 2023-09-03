@@ -182,14 +182,7 @@ class ExactMetrics_Install {
 	 */
 	public function new_install() {
 
-		// Check if ExactMetrics Legacy settings exist and convert those as defaults.
-		$em_legacy_options = get_option( 'gadwp_options', false );
-		if ( $em_legacy_options ) {
-			$this->new_settings = $this->get_settings_from_gadwp();
-		} else {
-			// Add default settings values.
-			$this->new_settings = $this->get_exactmetrics_default_values();
-		}
+        $this->new_settings = $this->get_exactmetrics_default_values();
 
 		$this->maybe_import_thirstyaffiliates_options();
 
@@ -197,7 +190,7 @@ class ExactMetrics_Install {
 			'installed_version' => EXACTMETRICS_VERSION,
 			'installed_date'    => time(),
 			'installed_pro'     => exactmetrics_is_pro_version() ? time() : false,
-			'installed_lite'     => exactmetrics_is_pro_version() ? false : time(),
+			'installed_lite'    => exactmetrics_is_pro_version() ? false : time(),
 		);
 
 		update_option( 'exactmetrics_over_time', $data, false );
@@ -205,225 +198,7 @@ class ExactMetrics_Install {
 		// Let addons + MI Pro/Lite hook in here. @todo: doc as nonpublic
 		do_action( 'exactmetrics_after_new_install_routine', EXACTMETRICS_VERSION );
 	}
-
-	/**
-	 * Convert existing settings from ExactMetrics legacy version.
-	 *
-	 * @return array
-	 */
-	public function get_settings_from_gadwp() {
-		$em_legacy_options = get_option( 'gadwp_options', '' );
-		$em_legacy_options = json_decode( $em_legacy_options, true );
-		$settings          = $this->get_exactmetrics_default_values();
-
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once ABSPATH . '/wp-admin/includes/plugin.php';
-		}
-		// If set to use network wide auth, update the manual UA for all sites.
-		$plugin = plugin_basename( EXACTMETRICS_PLUGIN_FILE );
-		if ( is_multisite() && is_plugin_active_for_network( $plugin ) ) {
-			$network_routine_ran = get_site_option( 'gadwp_network_import', false );
-			if ( false === $network_routine_ran ) {
-				$em_legacy_network_options = get_site_option( 'gadwp_network_options', '' );
-				$em_legacy_network_options = json_decode( $em_legacy_network_options, true );
-
-				if ( ! empty( $em_legacy_network_options['network_mode'] ) && $em_legacy_network_options['network_mode'] && ! empty( $em_legacy_network_options['network_tableid'] ) && is_array( $em_legacy_network_options['network_tableid'] ) ) {
-					foreach ( $em_legacy_network_options['network_tableid'] as $site_id => $network_profile ) {
-						switch_to_blog( $site_id );
-
-						$profile_data = array();
-						foreach ( $em_legacy_network_options['ga_profiles_list'] as $profile ) {
-							if ( ! empty( $profile[1] ) && $network_profile === $profile[1] ) {
-								$profile_data = $profile;
-								break;
-							}
-						}
-						if ( ! empty( $profile_data ) && is_array( $profile_data ) && ! empty( $profile_data[2] ) ) {
-							ExactMetrics()->auth->set_manual_ua( $profile_data[2] );
-						}
-
-						restore_current_blog();
-					}
-				}
-
-				update_site_option( 'gadwp_network_import', EXACTMETRICS_VERSION );
-			}
-		}
-		// Save the manual UA to make sure tracking keeps working.
-		if ( ! empty( $em_legacy_options['tableid_jail'] ) && is_array( $em_legacy_options['ga_profiles_list'] ) && ! empty( $em_legacy_options['ga_profiles_list'] ) ) {
-			$profile_data = array();
-			foreach ( $em_legacy_options['ga_profiles_list'] as $profile ) {
-				if ( ! empty( $profile[1] ) && $em_legacy_options['tableid_jail'] === $profile[1] ) {
-					$profile_data = $profile;
-					break;
-				}
-			}
-			if ( ! empty( $profile_data ) && is_array( $profile_data ) && ! empty( $profile_data[2] ) ) {
-				ExactMetrics()->auth->set_manual_ua( $profile_data[2] );
-			}
-		}
-
-		// Process download tracking options.
-		if ( ! empty( $em_legacy_options['ga_event_downloads'] ) ) {
-			$downloads                       = str_replace( '*', '', $em_legacy_options['ga_event_downloads'] );
-			$downloads                       = str_replace( '|', ',', $downloads );
-			$settings['extensions_of_files'] = $downloads;
-		}
-
-		// Process affiliate tracking settings.
-		if ( ! empty( $em_legacy_options['ga_aff_tracking'] ) && 0 !== $em_legacy_options['ga_aff_tracking'] && ! empty( $em_legacy_options['ga_event_affiliates'] ) ) {
-			$settings['affiliate_links'][] = array(
-				'path'  => $em_legacy_options['ga_event_affiliates'],
-				'label' => 'Affiliate',
-			);
-		}
-
-		// Process Hash Tracking.
-		if ( ! empty( $em_legacy_options['ga_hash_tracking'] ) && 0 !== $em_legacy_options['ga_hash_tracking'] ) {
-			$settings['hash_tracking'] = 1;
-		}
-
-		// Sample rate for Performance addon.
-		if ( ! empty( $em_legacy_options['ga_speed_samplerate'] ) ) {
-			$settings['speedsamplerate'] = $em_legacy_options['ga_speed_samplerate'];
-		}
-
-		// Speed Sample rate for Performance addon.
-		if ( ! empty( $em_legacy_options['ga_user_samplerate'] ) ) {
-			$settings['samplerate'] = $em_legacy_options['ga_user_samplerate'];
-		}
-
-		// Process anonymize ip.
-		if ( ! empty( $em_legacy_options['ga_anonymize_ip'] ) ) {
-			$settings['anonymize_ips'] = $em_legacy_options['ga_anonymize_ip'] ? 1 : 0;
-		}
-
-		// Process Enhanced Link Attribution.
-		$settings['link_attribution'] = ! empty( $em_legacy_options['ga_enhanced_links'] ) ? true : false;
-
-		// Process AM notices option.
-		if ( ! empty( $em_legacy_options['hide_am_notices'] ) ) {
-			$settings['hide_am_notices'] = $em_legacy_options['hide_am_notices'] ? 1 : 0;
-		}
-
-		// Process Automatic updates.
-		if ( ! empty( $em_legacy_options['automatic_updates_minorversion'] ) ) {
-			$settings['automatic_updates'] = $em_legacy_options['automatic_updates_minorversion'] ? 'minor' : 'none';
-		}
-
-		// Process Usage Tracking.
-		if ( ! empty( $em_legacy_options['usage_tracking'] ) && 1 === $em_legacy_options['usage_tracking'] ) {
-			$settings['anonymous_data'] = 1;
-		}
-
-		// Process Cross Domain Tracking.
-		if ( ! empty( $em_legacy_options['ga_crossdomain_list'] ) ) {
-			$cross_domains             = explode( ',', $em_legacy_options['ga_crossdomain_list'] );
-			$settings['cross_domains'] = array();
-			foreach ( $cross_domains as $cross_domain ) {
-				$settings['cross_domains'][] = array(
-					'domain' => $cross_domain,
-				);
-			}
-		}
-
-		// Process not tracked roles.
-		if ( ! empty( $em_legacy_options['track_exclude'] ) && is_array( $em_legacy_options['track_exclude'] ) ) {
-			foreach ( $em_legacy_options['track_exclude'] as $role ) {
-				if ( ! in_array( $role, $settings['ignore_users'], true ) ) {
-					$settings['ignore_users'][] = $role;
-				}
-			}
-		}
-
-		// Process roles that are allowed to view dashboard.
-		if ( ! empty( $em_legacy_options['access_back'] ) && is_array( $em_legacy_options['access_back'] ) ) {
-			foreach ( $em_legacy_options['access_back'] as $role ) {
-				if ( ! in_array( $role, $settings['view_reports'], true ) ) {
-					$settings['view_reports'][] = $role;
-				}
-			}
-		}
-
-		// Convert custom dimensions.
-		$settings['custom_dimensions'] = array();
-
-		// Author custom dimension.
-		if ( ! empty( $em_legacy_options['ga_author_dimindex'] ) && 0 !== $em_legacy_options['ga_author_dimindex'] ) {
-			$settings['custom_dimensions'][] = array(
-				'id'   => intval( $em_legacy_options['ga_author_dimindex'] ),
-				'type' => 'author',
-			);
-		}
-
-		// Category custom dimension.
-		if ( ! empty( $em_legacy_options['ga_category_dimindex'] ) && 0 !== $em_legacy_options['ga_category_dimindex'] ) {
-			$settings['custom_dimensions'][] = array(
-				'id'   => intval( $em_legacy_options['ga_category_dimindex'] ),
-				'type' => 'category',
-			);
-		}
-
-		// Tags custom dimension.
-		if ( ! empty( $em_legacy_options['ga_tag_dimindex'] ) && 0 !== $em_legacy_options['ga_tag_dimindex'] ) {
-			$settings['custom_dimensions'][] = array(
-				'id'   => intval( $em_legacy_options['ga_tag_dimindex'] ),
-				'type' => 'tags',
-			);
-		}
-
-		// Convert "User Type" to "Logged in" custom dimension.
-		if ( ! empty( $em_legacy_options['ga_user_dimindex'] ) && 0 !== $em_legacy_options['ga_user_dimindex'] ) {
-			$settings['custom_dimensions'][] = array(
-				'id'   => intval( $em_legacy_options['ga_tag_dimindex'] ),
-				'type' => 'logged_in',
-			);
-		}
-
-		// Transfer Google Optimize
-		if ( ! empty( $em_legacy_options['optimize_tracking'] ) && 1 === $em_legacy_options['optimize_tracking'] ) {
-			if ( ! empty( $em_legacy_options['optimize_containerid'] ) ) {
-				$settings['goptimize_container'] = $em_legacy_options['optimize_containerid'];
-				// Maybe also page hide
-				if ( ! empty( $em_legacy_options['optimize_pagehiding'] ) ) {
-					$settings['goptimize_pagehide'] = true;
-				}
-			}
-		}
-
-		// Transfer enhanced eCommerce
-		if ( ! empty( $em_legacy_options['ecommerce_mode'] ) ) {
-			if ( 'disabled' !== $em_legacy_options['ecommerce_mode'] ) {
-				$settings['gadwp_ecommerce'] = true;
-			}
-			if ( 'enhanced' === $em_legacy_options['ecommerce_mode'] ) {
-				$settings['enhanced_ecommerce'] = true;
-			}
-		}
-
-		// Transfer Demographics
-		$settings['demographics'] = ! empty( $em_legacy_options['ga_dash_remarketing'] ) ? 1 : 0;
-
-
-		$settings['gadwp_migrated'] = time();
-
-		// Hide the dashboard widget reports for migrating users.
-		if ( ! exactmetrics_is_pro_version() ) {
-			$dashboard_settings = array(
-				'reports' => array(
-					'overview' => array(
-						'toppages'    => false,
-						'newvsreturn' => false,
-						'devices'     => false,
-					),
-				),
-			);
-			update_user_meta( get_current_user_id(), 'exactmetrics_user_preferences', $dashboard_settings );
-		}
-
-		return $settings;
-	}
-
+    
 	public function get_exactmetrics_default_values() {
 		$admin_email       = get_option( 'admin_email' );
 		$admin_email_array = array(
@@ -462,7 +237,7 @@ class ExactMetrics_Install {
 			'email_summaries'                          => 'on',
 			'summaries_html_template'                  => 'yes',
 			'summaries_email_addresses'                => $admin_email_array,
-			'automatic_updates'                        => 'none',
+			'automatic_updates'                        => 'all',
 			'popular_posts_inline_theme'               => 'alpha',
 			'popular_posts_widget_theme'               => 'alpha',
 			'popular_posts_products_theme'             => 'alpha',

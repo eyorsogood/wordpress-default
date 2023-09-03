@@ -101,7 +101,7 @@ class Robots {
 			return $this->metaHelper();
 		}
 
-		if ( is_home() && 'posts' === get_option( 'show_on_front' ) ) {
+		if ( is_home() && 'page' !== get_option( 'show_on_front' ) ) {
 			$this->globalValues();
 
 			return $this->metaHelper();
@@ -155,7 +155,7 @@ class Robots {
 	 */
 	public function metaHelper( $array = false ) {
 		$pageNumber = aioseo()->helpers->getPageNumber();
-		if ( 1 < $pageNumber || 0 < (int) get_query_var( 'cpage', 0 ) ) {
+		if ( 1 < $pageNumber || aioseo()->helpers->getCommentPageNumber() ) {
 			if (
 				aioseo()->options->searchAppearance->advanced->globalRobotsMeta->default ||
 				aioseo()->options->searchAppearance->advanced->globalRobotsMeta->noindexPaginated
@@ -182,7 +182,7 @@ class Robots {
 			$this->attributes['nofollow'] = 'nofollow';
 		}
 
-		$this->attributes = array_filter( apply_filters( 'aioseo_robots_meta', $this->attributes ) );
+		$this->attributes = array_filter( (array) apply_filters( 'aioseo_robots_meta', $this->attributes ) );
 
 		return $array ? $this->attributes : implode( ', ', $this->attributes );
 	}
@@ -242,8 +242,7 @@ class Robots {
 	private function archives() {
 		$dynamicOptions = aioseo()->dynamicOptions->noConflict();
 		$postType       = get_queried_object();
-
-		if ( $dynamicOptions->searchAppearance->archives->has( $postType->name ) ) {
+		if ( ! empty( $postType->name ) && $dynamicOptions->searchAppearance->archives->has( $postType->name ) ) {
 			$this->globalValues( [ 'archives', $postType->name ], true );
 		}
 	}
@@ -260,11 +259,14 @@ class Robots {
 	protected function globalValues( $optionOrder = [], $isDynamicOption = false ) {
 		$robotsMeta = [];
 		if ( count( $optionOrder ) ) {
-			$options = $isDynamicOption ? aioseo()->dynamicOptions->noConflict()->searchAppearance : aioseo()->options->noConflict()->searchAppearance;
+			$options = $isDynamicOption
+				? aioseo()->dynamicOptions->noConflict( true )->searchAppearance
+				: aioseo()->options->noConflict()->searchAppearance;
+
 			foreach ( $optionOrder as $option ) {
 				if ( ! $options->has( $option, false ) ) {
 					return;
-				};
+				}
 				$options = $options->$option;
 			}
 
@@ -332,7 +334,7 @@ class Robots {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  array $metaData The post/term meta data.
+	 * @param  \AIOSEO\Plugin\Common\Models\Post|\AIOSEO\Plugin\Pro\Models\Term $metaData The post/term meta data.
 	 * @return void
 	 */
 	protected function metaValues( $metaData ) {

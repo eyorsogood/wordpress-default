@@ -13,6 +13,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Title {
 	/**
+	 * Helpers class instance.
+	 *
+	 * @since 4.2.7
+	 *
+	 * @var Helpers
+	 */
+	public $helpers = null;
+
+	/**
 	 * Class constructor.
 	 *
 	* @since 4.1.2
@@ -50,7 +59,13 @@ class Title {
 			return $title ? $title : aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'name' ) );
 		}
 
-		$title = $this->helpers->prepare( aioseo()->options->searchAppearance->global->siteTitle );
+		$title = aioseo()->options->searchAppearance->global->siteTitle;
+		if ( aioseo()->helpers->isWpmlActive() ) {
+			// Allow WPML to translate the title if the homepage is not static.
+			$title = apply_filters( 'wpml_translate_single_string', $title, 'admin_texts_aioseo_options_localized', '[aioseo_options_localized]searchAppearance_global_siteTitle' );
+		}
+
+		$title = $this->helpers->prepare( $title );
 
 		return $title ? $title : aioseo()->helpers->decodeHtmlEntities( get_bloginfo( 'name' ) );
 	}
@@ -60,12 +75,12 @@ class Title {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  WP_Post $post    The post object (optional).
-	 * @param  boolean $default Whether we want the default value, not the post one.
-	 * @return string           The page title.
+	 * @param  \WP_Post $post    The post object (optional).
+	 * @param  boolean  $default Whether we want the default value, not the post one.
+	 * @return string            The page title.
 	 */
 	public function getTitle( $post = null, $default = false ) {
-		if ( is_home() && 'posts' === get_option( 'show_on_front' ) ) {
+		if ( is_home() ) {
 			return $this->getHomePageTitle();
 		}
 
@@ -91,11 +106,13 @@ class Title {
 			return $this->helpers->prepare( aioseo()->options->searchAppearance->archives->search->title );
 		}
 
-		if ( is_archive() ) {
-			$postType       = get_queried_object();
-			$dynamicOptions = aioseo()->dynamicOptions->noConflict();
-			if ( $dynamicOptions->searchAppearance->archives->has( $postType->name ) ) {
-				return $this->helpers->prepare( aioseo()->dynamicOptions->searchAppearance->archives->{ $postType->name }->title );
+		if ( is_post_type_archive() ) {
+			$postType = get_queried_object();
+			if ( is_a( $postType, 'WP_Post_Type' ) ) {
+				$dynamicOptions = aioseo()->dynamicOptions->noConflict();
+				if ( $dynamicOptions->searchAppearance->archives->has( $postType->name ) ) {
+					return $this->helpers->prepare( aioseo()->dynamicOptions->searchAppearance->archives->{ $postType->name }->title );
+				}
 			}
 		}
 
@@ -107,9 +124,9 @@ class Title {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  WP_Post|int $post    The post object or ID.
-	 * @param  boolean     $default Whether we want the default value, not the post one.
-	 * @return string               The post title.
+	 * @param  \WP_Post|int $post    The post object or ID.
+	 * @param  boolean      $default Whether we want the default value, not the post one.
+	 * @return string                The post title.
 	 */
 	public function getPostTitle( $post, $default = false ) {
 		$post = $post && is_object( $post ) ? $post : aioseo()->helpers->getPost( $post );
@@ -170,9 +187,9 @@ class Title {
 	 *
 	 * @since 4.0.6
 	 *
-	 * @param  WP_Term $term    The term object.
-	 * @param  boolean $default Whether we want the default value, not the post one.
-	 * @return string           The term title.
+	 * @param  \WP_Term $term    The term object.
+	 * @param  boolean  $default Whether we want the default value, not the post one.
+	 * @return string            The term title.
 	 */
 	public function getTermTitle( $term, $default = false ) {
 		if ( ! is_a( $term, 'WP_Term' ) ) {
@@ -189,7 +206,7 @@ class Title {
 		if ( ! $title && $dynamicOptions->searchAppearance->taxonomies->has( $term->taxonomy ) ) {
 			$newTitle = aioseo()->dynamicOptions->searchAppearance->taxonomies->{$term->taxonomy}->title;
 			$newTitle = preg_replace( '/#taxonomy_title/', aioseo()->helpers->escapeRegexReplacement( $term->name ), $newTitle );
-			$title    = $this->helpers->prepare( $newTitle, false, $default );
+			$title    = $this->helpers->prepare( $newTitle, $term->term_id, $default );
 		}
 
 		$terms[ $term->term_id ] = $title;

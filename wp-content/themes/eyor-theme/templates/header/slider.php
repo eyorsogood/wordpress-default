@@ -67,7 +67,7 @@ if ( $slick_options ) {
 	$js_config['sliderOptions'] = $slick_options;
 }
 
-if ( 'random' === $section_order ) {
+if ( isset($section_order) && 'random' === $section_order ) {
 	shuffle( $slider_group );
 }
 

@@ -45,6 +45,8 @@ if ( qed_get_option( 'is_testimonial_enabled', 'option' ) && qed_is_display_test
 		</div>
 	</div>
 </footer>
+<input type="hidden" id="base-url" value="<?php echo home_url(); ?>">
+<input type="hidden" id="ajax-url" value="<?php echo admin_url('admin-ajax.php'); ?>">
 <div style="display:none" class="fancybox-hidden">
 	<div id="contact-lightbox" style="display: block;max-width: 1080px;width: 100%;">
 		<?php get_template_part( 'templates/lightbox', 'contact-form' );?>

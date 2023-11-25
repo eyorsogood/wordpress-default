@@ -42,6 +42,7 @@ class JuiceContainer implements ArrayAccess
     /**
      * Sets a parameter or a definition
      */
+     #[\ReturnTypeWillChange]
     public function offsetSet($id, $value)
     {
         if ($this->locked) {
@@ -75,6 +76,7 @@ class JuiceContainer implements ArrayAccess
      *
      * @throws InvalidArgumentException if the identifier is not defined
      */
+     #[\ReturnTypeWillChange]
     public function offsetGet($id)
     {
         $this->lock();
@@ -122,6 +124,7 @@ class JuiceContainer implements ArrayAccess
      *
      * @return Boolean
      */
+     #[\ReturnTypeWillChange]
     public function offsetExists($id)
     {
         return isset($this->values[$id]) || isset($this->definitions[$id]) || isset($this->aliases[$id]);
@@ -132,6 +135,7 @@ class JuiceContainer implements ArrayAccess
      *
      * @param  string $id The unique identifier for the parameter or object
      */
+     #[\ReturnTypeWillChange]
     public function offsetUnset($id)
     {
         unset($this->values[$id]);

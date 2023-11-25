@@ -209,6 +209,10 @@ class SD_Less_Processor extends SD_Component {
 
 		foreach ( $less_variables as $option_name => $details ) {
 			$txt_value = $details['value'];
+			
+			if(is_null($txt_value)){
+		        $txt_value = '';
+		    }
 
 			// grouping options related to the font settings.
 			// to load related fonts later.

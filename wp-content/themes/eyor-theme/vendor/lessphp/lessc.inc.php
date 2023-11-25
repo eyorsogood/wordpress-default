@@ -662,11 +662,12 @@ class lessc {
 
 		// check for a rest
 		$last = end($args);
+		
 		if(!is_bool($last)){
-			if ($last[0] == "rest") {
-				$rest = array_slice($orderedValues, count($args) - 1);
-				$this->set($last[1], $this->reduce(array("list", " ", $rest)));
-			}
+		    if ($last[0] == "rest") {
+    			$rest = array_slice($orderedValues, count($args) - 1);
+    			$this->set($last[1], $this->reduce(array("list", " ", $rest)));
+    		}   
 		}
 
 		// wow is this the only true use of PHP's + operator for arrays?
@@ -1571,7 +1572,8 @@ class lessc {
 				$width = strlen($colorStr) == 3 ? 16 : 256;
 
 				for ($i = 3; $i > 0; $i--) { // 3 2 1
-					$t = $num % $width;
+					//$t = $num % $width;
+					$t = (int)$num % $width;
 					$num /= $width;
 
 					$c[$i] = $t * (256/$width) + $t * floor(16/$width);
@@ -3489,6 +3491,7 @@ class lessc_parser {
 	}
 
 	// try to match something on head of buffer
+	/*
 	protected function match($regex, &$out, $eatWhitespace = null) {
 		if ($eatWhitespace === null) $eatWhitespace = $this->eatWhiteDefault;
 
@@ -3499,7 +3502,22 @@ class lessc_parser {
 			return true;
 		}
 		return false;
-	}
+	}*/
+	
+	protected function match($regex, &$out, $eatWhitespace = null)
+    {
+        if ($eatWhitespace === null) $eatWhitespace = $this->eatWhiteDefault;
+    
+        $r = '/'.$regex.($eatWhitespace && !$this->writeComments ? '\s*' : '').'/Ais';
+    
+        if (preg_match($r, $this->buffer, $out, 0, $this->count)) {
+            $this->count += strlen($out[0]);
+            if ($eatWhitespace && $this->writeComments) $this->whitespace();
+            return true;
+        }
+    
+        return false;
+    }
 
 	// match some whitespace
 	protected function whitespace() {
@@ -3524,7 +3542,7 @@ class lessc_parser {
 	protected function peek($regex, &$out = null, $from=null) {
 		if (is_null($from)) $from = $this->count;
 		$r = '/'.$regex.'/Ais';
-		$result = preg_match($r, $this->buffer, $out, null, $from);
+		$result = preg_match($r, $this->buffer, $out, 0, $from);
 
 		return $result;
 	}
